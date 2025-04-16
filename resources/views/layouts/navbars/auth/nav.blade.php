@@ -21,7 +21,8 @@
             <div class="card blur shadow-blur pe-2 me-3">
                 <div class="d-flex align-items-center">
                     <div class="avatar">
-                        <img src="../assets/img/bruce-mars.jpg" alt="..." class="border-radius-lg shadow-sm"
+                        <img src="{{ Auth::user()->photo ? Auth::user()->photo : asset('assets/img/bruce-mars.jpg') }}"
+                            alt="..." class="border-radius-lg shadow-sm"
                             style="width: 28px; height: 28px; object-fit: cover;">
                     </div>
                     <div>
