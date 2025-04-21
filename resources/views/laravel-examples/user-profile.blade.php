@@ -3,7 +3,7 @@
 @section('content')
 
 <div>
-    <form action="/user-profile" method="POST" role="form text-left" enctype="multipart/form-data">
+    <form action="{{ route('user-profile.update') }}" method="POST" role="form text-left" enctype="multipart/form-data">
         <div class="container-fluid">
             @csrf
             <div class="page-header min-height-300 border-radius-xl mt-4"

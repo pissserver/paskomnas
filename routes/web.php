@@ -41,10 +41,11 @@ Route::group(['middleware' => 'auth'], function () {
 		return view('rtl');
 	})->name('rtl');
 
-	Route::get('user-management', function () {
-		return view('laravel-examples/user-management');
-	})->name('user-management');
+	// Route::get('user-management', function () {
+	// 	return view('laravel-examples/user-management');
+	// })->name('user-management');
 
+	
 	Route::get('tables', function () {
 		return view('tables');
 	})->name('tables');
@@ -61,9 +62,15 @@ Route::group(['middleware' => 'auth'], function () {
 		return view('static-sign-up');
 	})->name('sign-up');
 
+
+	Route::get('user-profile', [InfoUserController::class, 'index'])->name('user-profile.index');
+	Route::post('user-profile/update', [InfoUserController::class, 'update'])->name('user-profile.update');
+	Route::get('user-management/create', [InfoUserController::class, 'create'])->name('user-management.create');
+	Route::post('user-management', [InfoUserController::class, 'store'])->name('user-management.store');
+	Route::get('user-management', [InfoUserController::class, 'show'])->name('user-management');
+	
     Route::get('/logout', [SessionsController::class, 'destroy']);
-	Route::get('/user-profile', [InfoUserController::class, 'create']);
-	Route::post('/user-profile', [InfoUserController::class, 'store']);
+
     Route::get('/login', function () {
 		return view('dashboard');
 	})->name('sign-up');

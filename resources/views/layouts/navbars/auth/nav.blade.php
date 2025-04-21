@@ -4,11 +4,18 @@
     <div class="container-fluid py-1 px-3">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-                <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Pages</a></li>
+                <li class="breadcrumb-item text-sm">
+                    <a class="opacity-5 text-dark" href="javascript:;">Pages</a>
+                </li>
+                @foreach (explode('/', Request::path()) as $segment)
                 <li class="breadcrumb-item text-sm text-dark active text-capitalize" aria-current="page">
-                    {{ str_replace('-', ' ', Request::path()) }}</li>
+                    {{ ucwords(str_replace('-', ' ', $segment)) }}
+                </li>
+                @endforeach
             </ol>
-            <h6 class="font-weight-bolder mb-0 text-capitalize">{{ str_replace('-', ' ', Request::path()) }}</h6>
+            <h6 class="font-weight-bolder mb-0 text-capitalize">
+                {{ ucwords(str_replace('-', ' ', str_replace('/', ' / ', Request::path()))) }}
+            </h6>
         </nav>
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4 d-flex justify-content-end" id="navbar">
             <div class="ms-md-3 pe-md-3 d-flex align-items-center">
@@ -21,7 +28,7 @@
             <div class="card blur shadow-blur pe-2 me-3">
                 <div class="d-flex align-items-center">
                     <div class="avatar">
-                        <img src="{{ Auth::user()->photo ? Auth::user()->photo : asset('assets/img/bruce-mars.jpg') }}"
+                        <img src="{{ Auth::user()->photo ? asset(Auth::user()->photo) : asset('assets/img/bruce-mars.jpg') }}"
                             alt="..." class="border-radius-lg shadow-sm"
                             style="width: 28px; height: 28px; object-fit: cover;">
                     </div>
