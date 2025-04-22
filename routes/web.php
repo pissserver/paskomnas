@@ -2,7 +2,8 @@
 
 use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\InfoUserController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\ResetController;
 use App\Http\Controllers\SessionsController;
@@ -62,14 +63,19 @@ Route::group(['middleware' => 'auth'], function () {
 		return view('static-sign-up');
 	})->name('sign-up');
 
+	// User Profile
+	Route::get('profile', [UserController::class, 'index'])->name('user.index');
+	Route::put('profile', [UserController::class, 'update'])->name('user.update');
 
-	Route::get('user-profile', [InfoUserController::class, 'index'])->name('user-profile.index');
-	Route::post('user-profile/update', [InfoUserController::class, 'update'])->name('user-profile.update');
-	Route::get('user-management/create', [InfoUserController::class, 'create'])->name('user-management.create');
-	Route::post('user-management', [InfoUserController::class, 'store'])->name('user-management.store');
-	Route::get('user-management', [InfoUserController::class, 'show'])->name('user-management');
+	// User Management
+	Route::get('user-management', [UserManagementController::class, 'index'])->name('user-management.index');
+	Route::get('user-management/create', [UserManagementController::class, 'create'])->name('user-management.create');
+	Route::put('user-management', [UserManagementController::class, 'store'])->name('user-management.store');
+	Route::get('user-management/{id}/edit', [UserManagementController::class, 'edit'])->name('user-management.edit');
+	Route::put('user-management/{id}', [UserManagementController::class, 'update'])->name('user-management.update');
+	Route::delete('user-management/{id}', [UserManagementController::class, 'destroy'])->name('user-management.destroy');
 	
-    Route::get('/logout', [SessionsController::class, 'destroy']);
+    Route::get('logout', [SessionsController::class, 'destroy'])->name('logout');
 
     Route::get('/login', function () {
 		return view('dashboard');

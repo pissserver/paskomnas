@@ -3,11 +3,12 @@
 @section('content')
 
 <div>
-    <form action="{{ route('user-profile.update') }}" method="POST" role="form text-left" enctype="multipart/form-data">
+    <form action="{{ route('user.update')}}" method="POST" role="form text-left" enctype="multipart/form-data">
         <div class="container-fluid">
             @csrf
+            @method('PUT')
             <div class="page-header min-height-300 border-radius-xl mt-4"
-                style="background-image: url('../assets/img/curved-images/curved0.jpg'); background-position-y: 50%;">
+                style="background-image: url('{{ asset('assets/img/curved-images/curved0.jpg') }}'); background-position-y: 50%;">
                 <span class="mask bg-gradient-primary opacity-6"></span>
             </div>
             <div class="card card-body blur shadow-blur mx-4 mt-n6">
@@ -15,14 +16,20 @@
                     <div class="col-auto">
                         <div class="avatar avatar-xl position-relative">
                             <img id="previewImage"
-                                src="{{ Auth::user()->photo ? asset(Auth::user()->photo) : asset('assets/img/bruce-mars.jpg') }}"
+                                src="{{ Auth::user()->photo ? asset(Auth::user()->photo) : asset('assets/img/default-profile.jpg') }}"
                                 alt="Preview" class="w-100 border-radius-lg shadow-sm">
                             <input type="file" id="imageInput" name="photo" accept="image/*" class="d-none"
                                 onchange="previewSelectedImage(event)">
                             <a href="javascript:;" onclick="document.getElementById('imageInput').click()"
                                 class="btn btn-sm btn-icon-only bg-gradient-light position-absolute bottom-0 end-0 mb-n2 me-n2">
                                 <i class="fa fa-pen top-0" data-bs-toggle="tooltip" data-bs-placement="top"
-                                    title="Edit Image"></i>
+                                    title="Edit Picture"></i>
+                            </a>
+                            <input type="hidden" name="reset_photo" id="resetPhoto" value="0">
+                            <a href="javascript:;" onclick="resetImageToDefault()"
+                                class="btn btn-sm btn-icon-only bg-gradient-danger position-absolute bottom-0 start-0 mb-n2 ms-n2">
+                                <i class="fa fa-trash top-0" data-bs-toggle="tooltip" data-bs-placement="top"
+                                    title="Remove Picture"></i>
                             </a>
                         </div>
                     </div>
@@ -31,8 +38,9 @@
                             <h5 class="mb-1">
                                 {{ auth()->user()->name }}
                             </h5>
-                            <p class="mb-0 font-weight-bold text-sm">
-                                {{ auth()->user()->email }}
+                            <p
+                                class="mb-0 font-weight-bold text-sm text-uppercas btn {{ auth()->user()->role == 'master' ? "bg-gradient-primary" : "bg-gradient-warning" }} btn-sm">
+                                {{ auth()->user()->role }}
                             </p>
                         </div>
                     </div>
@@ -137,12 +145,12 @@
         </div>
         <div class="container-fluid py-4">
             <div class="card">
-                <div class="card-header pb-0 px-3">
+                <div class="card-header pb-0 p-4">
                     <h6 class="mb-0">{{ __('Profile Information') }}</h6>
                 </div>
-                <div class="card-body pt-4 p-3">
+                <div class="card-body pt-4 p-4">
                     @if($errors->any())
-                    <div class="mt-3  alert alert-primary alert-dismissible fade show" role="alert">
+                    <div class="alert alert-primary alert-dismissible fade show" role="alert">
                         <span class="alert-text text-white">
                             {{$errors->first()}}</span>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
@@ -151,7 +159,7 @@
                     </div>
                     @endif
                     @if(session('success'))
-                    <div class="m-3  alert alert-success alert-dismissible fade show" id="alert-success" role="alert">
+                    <div class="alert alert-success alert-dismissible fade show" id="alert-success" role="alert">
                         <span class="alert-text text-white">
                             {{ session('success') }}</span>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
@@ -165,7 +173,7 @@
                                 <label for="user-name" class="form-control-label">{{ __('Full Name') }}</label>
                                 <div class="@error('user.name')border border-danger rounded-3 @enderror">
                                     <input class="form-control" value="{{ auth()->user()->name }}" type="text"
-                                        placeholder="Name" id="user-name" name="name">
+                                        placeholder="Full Name" id="user-name" name="name">
                                     @error('name')
                                     <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                     @enderror
@@ -190,7 +198,7 @@
                             <div class="form-group">
                                 <label for="user.phone" class="form-control-label">{{ __('Phone') }}</label>
                                 <div class="@error('user.phone')border border-danger rounded-3 @enderror">
-                                    <input class="form-control" type="tel" placeholder="40770888444" id="number"
+                                    <input class="form-control" type="tel" placeholder="Phone Number" id="number"
                                         name="phone" value="{{ auth()->user()->phone }}">
                                     @error('phone')
                                     <p class="text-danger text-xs mt-2">{{ $message }}</p>
@@ -255,6 +263,13 @@
             };
             reader.readAsDataURL(file);
         }
+    }
+
+    function resetImageToDefault() {
+        const preview = document.getElementById('previewImage');
+        preview.src = "{{ asset('assets/img/default-profile.jpg') }}";
+        document.getElementById('resetPhoto').value = 1;
+        document.getElementById('imageInput').value = '';
     }
 </script>
 @endsection

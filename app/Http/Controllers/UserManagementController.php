@@ -6,14 +6,13 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\View;
 
-class InfoUserController extends Controller
+class UserManagementController extends Controller
 {
     public function index()
     {
-        $user = User::find(Auth::id());
-        return view('laravel-examples/user-profile', ['users' => $user]);
+        $users = User::paginate(10);
+        return view('laravel-examples/user-management', ['users' => $users]);
     }
 
     public function create()
@@ -21,7 +20,7 @@ class InfoUserController extends Controller
         return view('laravel-examples/user-create');
     }
 
-    public function store(Request $request)
+    public function store(Request $request, User $user)
     {
         $attributes = request()->validate([
             'name' => ['required', 'max:50'],
@@ -33,16 +32,6 @@ class InfoUserController extends Controller
             'about_me' => ['max:255'],
             'photo' => ['nullable', 'image', 'max:10240'],
         ]);
-
-        if($request->get('email') != Auth::user()->email)
-        {
-            if(env('IS_DEMO') && Auth::user()->id == 1)
-            {
-                return redirect()->back()->withErrors(['msg2' => 'You are in a demo version, you can\'t change the email address.']);
-                
-            }
-            
-        }
 
         $dataToCreate = [
             'name' => $attributes['name'],
@@ -61,39 +50,29 @@ class InfoUserController extends Controller
             $dataToCreate['photo'] = 'storage/photos/' . $filename;
         }
         
-        
-        User::create($dataToCreate);
-
+        $user->create($dataToCreate);
 
         return redirect('/user-management')->with('success','User created successfully');
     }
 
-    public function show(User $user)
+    public function edit($id)
     {
-        $users = User::paginate(10);
-        return view('laravel-examples/user-management', ['users' => $users]);
+        $user = User::findOrFail($id);
+        return view('laravel-examples/user-edit', ['user' => $user]);
     }
 
-    public function update(Request $request, User $user)
+    public function update(Request $request, $id)
     {
+        $user = User::findOrFail($id);
+
         $attributes = request()->validate([
             'name' => ['required', 'max:50'],
-            'email' => ['required', 'email', 'max:50', Rule::unique('users')->ignore(Auth::user()->id)],
+            'email' => ['required', 'email', 'max:50', Rule::unique('users')->ignore($user->id)],
             'phone' => ['max:50'],
             'location' => ['max:70'],
             'about_me' => ['max:150'],
             'photo' => ['nullable', 'image', 'max:10240'],
         ]);
-
-        if($request->get('email') != Auth::user()->email)
-        {
-            if(env('IS_DEMO') && Auth::user()->id == 1)
-            {
-                return redirect()->back()->withErrors(['msg2' => 'You are in a demo version, you can\'t change the email address.']);
-                
-            }
-            
-        }
 
         $dataToUpdate = [
             'name' => $attributes['name'],
@@ -103,21 +82,27 @@ class InfoUserController extends Controller
             'about_me' => $attributes['about_me'],
         ];
 
-        if ($request->hasFile('photo')) {
-            if (Auth::user()->photo && file_exists(public_path(Auth::user()->photo))) {
-                unlink(public_path(Auth::user()->photo));
-            }
-        
+        if ($request->hasFile('photo')) {        
             $file = $request->file('photo');
             $filename = 'user_' . Auth::id() . '_' . time() . '.' . $file->getClientOriginalExtension();
             $path = $file->storeAs('public/photos', $filename);
             $dataToUpdate['photo'] = 'storage/photos/' . $filename;
+        } elseif ($request->input('reset_photo') == '1') {
+            $dataToUpdate['photo'] = null;
         }
         
         
-        User::where('id', Auth::id())->update($dataToUpdate);
+        $user->update($dataToUpdate);
 
+        return redirect()->route('user-management.edit', ['id' => $user->id])
+            ->with('success', 'Profile updated successfully');
+    }
 
-        return redirect('/user-profile')->with('success','Profile updated successfully');
+    public function destroy($id)
+    {
+        $user = User::findOrFail($id);
+        $user->delete();
+
+        return redirect('/user-management')->with('success', 'User deleted successfully');
     }
 }

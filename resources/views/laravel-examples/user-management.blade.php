@@ -88,7 +88,7 @@
                                     </td>
                                     <td>
                                         <div>
-                                            <img src="{{ $user->photo ? asset($user->photo) : asset('assets/img/default-avatar.png') }}"
+                                            <img src="{{ $user->photo != NULL ? asset($user->photo) : asset('assets/img/default-profile.jpg') }}"
                                                 class="avatar avatar-sm me-3">
                                         </div>
                                     </td>
@@ -102,24 +102,37 @@
                                         <p class="text-xs font-weight-bold mb-0">
                                             <span
                                                 class="mb-0 btn btn-sm {{ $user->role == 'master' ? 'bg-gradient-primary' : 'bg-gradient-warning' }}"
-                                                style="cursor: default !important;"">
+                                                style="cursor: default !important;">
                                                 {{ $user->role }}
                                             </span>
                                         </p>
                                     </td>
                                     <td class=" text-center">
-                                                <span
-                                                    class="text-secondary text-xs font-weight-bold">{{ \Carbon\Carbon::parse($user->created_at)->translatedFormat('d F Y') }}</span>
+                                        <span
+                                            class="text-secondary text-xs font-weight-bold">{{ \Carbon\Carbon::parse($user->created_at)->translatedFormat('d F Y') }}</span>
                                     </td>
                                     <td class="text-center">
-                                        <a href="#" class="mx-3" data-bs-toggle="tooltip"
-                                            data-bs-original-title="Edit user">
+                                        @if($user->id != Auth::user()->id)
+                                        <a href="{{ route('user-management.edit', $user->id) }}" class="mx-3"
+                                            data-bs-toggle="tooltip" data-bs-original-title="Edit user">
                                             <i class="fas fa-user-edit text-secondary"></i>
                                         </a>
-                                        <a href="#" class="mx-3" data-bs-toggle="tooltip"
-                                            data-bs-original-title="Delete user">
-                                            <i class="fas fa-trash text-secondary"></i>
+                                        <form id="delete-form-{{ $user->id }}"
+                                            action="{{ route('user-management.destroy', $user->id) }}" method="POST"
+                                            class="d-none">
+                                            @csrf
+                                            @method('DELETE')
+                                        </form>
+                                        <a class="mx-3" href="javascript:;" title="Delete user"
+                                            onclick="confirmDelete({{ $user->id }}, '{{ $user->name }}')">
+                                            <i class="fas fa-trash text-danger"></i>
                                         </a>
+                                        @else
+                                        <span class="mb-0 btn btn-sm bg-gradient-success"
+                                            style="cursor: default !important;">
+                                            Logged In
+                                        </span>
+                                        @endif
                                     </td>
                                 </tr>
                                 @endforeach
@@ -135,5 +148,24 @@
         </div>
     </div>
 </div>
+
+<script>
+    function confirmDelete(userId, userName) {
+        Swal.fire({
+            title: 'Are you sure delete?',
+            html: `User <strong>${userName}</strong> to permenent delete.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, delete!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(`delete-form-${userId}`).submit();
+            }
+        });
+    }
+</script>
 
 @endsection

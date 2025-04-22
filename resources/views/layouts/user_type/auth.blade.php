@@ -24,13 +24,6 @@
     </div>
 </main>
 
-@elseif (\Request::is('profile'))
-@include('layouts.navbars.auth.sidebar')
-<div class="main-content position-relative bg-gray-100 max-height-vh-100 h-100">
-    @include('layouts.navbars.auth.nav')
-    @yield('content')
-</div>
-
 @elseif (\Request::is('virtual-reality'))
 @include('layouts.navbars.auth.nav')
 <div class="border-radius-xl mt-3 mx-3 position-relative"

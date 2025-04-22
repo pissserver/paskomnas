@@ -7,14 +7,15 @@
         enctype="multipart/form-data">
         <div class="container-fluid">
             @csrf
+            @method('PUT')
             <div class="container-fluid py-4">
                 <div class="card">
-                    <div class="card-header pb-0 px-3">
+                    <div class="card-header p-4">
                         <h6 class="mb-0">{{ __('Create User') }}</h6>
                     </div>
-                    <div class="card-body pt-4 p-3">
+                    <div class="card-body pt-2 p-4">
                         @if($errors->any())
-                        <div class="mt-3  alert alert-primary alert-dismissible fade show" role="alert">
+                        <div class="alert alert-primary alert-dismissible fade show" role="alert">
                             <span class="alert-text text-white">
                                 {{$errors->first()}}</span>
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
@@ -23,8 +24,7 @@
                         </div>
                         @endif
                         @if(session('success'))
-                        <div class="m-3  alert alert-success alert-dismissible fade show" id="alert-success"
-                            role="alert">
+                        <div class="alert alert-success alert-dismissible fade show" id="alert-success" role="alert">
                             <span class="alert-text text-white">
                                 {{ session('success') }}</span>
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
