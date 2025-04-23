@@ -26,6 +26,7 @@ class UserController extends Controller
         $attributes = request()->validate([
             'name' => ['required', 'max:50'],
             'email' => ['required', 'email', 'max:50', Rule::unique('users')->ignore(Auth::user()->id)],
+            'password' => ['nullable', 'min:8', 'max:50', 'confirmed'],
             'phone' => ['max:50'],
             'location' => ['max:255'],
             'about_me' => ['max:255'],
@@ -35,6 +36,7 @@ class UserController extends Controller
         $dataToUpdate = [
             'name' => $attributes['name'],
             'email' => $attributes['email'],
+            'password' => $attributes['password'] ? bcrypt($attributes['password']) : Auth::user()->password,
             'phone' => $attributes['phone'],
             'location' => $attributes['location'],
             'about_me' => $attributes['about_me'],
@@ -55,6 +57,11 @@ class UserController extends Controller
 
         Auth::user()->update($dataToUpdate);
 
-        return redirect()->back()->with('success', 'Profile updated successfully.');
+        if ($request->input('password') != null) {
+            Auth::logout();
+            return redirect('/login')->with('success', 'Password updated successfully. Please log in again.');
+        } else {
+            return redirect()->back()->with('success', 'Profile updated successfully.');
+        }
     }
 }

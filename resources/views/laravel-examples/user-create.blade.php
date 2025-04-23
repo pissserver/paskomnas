@@ -112,18 +112,23 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="password">Password</label>
-                            <div class="@error('password') border border-danger rounded-3 @enderror">
-                                <input class="form-control" type="password" placeholder="Password" id="password"
+                            <label for="password">Change Password</label>
+                            <div class="input-group @error('password') border border-danger rounded-3 @enderror">
+                                <input class="form-control" type="password" placeholder="Change Password" id="password"
                                     name="password">
+                                <span class="input-group-text" onclick="togglePassword('password', this)">
+                                    <i class="fa fa-eye-slash" aria-hidden="true"></i>
+                                </span>
                             </div>
 
                             <label for="password_confirmation" class="mt-3">Repeat Password</label>
-                            <div class="@error('password') border border-danger rounded-3 @enderror">
+                            <div class="input-group @error('password') border border-danger rounded-3 @enderror">
                                 <input class="form-control" type="password" placeholder="Repeat Password"
                                     id="password_confirmation" name="password_confirmation">
+                                <span class="input-group-text" onclick="togglePassword('password_confirmation', this)">
+                                    <i class="fa fa-eye-slash" aria-hidden="true"></i>
+                                </span>
                             </div>
-
                         </div>
                         <div class="d-flex justify-content-end">
                             <button type="submit"
@@ -144,6 +149,21 @@
                 document.getElementById('previewImage').src = e.target.result;
             };
             reader.readAsDataURL(file);
+        }
+    }
+
+    function togglePassword(inputId, iconElement) {
+        const input = document.getElementById(inputId);
+        const icon = iconElement.querySelector('i');
+
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        } else {
+            input.type = "password";
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
         }
     }
 </script>

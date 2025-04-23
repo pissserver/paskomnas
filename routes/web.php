@@ -74,8 +74,11 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('user-management/{id}/edit', [UserManagementController::class, 'edit'])->name('user-management.edit');
 	Route::put('user-management/{id}', [UserManagementController::class, 'update'])->name('user-management.update');
 	Route::delete('user-management/{id}', [UserManagementController::class, 'destroy'])->name('user-management.destroy');
+	Route::get('user-management/search', [UserManagementController::class, 'search'])->name('user-management.search');
 	
     Route::get('logout', [SessionsController::class, 'destroy'])->name('logout');
+
+	Route::post('switch-account', [SessionsController::class, 'switchAccount'])->name('switch-account');
 
     Route::get('/login', function () {
 		return view('dashboard');
@@ -91,7 +94,6 @@ Route::group(['middleware' => 'guest'], function () {
 	Route::post('/forgot-password', [ResetController::class, 'sendEmail']);
 	Route::get('/reset-password/{token}', [ResetController::class, 'resetPass'])->name('password.reset');
 	Route::post('/reset-password', [ChangePasswordController::class, 'changePassword'])->name('password.update');
-
 });
 
 Route::get('/login', function () {

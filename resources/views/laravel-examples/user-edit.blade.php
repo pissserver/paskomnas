@@ -9,8 +9,8 @@
             @csrf
             @method('PUT')
             <div class="page-header min-height-300 border-radius-xl mt-4"
-                style="background-image: url('{{ asset('assets/img/curved-images/curved0.jpg') }}'); background-position-y: 50%;">
-                <span class="mask bg-gradient-primary opacity-6"></span>
+                style="background-image: url('{{ asset('assets/img/bg-user-edit.png') }}'); background-position-y: 50%;">
+                <span class="mask bg-gradient-dark opacity-2"></span>
             </div>
             <div class="card card-body blur shadow-blur mx-4 mt-n6">
                 <div class="row gx-4">
@@ -39,8 +39,9 @@
                             <h5 class="mb-1">
                                 {{ $user->name }}
                             </h5>
-                            <p class="mb-0 font-weight-bold text-sm">
-                                {{ $user->email }}
+                            <p
+                                class="mb-0 font-weight-bold text-sm text-uppercas btn {{ $user->role == 'master' ? "bg-gradient-primary" : "bg-gradient-warning" }} btn-sm">
+                                {{ $user->role }}
                             </p>
                         </div>
                     </div>
@@ -145,7 +146,7 @@
         </div>
         <div class="container-fluid py-4">
             <div class="card">
-                <div class="card-header p-4">
+                <div class="card-header pb-0 p-4">
                     <h6 class="mb-0">{{ __('Profile Information') }}</h6>
                 </div>
                 <div class="card-body pt-4 p-4">
@@ -243,6 +244,25 @@
                                 name="about_me">{{ $user->about_me }}</textarea>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label for="password">Change Password</label>
+                        <div class="input-group @error('password') border border-danger rounded-3 @enderror">
+                            <input class="form-control" type="password" placeholder="Change Password" id="password"
+                                name="password">
+                            <span class="input-group-text" onclick="togglePassword('password', this)">
+                                <i class="fa fa-eye-slash" aria-hidden="true"></i>
+                            </span>
+                        </div>
+
+                        <label for="password_confirmation" class="mt-3">Repeat Password</label>
+                        <div class="input-group @error('password') border border-danger rounded-3 @enderror">
+                            <input class="form-control" type="password" placeholder="Repeat Password"
+                                id="password_confirmation" name="password_confirmation">
+                            <span class="input-group-text" onclick="togglePassword('password_confirmation', this)">
+                                <i class="fa fa-eye-slash" aria-hidden="true"></i>
+                            </span>
+                        </div>
+                    </div>
                     <div class="d-flex justify-content-end">
                         <button type="submit"
                             class="btn bg-gradient-dark btn-md mt-4 mb-4">{{ 'Save Changes' }}</button>
@@ -270,6 +290,21 @@
         preview.src = "{{ asset('assets/img/default-profile.jpg') }}";
         document.getElementById('resetPhoto').value = 1;
         document.getElementById('imageInput').value = '';
+    }
+
+    function togglePassword(inputId, iconElement) {
+        const input = document.getElementById(inputId);
+        const icon = iconElement.querySelector('i');
+
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        } else {
+            input.type = "password";
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        }
     }
 </script>
 @endsection

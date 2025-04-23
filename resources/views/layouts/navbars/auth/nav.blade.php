@@ -53,87 +53,72 @@
                         </a>
                     </div>
                 </li>
-                <li class="nav-item dropdown d-flex align-items-center ps-2 pe-2">
+                <li class="nav-item dropdown d-flex align-items-center ps-2 pe-4">
                     <a href="javascript:;" class="btn btn-secondary active mb-0 text-white" id="dropdownMenu"
                         data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fa fa-exchange-alt me-sm-1"></i>
                         <span class="d-sm-inline d-none">Switch</span>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end  px-2 py-3 me-sm-n4" aria-labelledby="dropdownMenu">
+                    <ul class="dropdown-menu dropdown-menu-end px-2 py-3 me-3"
+                        style="max-height: 300px; overflow-y: auto;" aria-labelledby="dropdownMenu">
+                        @foreach ($users as $user)
                         <li class="mb-2">
-                            <a class="dropdown-item border-radius-md" href="javascript:;">
+                            <a class="dropdown-item border-radius-md" href="javascript:;"
+                                onclick="{{ $user->id != Auth::user()->id ? "confirmSwitch($user->id, '" . ($user->photo ? asset($user->photo) : asset('assets/img/default-profile.jpg')) . "', '$user->name', '$user->email', '$user->role')" : '' }}">
                                 <div class="d-flex py-1">
-                                    <div class="my-auto">
-                                        <img src="../assets/img/team-2.jpg" class="avatar avatar-sm  me-3 ">
+                                    <div class="my-auto position-relative">
+                                        <img src="{{ $user->photo ? asset($user->photo) : asset('assets/img/default-profile.jpg') }}"
+                                            alt="..."
+                                            class="avatar avatar-sm me-3 rounded-circle border {{ $user->role == 'master' ? "border-primary" : "border-warning" }} border-3"
+                                            style="width: 28px; height: 28px; object-fit: cover; border-radius: 50%;">
+
+                                        <div style="
+                                            position: absolute;
+                                            bottom: -4px;
+                                            right: 13px;
+                                            background-color: white;
+                                            border: 1px solid #ccc;
+                                            border-radius: 50%;
+                                            width: 16px;
+                                            height: 16px;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            box-shadow: 0 0 2px rgba(0,0,0,0.2);
+                                        ">
+                                            <i class="fa fa-user" style="font-size: 9px; color: #6c757d;"></i>
+                                        </div>
                                     </div>
                                     <div class="d-flex flex-column justify-content-center">
                                         <h6 class="text-sm font-weight-normal mb-1">
-                                            <span class="font-weight-bold">New message</span> from Laur
+                                            {{ $user->name }}
                                         </h6>
-                                        <p class="text-xs text-secondary mb-0">
-                                            <i class="fa fa-clock me-1"></i>
-                                            13 minutes ago
+                                        <p class="text-xs text-secondary mb-1">
+                                            {{ $user->email }}
                                         </p>
+                                        <div
+                                            class="d-flex align-items-center text-xs {{ $user->id == Auth::user()->id ? 'text-success' : 'text-danger' }}">
+                                            {{ $user->id == Auth::user()->id ? 'Logged In' : 'Logged Out' }}
+                                            <div style="
+                                                {{ $user->id == Auth::user()->id ? 'background-color: green;' : 'background-color: red;' }}
+                                                border-radius: 50%;
+                                                width: 16px;
+                                                height: 16px;
+                                                display: flex;
+                                                align-items: center;
+                                                justify-content: center;
+                                                box-shadow: 0 0 2px rgba(0,0,0,0.2);
+                                                margin-left: 5px;
+                                            ">
+                                                <i class="fa {{ $user->id == Auth::user()->id ? 'fa-check' : 'fa-times' }}"
+                                                    style="font-size: 9px; color: #ffffff"></i>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </a>
                         </li>
-                        <li class="mb-2">
-                            <a class="dropdown-item border-radius-md" href="javascript:;">
-                                <div class="d-flex py-1">
-                                    <div class="my-auto">
-                                        <img src="../assets/img/small-logos/logo-spotify.svg"
-                                            class="avatar avatar-sm bg-gradient-dark  me-3 ">
-                                    </div>
-                                    <div class="d-flex flex-column justify-content-center">
-                                        <h6 class="text-sm font-weight-normal mb-1">
-                                            <span class="font-weight-bold">New album</span> by Travis Scott
-                                        </h6>
-                                        <p class="text-xs text-secondary mb-0">
-                                            <i class="fa fa-clock me-1"></i>
-                                            1 day
-                                        </p>
-                                    </div>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item border-radius-md" href="javascript:;">
-                                <div class="d-flex py-1">
-                                    <div class="avatar avatar-sm bg-gradient-secondary  me-3  my-auto">
-                                        <svg width="12px" height="12px" viewBox="0 0 43 36" version="1.1"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            xmlns:xlink="http://www.w3.org/1999/xlink">
-                                            <title>credit-card</title>
-                                            <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                                <g transform="translate(-2169.000000, -745.000000)" fill="#FFFFFF"
-                                                    fill-rule="nonzero">
-                                                    <g transform="translate(1716.000000, 291.000000)">
-                                                        <g transform="translate(453.000000, 454.000000)">
-                                                            <path class="color-background"
-                                                                d="M43,10.7482083 L43,3.58333333 C43,1.60354167 41.3964583,0 39.4166667,0 L3.58333333,0 C1.60354167,0 0,1.60354167 0,3.58333333 L0,10.7482083 L43,10.7482083 Z"
-                                                                opacity="0.593633743"></path>
-                                                            <path class="color-background"
-                                                                d="M0,16.125 L0,32.25 C0,34.2297917 1.60354167,35.8333333 3.58333333,35.8333333 L39.4166667,35.8333333 C41.3964583,35.8333333 43,34.2297917 43,32.25 L43,16.125 L0,16.125 Z M19.7083333,26.875 L7.16666667,26.875 L7.16666667,23.2916667 L19.7083333,23.2916667 L19.7083333,26.875 Z M35.8333333,26.875 L28.6666667,26.875 L28.6666667,23.2916667 L35.8333333,23.2916667 L35.8333333,26.875 Z">
-                                                            </path>
-                                                        </g>
-                                                    </g>
-                                                </g>
-                                            </g>
-                                        </svg>
-                                    </div>
-                                    <div class="d-flex flex-column justify-content-center">
-                                        <h6 class="text-sm font-weight-normal mb-1">
-                                            Payment successfully completed
-                                        </h6>
-                                        <p class="text-xs text-secondary mb-0">
-                                            <i class="fa fa-clock me-1"></i>
-                                            2 days
-                                        </p>
-                                    </div>
-                                </div>
-                            </a>
-                        </li>
+                        @endforeach
                     </ul>
                 </li>
                 <li class="nav-item dropdown pe-2 d-flex align-items-center">
@@ -241,4 +226,84 @@
             }
         });
     }
+
+    function confirmSwitch(userId, photo, name, email, role) {
+        const borderColor = role === 'master' ? 'border-primary' : 'border-warning';
+
+        Swal.fire({
+            title: 'Are you sure to switch?',
+            html: `
+                <hr style="margin: 10px 0;">
+                <div style="
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                ">
+                    <div style="
+                        border: 1px solid #ddd;
+                        border-radius: 10px;
+                        padding: 15px 20px;
+                        width: 100%;
+                        max-width: 350px;
+                        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+                        text-align: center;
+                        margin-bottom: 15px;
+                    ">
+                        <img src="${photo ? photo : '/assets/img/default-profile.jpg'}" 
+                            alt="Profile"
+                            class="rounded-circle border ${borderColor} border-3"
+                            style="width: 60px; height: 60px; object-fit: cover; margin-bottom: 10px;">
+                        <div style="font-weight: bold; font-size: 16px;">${name}</div>
+                        <div style="color: #6c757d; font-size: 13px;">${email}</div>
+                    </div>
+
+                    <input type="password" id="switchPassword" class="swal2-input" placeholder="Enter your password" style="max-width: 300px;">
+                </div>
+            `,
+            preConfirm: () => {
+                const password = document.getElementById('switchPassword').value;
+                if (!password) {
+                    Swal.showValidationMessage('Password is required');
+                }
+                return { password: password };
+            },
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, switch!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const password = result.value.password;
+
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = "{{ route('switch-account') }}";
+
+                const token = document.createElement('input');
+                token.type = 'hidden';
+                token.name = '_token';
+                token.value = '{{ csrf_token() }}';
+                form.appendChild(token);
+
+                const idInput = document.createElement('input');
+                idInput.type = 'hidden';
+                idInput.name = 'user_id';
+                idInput.value = userId;
+                form.appendChild(idInput);
+
+                const pwInput = document.createElement('input');
+                pwInput.type = 'hidden';
+                pwInput.name = 'password';
+                pwInput.value = password;
+                form.appendChild(pwInput);
+
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+
 </script>

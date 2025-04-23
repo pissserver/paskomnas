@@ -40,12 +40,19 @@
                         <div>
                             <h5 class="mb-0">All Users</h5>
                         </div>
+                        <div class="d-flex align-items-center">
+                            <input type="text" class="form-control form-control-sm me-1" id="searchUser"
+                                placeholder="Search user..." name="search" style="max-width: 200px;">
+                            <span class="input-group-text" onclick="togglePassword('password_confirmation', this)">
+                                <i class="fa fa-search" aria-hidden="true"></i>
+                            </span>
+                        </div>
                         <a href="{{ route('user-management.create') }}" class="btn bg-gradient-primary btn-sm mb-0"
                             type="button">+&nbsp; New
                             User</a>
                     </div>
                 </div>
-                <div class="card-body px-0 pt-0 pb-2">
+                <div class="card-body px-0 pt-4 pb-2">
                     <div class="table-responsive p-0">
                         <table class="table align-items-center mb-0">
                             <thead>
@@ -79,7 +86,7 @@
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="userTableBody">
                                 @foreach ($users as $user)
                                 <tr>
                                     <td class="ps-4">
@@ -141,7 +148,7 @@
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-center mt-3 mb-2">
+                <div class="d-flex justify-content-center mt-3 mb-2" id="pagination">
                     {{ $users->links('pagination::bootstrap-5') }}
                 </div>
             </div>
@@ -166,6 +173,19 @@
             }
         });
     }
+
+    document.getElementById('searchUser').addEventListener('keyup', function () {
+        const keyword = this.value;
+
+        fetch(`{{ route('user-management.search') }}?keyword=${encodeURIComponent(keyword)}`)
+            .then(response => response.json())
+            .then(data => {
+                // Update tabel dengan data pencarian
+                document.getElementById('userTableBody').innerHTML = data.html;
+                // Update pagination
+                document.getElementById('pagination').innerHTML = data.pagination;
+            });
+    });
 </script>
 
 @endsection
