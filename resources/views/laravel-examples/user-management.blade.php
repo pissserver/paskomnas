@@ -87,69 +87,14 @@
                                 </tr>
                             </thead>
                             <tbody id="userTableBody">
-                                @foreach ($users as $user)
-                                <tr>
-                                    <td class="ps-4">
-                                        <p class="text-xs font-weight-bold mb-0">
-                                            {{ $loop->iteration + ($users->currentPage() - 1) * $users->perPage() }}</p>
-                                    </td>
-                                    <td>
-                                        <div>
-                                            <img src="{{ $user->photo != NULL ? asset($user->photo) : asset('assets/img/default-profile.jpg') }}"
-                                                class="avatar avatar-sm me-3">
-                                        </div>
-                                    </td>
-                                    <td class="text-center">
-                                        <p class="text-xs font-weight-bold mb-0">{{ $user->name }}</p>
-                                    </td>
-                                    <td class="text-center">
-                                        <p class="text-xs font-weight-bold mb-0">{{ $user->email }}</p>
-                                    </td>
-                                    <td class="text-center">
-                                        <p class="text-xs font-weight-bold mb-0">
-                                            <span
-                                                class="mb-0 btn btn-sm {{ $user->role == 'master' ? 'bg-gradient-primary' : 'bg-gradient-warning' }}"
-                                                style="cursor: default !important;">
-                                                {{ $user->role }}
-                                            </span>
-                                        </p>
-                                    </td>
-                                    <td class=" text-center">
-                                        <span
-                                            class="text-secondary text-xs font-weight-bold">{{ \Carbon\Carbon::parse($user->created_at)->translatedFormat('d F Y') }}</span>
-                                    </td>
-                                    <td class="text-center">
-                                        @if($user->id != Auth::user()->id)
-                                        <a href="{{ route('user-management.edit', $user->id) }}" class="mx-3"
-                                            data-bs-toggle="tooltip" data-bs-original-title="Edit user">
-                                            <i class="fas fa-user-edit text-secondary"></i>
-                                        </a>
-                                        <form id="delete-form-{{ $user->id }}"
-                                            action="{{ route('user-management.destroy', $user->id) }}" method="POST"
-                                            class="d-none">
-                                            @csrf
-                                            @method('DELETE')
-                                        </form>
-                                        <a class="mx-3" href="javascript:;" title="Delete user"
-                                            onclick="confirmDelete({{ $user->id }}, '{{ $user->name }}')">
-                                            <i class="fas fa-trash text-danger"></i>
-                                        </a>
-                                        @else
-                                        <span class="mb-0 btn btn-sm bg-gradient-success"
-                                            style="cursor: default !important;">
-                                            Logged In
-                                        </span>
-                                        @endif
-                                    </td>
-                                </tr>
-                                @endforeach
+
                             </tbody>
                         </table>
                     </div>
                 </div>
 
                 <div class="d-flex justify-content-center mt-3 mb-2" id="pagination">
-                    {{ $users->links('pagination::bootstrap-5') }}
+
                 </div>
             </div>
         </div>
@@ -174,17 +119,38 @@
         });
     }
 
-    document.getElementById('searchUser').addEventListener('keyup', function () {
-        const keyword = this.value;
-
-        fetch(`{{ route('user-management.search') }}?keyword=${encodeURIComponent(keyword)}`)
+    function loadUsers(keyword = '', page = 1) {
+        fetch(`{{ route('user-management.data') }}?keyword=${encodeURIComponent(keyword)}&page=${page}`)
             .then(response => response.json())
             .then(data => {
-                // Update tabel dengan data pencarian
                 document.getElementById('userTableBody').innerHTML = data.html;
-                // Update pagination
                 document.getElementById('pagination').innerHTML = data.pagination;
+
+                // Re-bind pagination click
+                document.querySelectorAll('#pagination a').forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const url = new URL(this.href);
+                        const page = url.searchParams.get('page');
+                        const keyword = document.getElementById('searchUser').value;
+                        loadUsers(keyword, page);
+                    });
+                });
+
+                if (window.activeZoom) {
+                    window.activeZoom.detach();
+                }
+                window.activeZoom = mediumZoom('.zoomable', {
+                    margin: 24,
+                    background: '#000'
+                });
             });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => loadUsers());
+
+    document.getElementById('searchUser').addEventListener('keyup', function () {
+        loadUsers(this.value);
     });
 </script>
 

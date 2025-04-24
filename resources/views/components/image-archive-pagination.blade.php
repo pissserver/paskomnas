@@ -1,0 +1,1 @@
+{{ $archives->withQueryString()->links('pagination::bootstrap-5') }}

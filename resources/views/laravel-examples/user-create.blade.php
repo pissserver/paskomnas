@@ -137,21 +137,11 @@
                     </div>
                 </div>
             </div>
+        </div>
     </form>
 </div>
 
 <script>
-    function previewSelectedImage(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('previewImage').src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-    }
-
     function togglePassword(inputId, iconElement) {
         const input = document.getElementById(inputId);
         const icon = iconElement.querySelector('i');

@@ -24,8 +24,9 @@ class SessionsController extends Controller
 
         if(Auth::attempt($attributes))
         {
+            $name = Auth::user()->name;
             session()->regenerate();
-            return redirect('dashboard')->with(['success'=>'You are logged in.']);
+            return redirect('dashboard')->with(['success'=>'Welcome to dashboard <strong>' . $name . '<strong> !']);
         }
         else{
 

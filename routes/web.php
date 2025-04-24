@@ -4,6 +4,7 @@ use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserManagementController;
+use App\Http\Controllers\ImageArchiveController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\ResetController;
 use App\Http\Controllers\SessionsController;
@@ -34,19 +35,10 @@ Route::group(['middleware' => 'auth'], function () {
 		return view('billing');
 	})->name('billing');
 
-	Route::get('profile', function () {
-		return view('profile');
-	})->name('profile');
-
 	Route::get('rtl', function () {
 		return view('rtl');
 	})->name('rtl');
 
-	// Route::get('user-management', function () {
-	// 	return view('laravel-examples/user-management');
-	// })->name('user-management');
-
-	
 	Route::get('tables', function () {
 		return view('tables');
 	})->name('tables');
@@ -63,21 +55,29 @@ Route::group(['middleware' => 'auth'], function () {
 		return view('static-sign-up');
 	})->name('sign-up');
 
+	// Image Archive
+	Route::get('image-archive', [ImageArchiveController::class, 'index'])->name('image-archive.index');
+	Route::post('image-archive', [ImageArchiveController::class, 'store'])->name('image-archive.store');
+	Route::get('image-archive/data', [ImageArchiveController::class, 'data'])->name('image-archive.data');
+	Route::get('image-archive/{id}/edit', [ImageArchiveController::class, 'edit'])->name('image-archive.edit');
+	Route::put('image-archive/{id}', [ImageArchiveController::class, 'update'])->name('image-archive.update');
+	Route::delete('image-archive/{id}', [ImageArchiveController::class, 'destroy'])->name('image-archive.destroy');
+
 	// User Profile
 	Route::get('profile', [UserController::class, 'index'])->name('user.index');
 	Route::put('profile', [UserController::class, 'update'])->name('user.update');
 
 	// User Management
-	Route::get('user-management', [UserManagementController::class, 'index'])->name('user-management.index');
+	Route::get('/user-management', [UserManagementController::class, 'index'])->name('user-management.index');
+	Route::get('/user-management/data', [UserManagementController::class, 'data'])->name('user-management.data');	
 	Route::get('user-management/create', [UserManagementController::class, 'create'])->name('user-management.create');
 	Route::put('user-management', [UserManagementController::class, 'store'])->name('user-management.store');
 	Route::get('user-management/{id}/edit', [UserManagementController::class, 'edit'])->name('user-management.edit');
 	Route::put('user-management/{id}', [UserManagementController::class, 'update'])->name('user-management.update');
 	Route::delete('user-management/{id}', [UserManagementController::class, 'destroy'])->name('user-management.destroy');
-	Route::get('user-management/search', [UserManagementController::class, 'search'])->name('user-management.search');
 	
+	// Sessions
     Route::get('logout', [SessionsController::class, 'destroy'])->name('logout');
-
 	Route::post('switch-account', [SessionsController::class, 'switchAccount'])->name('switch-account');
 
     Route::get('/login', function () {

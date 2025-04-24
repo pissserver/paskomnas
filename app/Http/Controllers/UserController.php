@@ -49,8 +49,8 @@ class UserController extends Controller
 
             $file = $request->file('photo');
             $filename = 'user_' . Auth::id() . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $path = $file->storeAs('public/photos', $filename);
-            $dataToUpdate['photo'] = 'storage/photos/' . $filename;
+            $path = $file->storeAs('public/profile', $filename);
+            $dataToUpdate['photo'] = 'storage/profile/' . $filename;
         } elseif ($request->input('reset_photo') == '1') {
             $dataToUpdate['photo'] = null;
         }
