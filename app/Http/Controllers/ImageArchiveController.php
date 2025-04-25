@@ -9,7 +9,7 @@ class ImageArchiveController extends Controller
 {
     public function index()
     {
-        return view('pages.image-archive');
+        return view('pages.image-archive.index');
     }
 
     public function store(Request $request, ImageArchive $imageArchive) 
@@ -56,7 +56,7 @@ class ImageArchiveController extends Controller
         $archives = $query->orderBy('created_at', 'desc')->paginate(10);
 
         $html = view('components.tables.image-archive-table', compact('archives'))->render();
-        $pagination = view('components.image-archive-pagination', compact('archives'))->render();
+        $pagination = view('components.pagination.image-archive-pagination', compact('archives'))->render();
 
         return response()->json([
             'html' => $html,
@@ -67,7 +67,7 @@ class ImageArchiveController extends Controller
     public function edit($id)
     {
         $archive = ImageArchive::findOrFail($id);
-        return view('pages.image-archive-edit', ['archive' => $archive]);
+        return view('pages.image-archive.edit', ['archive' => $archive]);
     }
 
     public function update(Request $request, $id)

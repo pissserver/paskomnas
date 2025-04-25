@@ -11,7 +11,7 @@ class UserManagementController extends Controller
 {
     public function index()
     {
-        return view('laravel-examples.user-management');
+        return view('pages.user-management.index');
     }
 
     public function data(Request $request)
@@ -31,7 +31,7 @@ class UserManagementController extends Controller
         $users = $query->orderBy('role', 'asc')->orderBy('name', 'asc')->paginate(10);
 
         $html = view('components.tables.user-management-table', compact('users'))->render();
-        $pagination = view('components.user-pagination', compact('users'))->render();
+        $pagination = view('components.pagination.user-pagination', compact('users'))->render();
 
         return response()->json([
             'html' => $html,
@@ -41,7 +41,7 @@ class UserManagementController extends Controller
 
     public function create()
     {
-        return view('laravel-examples/user-create');
+        return view('pages.user-management.create');
     }
 
     public function store(Request $request, User $user)
@@ -85,7 +85,7 @@ class UserManagementController extends Controller
     public function edit($id)
     {
         $user = User::findOrFail($id);
-        return view('laravel-examples/user-edit', ['user' => $user]);
+        return view('pages.user-management.index', ['user' => $user]);
     }
 
     public function update(Request $request, $id)
@@ -144,56 +144,4 @@ class UserManagementController extends Controller
 
         return redirect('/user-management')->with('success', 'User deleted successfully');
     }   
-
-    // public function search(Request $request)
-    // {
-    //     $keyword = $request->input('keyword');
-
-    //     $users = User::where('name', 'LIKE', "%$keyword%")
-    //         ->orWhere('email', 'LIKE', "%$keyword%")
-    //         ->orWhere('role', 'LIKE', "%$keyword%")
-    //         ->orWhereRaw("DATE_FORMAT(created_at, '%d %M %Y') LIKE ?", ["%$keyword%"])
-    //         ->orderBy('role', 'asc')
-    //         ->orderBy('name', 'asc')
-    //         ->paginate(10);
-
-    //         $html = '';
-    //         foreach ($users as $index => $user) {
-    //             $html .= '<tr>';
-    //             $html .= '<td class="ps-4"><p class="text-xs font-weight-bold mb-0">' . ($index + 1) . '</p></td>';
-    //             $html .= '<td><img src="' . asset(!empty($user->photo) ? $user->photo : 'assets/img/default-profile.jpg') . '" class="avatar avatar-sm me-3"></td>';
-    //             $html .= '<td class="text-center"><p class="text-xs font-weight-bold mb-0">' . $user->name . '</p></td>';
-    //             $html .= '<td class="text-center"><p class="text-xs font-weight-bold mb-0">' . $user->email . '</p></td>';
-    //             $html .= '<td class="text-center"><span class="mb-0 btn btn-sm ' . ($user->role == "master" ? "bg-gradient-primary" : "bg-gradient-warning") . '">' . $user->role . '</span></td>';
-    //             $html .= '<td class="text-center"><span class="text-secondary text-xs font-weight-bold">' . $user->created_at->format('d F Y') . '</span></td>';
-            
-    //             $html .= '<td class="text-center">';
-    //             if ($user->id != Auth::id()) {
-    //                 $html .= '<a href="' . route('user-management.edit', $user->id) . '" class="mx-3" data-bs-toggle="tooltip" data-bs-original-title="Edit user">';
-    //                 $html .= '<i class="fas fa-user-edit text-secondary"></i>';
-    //                 $html .= '</a>';
-            
-    //                 $html .= '<form id="delete-form-' . $user->id . '" action="' . route('user-management.destroy', $user->id) . '" method="POST" class="d-none">';
-    //                 $html .= csrf_field();
-    //                 $html .= method_field('DELETE');
-    //                 $html .= '</form>';
-            
-    //                 $html .= '<a class="mx-3" href="javascript:;" title="Delete user" onclick="confirmDelete(' . $user->id . ', \'' . e($user->name) . '\')">';
-    //                 $html .= '<i class="fas fa-trash text-danger"></i>';
-    //                 $html .= '</a>';
-    //             } else {
-    //                 $html .= '<span class="mb-0 btn btn-sm bg-gradient-success" style="cursor: default !important;">Logged In</span>';
-    //             }
-    //             $html .= '</td>';
-            
-    //             $html .= '</tr>';
-    //         }
-            
-            
-    //         $pagination =  $users->links('pagination::bootstrap-5')->toHtml();
-            
-    //         return response()->json(['html' => $html, 'pagination' => $pagination]);
-            
-    // }
-
 }

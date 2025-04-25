@@ -15,7 +15,7 @@ class UserController extends Controller
     public function index()
     {
         $users = User::find(Auth::id());
-        return view('laravel-examples/user-profile', ['users' => $users]);
+        return view('pages.profile.index', ['users' => $users]);
     }
 
     /**

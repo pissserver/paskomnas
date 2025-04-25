@@ -2,17 +2,17 @@
 
 namespace App\Providers;
 
-use App\Models\User;
 use Illuminate\Support\ServiceProvider;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\View;
+use App\Models\User;
+use Carbon\Carbon;
 
 class AppServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
-     *
-     * @return void
      */
     public function register()
     {
@@ -21,16 +21,23 @@ class AppServiceProvider extends ServiceProvider
 
     /**
      * Bootstrap any application services.
-     *
-     * @return void
      */
     public function boot()
     {
         Carbon::setLocale('id');
         App::setLocale('id');
 
-        view()->composer('layouts.navbars.auth.nav', function ($view) {
+        View::composer('layouts.navbars.auth.nav', function ($view) {
             $view->with('users', User::all());
         });
+
+        Blade::directive('role', function ($role) {
+            return "<?php if(auth()->check() && auth()->user()->role === {$role}): ?>";
+        });
+        
+        Blade::directive('endrole', function () {
+            return '<?php endif; ?>';
+        });
+        
     }
 }

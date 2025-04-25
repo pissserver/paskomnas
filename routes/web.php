@@ -23,10 +23,24 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// Default Route
+Route::get('login', [SessionsController::class, 'create'])->name('login');
 
-Route::group(['middleware' => 'auth'], function () {
+// Group Middleware Guest
+Route::group(['middleware' => 'guest'], function () {
+    Route::post('login-session', [SessionsController::class, 'store'])->name('login.store');
+    Route::get('register', [RegisterController::class, 'create'])->name('register');
+    Route::post('register-session', [RegisterController::class, 'store'])->name('register.store');
+	Route::get('login/forgot-password', [ResetController::class, 'create']);
+	Route::post('forgot-password', [ResetController::class, 'sendEmail']);
+	Route::get('reset-password/{token}', [ResetController::class, 'resetPass'])->name('password.reset');
+	Route::post('reset-password', [ChangePasswordController::class, 'changePassword'])->name('password.update');
+});
 
+// Group Middleware Auth 
+Route::middleware(['auth', 'roleAccess'])->group(function () {
     Route::get('/', [HomeController::class, 'home']);
+
 	Route::get('dashboard', function () {
 		return view('dashboard');
 	})->name('dashboard');
@@ -35,10 +49,6 @@ Route::group(['middleware' => 'auth'], function () {
 		return view('billing');
 	})->name('billing');
 
-	Route::get('rtl', function () {
-		return view('rtl');
-	})->name('rtl');
-
 	Route::get('tables', function () {
 		return view('tables');
 	})->name('tables');
@@ -46,14 +56,6 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('virtual-reality', function () {
 		return view('virtual-reality');
 	})->name('virtual-reality');
-
-    Route::get('static-sign-in', function () {
-		return view('static-sign-in');
-	})->name('sign-in');
-
-    Route::get('static-sign-up', function () {
-		return view('static-sign-up');
-	})->name('sign-up');
 
 	// Image Archive
 	Route::get('image-archive', [ImageArchiveController::class, 'index'])->name('image-archive.index');
@@ -68,8 +70,8 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::put('profile', [UserController::class, 'update'])->name('user.update');
 
 	// User Management
-	Route::get('/user-management', [UserManagementController::class, 'index'])->name('user-management.index');
-	Route::get('/user-management/data', [UserManagementController::class, 'data'])->name('user-management.data');	
+	Route::get('user-management', [UserManagementController::class, 'index'])->name('user-management.index');
+	Route::get('user-management/data', [UserManagementController::class, 'data'])->name('user-management.data');	
 	Route::get('user-management/create', [UserManagementController::class, 'create'])->name('user-management.create');
 	Route::put('user-management', [UserManagementController::class, 'store'])->name('user-management.store');
 	Route::get('user-management/{id}/edit', [UserManagementController::class, 'edit'])->name('user-management.edit');
@@ -79,23 +81,9 @@ Route::group(['middleware' => 'auth'], function () {
 	// Sessions
     Route::get('logout', [SessionsController::class, 'destroy'])->name('logout');
 	Route::post('switch-account', [SessionsController::class, 'switchAccount'])->name('switch-account');
-
-    Route::get('/login', function () {
-		return view('dashboard');
-	})->name('sign-up');
 });
 
-Route::group(['middleware' => 'guest'], function () {
-    Route::get('/register', [RegisterController::class, 'create']);
-    Route::post('/register', [RegisterController::class, 'store']);
-    Route::get('/login', [SessionsController::class, 'create']);
-    Route::post('/session', [SessionsController::class, 'store']);
-	Route::get('/login/forgot-password', [ResetController::class, 'create']);
-	Route::post('/forgot-password', [ResetController::class, 'sendEmail']);
-	Route::get('/reset-password/{token}', [ResetController::class, 'resetPass'])->name('password.reset');
-	Route::post('/reset-password', [ChangePasswordController::class, 'changePassword'])->name('password.update');
+// Error Handling
+Route::fallback(function () {
+    return response()->view('errors.not-found', [], 404);
 });
-
-Route::get('/login', function () {
-    return view('session/login-session');
-})->name('login');

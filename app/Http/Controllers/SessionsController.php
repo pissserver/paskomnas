@@ -11,7 +11,11 @@ use App\Models\User;
 class SessionsController extends Controller
 {
     public function create()
-    {
+    { 
+        if (Auth::check()) {
+            return redirect('dashboard')->with(['success'=>"You're already logged in."]);
+        }
+
         return view('session.login-session');
     }
 
