@@ -56,11 +56,18 @@
                                                 <div class="col-md-1">
                                                     <img src="{{ asset($archive->photo ?? 'assets/img/default-profile.jpg') }}"
                                                         data-zoom-src="{{ asset($archive->photo ?? 'assets/img/default-profile.jpg') }}"
-                                                        class="avatar me-3 zoomable" style="cursor: zoom-in;">
+                                                        class="avatar me-3 zoomable" style="cursor: zoom-in;"
+                                                        id="imagePreview">
                                                 </div>
                                                 <div class="col-md-11">
-                                                    <input type="file" class="form-control" id="imageInput" name="photo"
-                                                        accept="image/*">
+                                                    <input type="file" id="imageInput" name="photo" accept="image/*"
+                                                        class="d-none" onchange="previewSelectedImage(event)">
+                                                    <a href="javascript:;"
+                                                        onclick="document.getElementById('imageInput').click()"
+                                                        class="btn bg-gradient-primary w-100">
+                                                        <i class="fa fa-upload pe-2" data-bs-toggle="tooltip"
+                                                            title="Upload Image"></i>Upload Image
+                                                    </a>
                                                 </div>
                                             </div>
                                         </div>
@@ -87,6 +94,21 @@
 </div>
 
 <script>
+    function previewSelectedImage(event) {
+        const input = event.target;
+        const preview = document.getElementById('imagePreview');
+
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            preview.style.backgroundImage = '';
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         window.activeZoom = mediumZoom('.zoomable', {
             margin: 24,

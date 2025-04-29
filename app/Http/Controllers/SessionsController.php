@@ -66,7 +66,7 @@ class SessionsController extends Controller
 
         session()->regenerate();
 
-        return redirect('/dashboard')->with('success', 'Switch account successfully to: <strong>' . $targetUser->name . '</strong> as <strong>' . $targetUser->role . '</strong>');
+        return redirect('/dashboard')->with('success', 'Switch account successfully to <strong>' . $targetUser->name . '</strong> ');
 
     }
 }

@@ -28,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
         App::setLocale('id');
 
         View::composer('layouts.navbars.auth.nav', function ($view) {
-            $view->with('users', User::all());
+            $view->with('users', User::whereNull('google_id')->get());
         });
 
         Blade::directive('role', function ($role) {

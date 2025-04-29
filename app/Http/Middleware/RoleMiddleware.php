@@ -26,14 +26,15 @@ class RoleMiddleware
         $blockedUris = [
             'user-management',
         ];
-
+        
         if ($role == 'user') {
             foreach ($blockedUris as $blockedUri) {
                 if (str_contains($uri, $blockedUri)) {
-                    abort(403, 'Unauthorized access');
+                    return response()->view('errors.access-denied', [], 403);
                 }
             }
         }
+        
 
         return $next($request);
     }

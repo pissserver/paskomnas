@@ -108,13 +108,28 @@
                         <div class="form-group">
                             <label for="photo">{{ 'Photo' }}</label>
                             <div class="@error('user.photo') border border-danger rounded-3 @enderror">
-                                <input type="file" class="form-control" id="imageInput" name="photo" accept="image/*">
+                                <div class="d-flex align-items-center">
+                                    <div id="imagePreview" class="zoomable"
+                                        style="border: 2px dashed #DE0A93; border-radius: 8px; width: 43px; height: 43px; background-color: #ffffff; background-position: center; background-size: cover; background-repeat: no-repeat;">
+                                    </div>
+
+                                    <input type="file" id="imageInput" name="photo" accept="image/*" class="d-none"
+                                        onchange="previewSelectedImage(event)">
+
+                                    <div class="flex-grow-1 ms-3 pt-3">
+                                        <a href="javascript:;" onclick="document.getElementById('imageInput').click()"
+                                            class="btn bg-gradient-primary w-100">
+                                            <i class="fa fa-images pe-2" data-bs-toggle="tooltip"
+                                                title="Upload Image"></i>Upload Photo
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="password">Change Password</label>
+                            <label for="password">Password</label>
                             <div class="input-group @error('password') border border-danger rounded-3 @enderror">
-                                <input class="form-control" type="password" placeholder="Change Password" id="password"
+                                <input class="form-control" type="password" placeholder="Password" id="password"
                                     name="password">
                                 <span class="input-group-text" onclick="togglePassword('password', this)">
                                     <i class="fa fa-eye-slash" aria-hidden="true"></i>
@@ -142,6 +157,21 @@
 </div>
 
 <script>
+    function previewSelectedImage(event) {
+        const input = event.target;
+        const preview = document.getElementById('imagePreview');
+
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                preview.style.backgroundImage = `url('${e.target.result}')`;
+            };
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            preview.style.backgroundImage = '';
+        }
+    }
+
     function togglePassword(inputId, iconElement) {
         const input = document.getElementById(inputId);
         const icon = iconElement.querySelector('i');

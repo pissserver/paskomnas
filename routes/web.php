@@ -8,9 +8,11 @@ use App\Http\Controllers\ImageArchiveController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\ResetController;
 use App\Http\Controllers\SessionsController;
+use App\Http\Controllers\GoogleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Route;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -25,6 +27,10 @@ use Illuminate\Support\Facades\Route;
 
 // Default Route
 Route::get('login', [SessionsController::class, 'create'])->name('login');
+
+// Google Authentication
+Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.auth');
+Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 
 // Group Middleware Guest
 Route::group(['middleware' => 'guest'], function () {

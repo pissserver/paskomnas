@@ -49,13 +49,27 @@
 
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="photo">{{ 'Image' }}</label>
-                                        <div class="@error('archive.photo') border border-danger rounded-3 @enderror">
-                                            <input type="file" class="form-control" id="imageInput" name="photo"
-                                                accept="image/*">
+                                        <label for="imageInput" class="form-label mb-2">Image</label>
+                                        <div class="row">
+                                            <div class="col-md-1">
+                                                <div id="imagePreview" class="zoomable"
+                                                    style="border: 2px dashed #DE0A93; border-radius: 8px; width: 43px; height: 43px; background-color: #ffffff; background-position: center; background-size: cover; background-repeat: no-repeat;">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-11">
+                                                <input type="file" id="imageInput" name="photo" accept="image/*"
+                                                    class="d-none" onchange="previewSelectedImage(event)">
+                                                <a href="javascript:;"
+                                                    onclick="document.getElementById('imageInput').click()"
+                                                    class="btn bg-gradient-primary w-100">
+                                                    <i class="fa fa-upload pe-2" data-bs-toggle="tooltip"
+                                                        title="Upload Image"></i>Upload Image
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
+
                             </div>
                             <div class="form-group">
                                 <label for="about">{{ 'Description' }}</label>
@@ -138,6 +152,21 @@
 </div>
 
 <script>
+    function previewSelectedImage(event) {
+        const input = event.target;
+        const preview = document.getElementById('imagePreview');
+
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                preview.style.backgroundImage = `url('${e.target.result}')`;
+            };
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            preview.style.backgroundImage = '';
+        }
+    }
+    
     function confirmDelete(archiveId, archiveName) {
         Swal.fire({
             title: 'Are you sure delete?',

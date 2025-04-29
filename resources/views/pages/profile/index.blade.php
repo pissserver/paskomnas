@@ -243,6 +243,8 @@
                                 name="about_me">{{ auth()->user()->about_me }}</textarea>
                         </div>
                     </div>
+
+                    @if (auth()->user()->google_id == NULL)
                     <div class="form-group">
                         <label for="password">Change Password</label>
                         <div class="input-group @error('password') border border-danger rounded-3 @enderror">
@@ -262,6 +264,8 @@
                             </span>
                         </div>
                     </div>
+                    @endif
+
                     <div class="d-flex justify-content-end">
                         <button type="submit"
                             class="btn bg-gradient-dark btn-md mt-4 mb-4">{{ 'Save Changes' }}</button>
