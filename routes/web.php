@@ -37,10 +37,9 @@ Route::group(['middleware' => 'guest'], function () {
     Route::post('login-session', [SessionsController::class, 'store'])->name('login.store');
     Route::get('register', [RegisterController::class, 'create'])->name('register');
     Route::post('register-session', [RegisterController::class, 'store'])->name('register.store');
-	Route::get('login/forgot-password', [ResetController::class, 'create']);
-	Route::post('forgot-password', [ResetController::class, 'sendEmail']);
-	Route::get('reset-password/{token}', [ResetController::class, 'resetPass'])->name('password.reset');
-	Route::post('reset-password', [ChangePasswordController::class, 'changePassword'])->name('password.update');
+	Route::get('forgot-password', [ResetController::class, 'create'])->name('password.forgot');
+	Route::post('change-password', [ResetController::class, 'sendEmail'])->name('password.request');
+	Route::put('change-password-session', [ChangePasswordController::class, 'changePassword'])->name('password.update');
 });
 
 // Group Middleware Auth 

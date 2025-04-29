@@ -29,12 +29,12 @@
               @endif
 
               <div class="card-header pb-0 text-left bg-transparent">
-                <h3 class="font-weight-bolder text-info text-gradient">Welcome back</h3>
-                <p class="mb-0">Create a new acount or<br></p>
-                <p class="mb-0">Sign in with your account</p>
+                <h3 class="font-weight-bolder text-center text-info text-gradient">Login</h3>
+                <p class="mb-4 text-center">Selamat datang dihalaman login!</p>
               </div>
 
               <div class="row px-xl-4 px-sm-4 px-4 mt-4">
+                <p class="mb-4 text-center">Masuk dengan menggunakan akun google</p>
                 <div class="col-12 px-3">
                   <a class="btn btn-white btn-outline-light w-100" href={{ route('google.auth') }}>
                     <svg width="24px" height="32px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg"
@@ -60,7 +60,7 @@
                 </div>
                 <div class="position-relative text-center">
                   <p class="text-sm font-weight-bold text-secondary text-border d-inline z-index-2">
-                    Or
+                    Atau
                   </p>
                 </div>
               </div>
@@ -88,21 +88,22 @@
                     @enderror
                   </div>
                   <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="rememberMe" checked="">
-                    <label class="form-check-label" for="rememberMe">Remember me</label>
+                    <input class="form-check-input" type="checkbox" id="rememberMe">
+                    <label class="form-check-label" for="rememberMe">Ingat saya</label>
                   </div>
                   <div class="text-center">
-                    <button type="submit" class="btn bg-gradient-info w-100 mt-4 mb-0">Sign in</button>
+                    <button type="submit" class="btn bg-gradient-info w-100 mt-4 mb-0">Masuk <i
+                        class="fas fa-sign-in-alt ms-2"></i></button>
                   </div>
                 </form>
               </div>
               <div class="card-footer text-center pt-0 px-lg-2 px-1">
-                <small class="text-muted">Forgot you password? Reset you password
-                  <a href="/login/forgot-password" class="text-info text-gradient font-weight-bold">here</a>
+                <small class="text-muted">Lupa password? Reset password anda
+                  <a href="{{ route('password.forgot') }}" class="text-info text-gradient font-weight-bold">disini</a>
                 </small>
                 <p class="mb-4 text-sm mx-auto">
-                  Don't have an account?
-                  <a href="register" class="text-info text-gradient font-weight-bold">Sign up</a>
+                  Belum mempunyai akun?
+                  <a href="register" class="text-info text-gradient font-weight-bold">Daftar</a>
                 </p>
               </div>
             </div>
@@ -110,7 +111,8 @@
           <div class="col-md-6">
             <div class="oblique position-absolute top-0 h-100 d-md-block d-none me-n8">
               <div class="oblique-image bg-cover position-absolute fixed-top ms-auto h-100 z-index-0 ms-n6"
-                style="background-image:url('../assets/img/curved-images/curved6.jpg')"></div>
+                style="background-image:url({{ asset('assets/img/login-background.jpg') }})"></div>
+              <span class="mask bg-gradient-dark opacity-5"></span>
             </div>
           </div>
         </div>

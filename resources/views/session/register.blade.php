@@ -4,14 +4,13 @@
 
 <section class="min-vh-100 mb-8">
   <div class="page-header align-items-start min-vh-50 pt-5 pb-11 mx-3 border-radius-lg"
-    style="background-image: url('../assets/img/curved-images/curved14.jpg');">
+    style="background-image:url({{ asset('assets/img/register-background.jpg') }})">
     <span class="mask bg-gradient-dark opacity-6"></span>
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-lg-5 text-center mx-auto">
-          <h1 class="text-white mb-2 mt-5">Welcome!</h1>
-          <p class="text-lead text-white">Use these awesome forms to login or create new account in your project for
-            free.</p>
+          <h1 class="text-white mb-2 mt-7">Selamat Datang!</h1>
+          <p class="text-lead text-white">Daftar akun anda untuk mendapatkan akses penuh ke sistem.</p>
         </div>
       </div>
     </div>
@@ -21,7 +20,7 @@
       <div class="col-xl-4 col-lg-5 col-md-7 mx-auto">
         <div class="card z-index-0">
           <div class="card-header text-center pt-4">
-            <h5>Register with</h5>
+            <h5>Daftar dengan</h5>
           </div>
           <div class="row px-xl-5 px-sm-4 px-3">
             <div class="col-12 me-auto px-1">
@@ -49,7 +48,7 @@
             </div>
             <div class="mt-2 position-relative text-center">
               <p class="text-sm font-weight-bold mb-2 text-secondary text-border d-inline z-index-2 bg-white px-3">
-                Or
+                Atau
               </p>
             </div>
           </div>
@@ -57,8 +56,8 @@
             <form role="form text-left" method="POST" action="{{ route('register.store') }}">
               @csrf
               <div class="mb-3">
-                <input type="text" class="form-control" placeholder="Name" name="name" id="name" aria-label="Name"
-                  aria-describedby="name" value="{{ old('name') }}">
+                <input type="text" class="form-control" placeholder="Nama Lengkap" name="name" id="name"
+                  aria-label="Name" aria-describedby="name" value="{{ old('name') }}">
                 @error('name')
                 <p class="text-danger text-xs mt-2">{{ $message }}</p>
                 @enderror
@@ -92,7 +91,7 @@
 
           <div class="mb-3">
             <div class="input-group @error('password') border border-danger rounded-3 @enderror">
-              <input class="form-control" type="password" placeholder="Repeat Password" id="password_confirmation"
+              <input class="form-control" type="password" placeholder="Ulangi Password" id="password_confirmation"
                 name="password_confirmation">
               <span class="input-group-text" onclick="togglePassword('password_confirmation', this)">
                 <i class="fa fa-eye-slash" aria-hidden="true"></i>
@@ -105,20 +104,20 @@
           <div class="form-check form-check-info text-left">
             <input class="form-check-input" type="checkbox" name="agreement" id="flexCheckDefault"
               onchange="toggleSubmitButton()">
-            <label class="form-check-label" for="flexCheckDefault">
-              I agree the <a href="javascript:;" class="text-dark font-weight-bolder">Terms and Conditions</a>
+            <label class="form-check-label pt-1" for="flexCheckDefault">
+              Saya setuju dengan <a href="javascript:;" class="text-dark font-weight-bolder">Syarat dan Ketentuan</a>
             </label>
-            @error('agreement')
+            {{-- @error('agreement')
             <p class="text-danger text-xs mt-2">First, agree to the Terms and Conditions, then try register again.
             </p>
-            @enderror
+            @enderror --}}
           </div>
           <div class="text-center">
             <button type="submit" id="submitButton" class="btn bg-gradient-dark w-100 my-4 mb-2 opacity-50"
-              disabled>Sign up</button>
+              disabled>Daftar <i class="fa fa-user-plus ms-2"></i></button>
           </div>
-          <p class="text-sm mt-3 mb-0">Already have an account? <a href="login"
-              class="text-dark font-weight-bolder">Sign in</a></p>
+          <p class="text-sm mt-3 mb-0">Sudah mempunyai akun? <a href="login"
+              class="text-dark font-weight-bolder">Login</a></p>
           </form>
         </div>
       </div>
