@@ -1,5 +1,7 @@
 @extends('layouts.user_type.guest')
 
+@section('title', 'Daftar Paskomnas || PISS')
+
 @section('content')
 
 <section class="min-vh-100 mb-8">

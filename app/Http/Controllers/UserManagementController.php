@@ -79,13 +79,13 @@ class UserManagementController extends Controller
         
         $user->create($dataToCreate);
 
-        return redirect('/user-management')->with('success','User created successfully');
+        return redirect('/user-management')->with('success','Pengguna baru berhasil ditambahkan');
     }
 
     public function edit($id)
     {
         $user = User::findOrFail($id);
-        return view('pages.user-management.index', ['user' => $user]);
+        return view('pages.user-management.edit', ['user' => $user]);
     }
 
     public function update(Request $request, $id)
@@ -130,7 +130,7 @@ class UserManagementController extends Controller
         $user->update($dataToUpdate);
 
         return redirect()->route('user-management.edit', ['id' => $user->id])
-            ->with('success', 'Profile updated successfully');
+            ->with('success', 'Informasi pengguna berhasil diperbarui');
     }
 
     public function destroy($id)
@@ -142,6 +142,6 @@ class UserManagementController extends Controller
         }
         $user->delete();
 
-        return redirect('/user-management')->with('success', 'User deleted successfully');
+        return redirect('/kelola-pengguna')->with('success', 'Pengguna berhasil dihapus');
     }   
 }

@@ -38,7 +38,8 @@ Route::group(['middleware' => 'guest'], function () {
     Route::get('register', [RegisterController::class, 'create'])->name('register');
     Route::post('register-session', [RegisterController::class, 'store'])->name('register.store');
 	Route::get('forgot-password', [ResetController::class, 'create'])->name('password.forgot');
-	Route::post('change-password', [ResetController::class, 'sendEmail'])->name('password.request');
+	Route::post('forgot-password-session', [ResetController::class, 'sendEmail'])->name('password.request');
+	Route::get('change-password', [ChangePasswordController::class, 'create'])->name('password.change');
 	Route::put('change-password-session', [ChangePasswordController::class, 'changePassword'])->name('password.update');
 });
 
@@ -63,25 +64,25 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 	})->name('virtual-reality');
 
 	// Image Archive
-	Route::get('image-archive', [ImageArchiveController::class, 'index'])->name('image-archive.index');
-	Route::post('image-archive', [ImageArchiveController::class, 'store'])->name('image-archive.store');
-	Route::get('image-archive/data', [ImageArchiveController::class, 'data'])->name('image-archive.data');
-	Route::get('image-archive/{id}/edit', [ImageArchiveController::class, 'edit'])->name('image-archive.edit');
-	Route::put('image-archive/{id}', [ImageArchiveController::class, 'update'])->name('image-archive.update');
-	Route::delete('image-archive/{id}', [ImageArchiveController::class, 'destroy'])->name('image-archive.destroy');
+	Route::get('arsip-gambar', [ImageArchiveController::class, 'index'])->name('image-archive.index');
+	Route::post('arsip-gambar', [ImageArchiveController::class, 'store'])->name('image-archive.store');
+	Route::get('arsip-gambar/data', [ImageArchiveController::class, 'data'])->name('image-archive.data');
+	Route::get('arsip-gambar/{id}/edit', [ImageArchiveController::class, 'edit'])->name('image-archive.edit');
+	Route::put('arsip-gambar/{id}', [ImageArchiveController::class, 'update'])->name('image-archive.update');
+	Route::delete('arsip-gambar/{id}', [ImageArchiveController::class, 'destroy'])->name('image-archive.destroy');
 
 	// User Profile
-	Route::get('profile', [UserController::class, 'index'])->name('user.index');
-	Route::put('profile', [UserController::class, 'update'])->name('user.update');
+	Route::get('profil', [UserController::class, 'index'])->name('user.index');
+	Route::put('profil', [UserController::class, 'update'])->name('user.update');
 
 	// User Management
-	Route::get('user-management', [UserManagementController::class, 'index'])->name('user-management.index');
-	Route::get('user-management/data', [UserManagementController::class, 'data'])->name('user-management.data');	
-	Route::get('user-management/create', [UserManagementController::class, 'create'])->name('user-management.create');
-	Route::put('user-management', [UserManagementController::class, 'store'])->name('user-management.store');
-	Route::get('user-management/{id}/edit', [UserManagementController::class, 'edit'])->name('user-management.edit');
-	Route::put('user-management/{id}', [UserManagementController::class, 'update'])->name('user-management.update');
-	Route::delete('user-management/{id}', [UserManagementController::class, 'destroy'])->name('user-management.destroy');
+	Route::get('kelola-pengguna', [UserManagementController::class, 'index'])->name('user-management.index');
+	Route::get('kelola-pengguna/data', [UserManagementController::class, 'data'])->name('user-management.data');	
+	Route::get('kelola-pengguna/create', [UserManagementController::class, 'create'])->name('user-management.create');
+	Route::put('kelola-pengguna', [UserManagementController::class, 'store'])->name('user-management.store');
+	Route::get('kelola-pengguna/{id}/edit', [UserManagementController::class, 'edit'])->name('user-management.edit');
+	Route::put('kelola-pengguna/{id}', [UserManagementController::class, 'update'])->name('user-management.update');
+	Route::delete('kelola-pengguna/{id}', [UserManagementController::class, 'destroy'])->name('user-management.destroy');
 	
 	// Sessions
     Route::get('logout', [SessionsController::class, 'destroy'])->name('logout');

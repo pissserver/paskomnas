@@ -13,10 +13,10 @@ class SessionsController extends Controller
     public function create()
     { 
         if (Auth::check()) {
-            return redirect('dashboard')->with(['success'=>"You're already logged in."]);
+            return redirect('dashboard')->with(['success'=>"Anda sudah login, silakan akses sistem PASKOMNAS PISS."]);
         }
 
-        return view('session.login-session');
+        return view('session.login');
     }
 
     public function store()
@@ -30,11 +30,11 @@ class SessionsController extends Controller
         {
             $name = Auth::user()->name;
             session()->regenerate();
-            return redirect('dashboard')->with(['success'=>'Welcome to dashboard <strong>' . $name . '<strong> !']);
+            return redirect('dashboard')->with(['success'=>'Selamat datang <strong>' . $name . '</strong> di sistem PASKOMNAS PISS.']);
         }
         else{
 
-            return back()->withErrors(['email'=>'Email or password invalid.']);
+            return back()->withErrors(['email'=>'Email atau password salah!']);
         }
     }
     
@@ -42,7 +42,7 @@ class SessionsController extends Controller
     {
         Auth::logout();
 
-        return redirect('/login')->with(['success'=>'You\'ve been logged out.']);
+        return redirect('/login')->with(['success'=>'Berhasil keluar, silakan login kembali untuk akses sistem!']);
     }
 
     public function switchAccount(Request $request)
@@ -57,7 +57,7 @@ class SessionsController extends Controller
         $targetUser = User::findOrFail($request->user_id);
 
         if (!Hash::check($request->password, $targetUser->password)) {
-            return back()->withErrors(['password' => 'Switch account failed :(']);
+            return redirect('/dashboard')->withErrors(['password' => 'Beralih akun gagal, password salah!']);
         }
 
         Auth::logout();
@@ -66,7 +66,7 @@ class SessionsController extends Controller
 
         session()->regenerate();
 
-        return redirect('/dashboard')->with('success', 'Switch account successfully to <strong>' . $targetUser->name . '</strong> ');
+        return redirect('/dashboard')->with('success', 'Beralih akun ke <strong>' . $targetUser->name . '</strong> berhasil.');
 
     }
 }

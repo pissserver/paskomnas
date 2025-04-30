@@ -30,15 +30,15 @@
                 <div class="container-fluid py-4">
                     <div class="card">
                         <div class="card-header p-4">
-                            <h6 class="mb-0">{{ __('Create Image Archive') }}</h6>
+                            <h6 class="mb-0">{{ __('Arsip Gambar') }}</h6>
                         </div>
                         <div class="card-body pt-1 p-4">
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="name" class="form-control-label">{{ __('Name') }}</label>
+                                        <label for="name" class="form-control-label">{{ __('Nama') }}</label>
                                         <div class="@error('archive.name')border border-danger rounded-3 @enderror">
-                                            <input class="form-control" type="text" placeholder="Name" id="name"
+                                            <input class="form-control" type="text" placeholder="Nama Gambar" id="name"
                                                 name="name">
                                             @error('name')
                                             <p class="text-danger text-xs mt-2">{{ $message }}</p>
@@ -49,7 +49,7 @@
 
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="imageInput" class="form-label mb-2">Image</label>
+                                        <label for="imageInput" class="form-label mb-2">Gambar</label>
                                         <div class="row">
                                             <div class="col-md-1">
                                                 <div id="imagePreview" class="zoomable"
@@ -63,7 +63,7 @@
                                                     onclick="document.getElementById('imageInput').click()"
                                                     class="btn bg-gradient-primary w-100">
                                                     <i class="fa fa-upload pe-2" data-bs-toggle="tooltip"
-                                                        title="Upload Image"></i>Upload Image
+                                                        title="Upload Image"></i>Unggah Gambar
                                                 </a>
                                             </div>
                                         </div>
@@ -72,15 +72,16 @@
 
                             </div>
                             <div class="form-group">
-                                <label for="about">{{ 'Description' }}</label>
+                                <label for="about">{{ 'Deskripsi' }}</label>
                                 <div class="@error('archive.about') border border-danger rounded-3 @enderror">
-                                    <textarea class="form-control" id="about" rows="3" placeholder="Description"
+                                    <textarea class="form-control" id="about" rows="3" placeholder="Deskripsi Gambar"
                                         name="description"></textarea>
                                 </div>
                             </div>
                             <div class="d-flex justify-content-end">
                                 <button type="submit"
-                                    class="btn bg-gradient-dark btn-md mt-2 mb-2">{{ 'Create Data' }}</button>
+                                    class="btn bg-gradient-dark btn-md mt-2 mb-2">{{ 'Simpan' }}&nbsp;&nbsp; <i
+                                        class="fa fa-save"></i></button>
                             </div>
                         </div>
                     </div>
@@ -93,46 +94,80 @@
         <div class="col-12">
             <div class="card mb-4 mx-4">
                 <div class="card-header pb-0">
-                    <div class="d-flex flex-row justify-content-between">
-                        <div>
-                            <h5 class="mb-0">All Data</h5>
+                    <div class="d-flex justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-gradient-dark px-3 py-2 rounded-2 text-white d-flex align-items-center">
+                                <i class="fa fa-images me-2"></i>
+                                <h6 class="mb-0 text-white">Data Arsip Gambar</h6>
+                            </div>
                         </div>
+
                         <div class="d-flex align-items-center">
                             <input type="text" class="form-control form-control-sm me-1" id="searchData"
-                                placeholder="Search data..." name="search" style="max-width: 200px;">
-                            <span class="input-group-text" onclick="togglePassword('password_confirmation', this)">
+                                placeholder="Cari data..." name="search" style="max-width: 200px;">
+                            <span class="input-group-text" style="cursor: pointer;">
                                 <i class="fa fa-search" aria-hidden="true"></i>
                             </span>
                         </div>
+
+                        <div class="d-flex">
+                            <div class="dropdown">
+                                <button class="btn bg-gradient-danger" type="button" id="dropdownHapusSemua"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-trash-alt me-1"></i> Hapus Semua
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-end p-3 shadow" style="min-width: 300px;"
+                                    aria-labelledby="dropdownHapusSemua">
+                                    <form action="" method="POST"
+                                        onsubmit="return confirm('Yakin ingin menghapus semua data dalam rentang waktu ini?')">
+                                        @csrf
+                                        <div class="mb-2">
+                                            <label for="start_date" class="form-label mb-1 text-xs">Dari Tanggal</label>
+                                            <input type="date" name="start_date" id="start_date"
+                                                class="form-control form-control-sm" required>
+                                        </div>
+                                        <div class="mb-2">
+                                            <label for="end_date" class="form-label mb-1 text-xs">Sampai Tanggal</label>
+                                            <input type="date" name="end_date" id="end_date"
+                                                class="form-control form-control-sm" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-sm bg-gradient-danger w-100">
+                                            <i class="fas fa-trash-alt me-1"></i> Hapus
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="card-body px-0 pt-4 pb-2">
-                    <div class="table-responsive p-0">
-                        <table class="table align-items-center mb-0">
-                            <thead>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped table-hover align-items-center mb-0">
+                            <thead class="bg-gradient-dark">
                                 <tr>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                        ID
+                                    <th class="text-uppercase text-white text-xxs font-weight-bolder opacity-7"
+                                        width="5%">
+                                        No
                                     </th>
-                                    <th
-                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                                        Photo
+                                    <th class="text-center text-uppercase text-white text-xxs font-weight-bolder opacity-7"
+                                        width="10%">
+                                        Gambar
                                     </th>
-                                    <th
-                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                        Name
+                                    <th class="text-center text-uppercase text-white text-xxs font-weight-bolder opacity-7"
+                                        width="20%">
+                                        Nama Gambar
                                     </th>
-                                    <th
-                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                        Description
+                                    <th class="text-center text-uppercase text-white text-xxs font-weight-bolder opacity-7"
+                                        width="35%">
+                                        Deskripsi
                                     </th>
-                                    <th
-                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                        Creation Date
+                                    <th class="text-center text-uppercase text-white text-xxs font-weight-bolder opacity-7"
+                                        width="15%">
+                                        Tanggal Dibuat
                                     </th>
-                                    <th
-                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                        Action
+                                    <th class="text-center text-uppercase text-white text-xxs font-weight-bolder opacity-7"
+                                        width="15%">
+                                        Aksi
                                     </th>
                                 </tr>
                             </thead>
@@ -169,14 +204,14 @@
     
     function confirmDelete(archiveId, archiveName) {
         Swal.fire({
-            title: 'Are you sure delete?',
-            html: `Data <strong>${archiveName}</strong> to permenent delete.`,
+            title: 'Yakin ingin menghapus?',
+            html: `Data <strong>${archiveName}</strong> akan dihapus permanent.`,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
             cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Yes, delete!',
-            cancelButtonText: 'Cancel'
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
                 document.getElementById(`delete-form-${archiveId}`).submit();

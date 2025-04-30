@@ -146,8 +146,12 @@
         </div>
         <div class="container-fluid py-4">
             <div class="card">
-                <div class="card-header pb-0 p-4">
-                    <h6 class="mb-0">{{ __('Profile Information') }}</h6>
+                <div class="card-header pb-0 p-4 d-flex justify-content-between">
+                    <h6 class="mb-0">{{ __('Informasi Pengguna') }}</h6>
+
+                    <a href="{{ route('user-management.index') }}"
+                        class="btn bg-gradient-danger btn-md mb-0">{{ 'Kembali' }}&nbsp;&nbsp;<i
+                            class="fa fa-arrow-right"></i></a>
                 </div>
                 <div class="card-body pt-4 p-4">
                     @if($errors->any())
@@ -171,10 +175,10 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="user-name" class="form-control-label">{{ __('Full Name') }}</label>
+                                <label for="user-name" class="form-control-label">{{ __('Nama Lengkap') }}</label>
                                 <div class="@error('user.name')border border-danger rounded-3 @enderror">
                                     <input class="form-control" value="{{ $user->name }}" type="text"
-                                        placeholder="Full Name" id="user-name" name="name">
+                                        placeholder="Nama Lengkap" id="user-name" name="name">
                                     @error('name')
                                     <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                     @enderror
@@ -186,7 +190,7 @@
                                 <label for="user-email" class="form-control-label">{{ __('Email') }}</label>
                                 <div class="@error('email')border border-danger rounded-3 @enderror">
                                     <input class="form-control" value="{{ $user->email }}" type="email"
-                                        placeholder="@example.com" id="user-email" name="email">
+                                        placeholder="@contoh.com" id="user-email" name="email">
                                     @error('email')
                                     <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                     @enderror
@@ -197,9 +201,9 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="user.phone" class="form-control-label">{{ __('Phone') }}</label>
+                                <label for="user.phone" class="form-control-label">{{ __('No Telepon') }}</label>
                                 <div class="@error('user.phone')border border-danger rounded-3 @enderror">
-                                    <input class="form-control" type="tel" placeholder="Phone Number" id="number"
+                                    <input class="form-control" type="tel" placeholder="No Telepon" id="number"
                                         name="phone" value="{{ $user->phone }}">
                                     @error('phone')
                                     <p class="text-danger text-xs mt-2">{{ $message }}</p>
@@ -209,9 +213,9 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="user.location" class="form-control-label">{{ __('Location') }}</label>
+                                <label for="user.location" class="form-control-label">{{ __('Lokasi') }}</label>
                                 <div class="@error('user.location') border border-danger rounded-3 @enderror">
-                                    <input class="form-control" type="text" placeholder="Location" id="name"
+                                    <input class="form-control" type="text" placeholder="Lokasi" id="name"
                                         name="location" value="{{ $user->location }}">
                                 </div>
                             </div>
@@ -223,7 +227,7 @@
                                 <label for="role" class="form-control-label">{{ __('Role') }}</label>
                                 <div class="@error('role') border border-danger rounded-3 @enderror">
                                     <select class="form-control" id="role" name="role" required>
-                                        <option value="">Select Role</option>
+                                        <option value="">Pilih Role</option>
                                         <option value="master" {{ $user->role == 'master' ? 'selected' : '' }}>
                                             Master</option>
                                         <option value="user" {{ $user->role == 'user' ? 'selected' : '' }}>User
@@ -237,35 +241,38 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="about">{{ 'About Me' }}</label>
+                        <label for="about">{{ 'Tentang Saya' }}</label>
                         <div class="@error('user.about')border border-danger rounded-3 @enderror">
                             <textarea class="form-control" id="about" rows="3"
-                                placeholder="Say something about yourself"
+                                placeholder="Ceritakan sedikit tentang diri anda"
                                 name="about_me">{{ $user->about_me }}</textarea>
                         </div>
                     </div>
+                    @if ($user->google_id == NULL)
                     <div class="form-group">
-                        <label for="password">Change Password</label>
+                        <label for="password">Ganti Password</label>
                         <div class="input-group @error('password') border border-danger rounded-3 @enderror">
-                            <input class="form-control" type="password" placeholder="Change Password" id="password"
+                            <input class="form-control" type="password" placeholder="Ganti Password" id="password"
                                 name="password">
                             <span class="input-group-text" onclick="togglePassword('password', this)">
                                 <i class="fa fa-eye-slash" aria-hidden="true"></i>
                             </span>
                         </div>
 
-                        <label for="password_confirmation" class="mt-3">Repeat Password</label>
+                        <label for="password_confirmation" class="mt-3">Ulangi Password</label>
                         <div class="input-group @error('password') border border-danger rounded-3 @enderror">
-                            <input class="form-control" type="password" placeholder="Repeat Password"
+                            <input class="form-control" type="password" placeholder="Ulangis Password"
                                 id="password_confirmation" name="password_confirmation">
                             <span class="input-group-text" onclick="togglePassword('password_confirmation', this)">
                                 <i class="fa fa-eye-slash" aria-hidden="true"></i>
                             </span>
                         </div>
                     </div>
+                    @endif
+
                     <div class="d-flex justify-content-end">
-                        <button type="submit"
-                            class="btn bg-gradient-dark btn-md mt-4 mb-4">{{ 'Save Changes' }}</button>
+                        <button type="submit" class="btn bg-gradient-dark btn-md mt-4 mb-4">{{ 'Simpan' }}&nbsp;&nbsp;<i
+                                class="fa fa-save"></i></button>
                     </div>
                 </div>
             </div>

@@ -30,8 +30,11 @@
                 @method('PUT')
                 <div class="container-fluid py-4">
                     <div class="card">
-                        <div class="card-header p-4">
+                        <div class="card-header p-4 d-flex justify-content-between align-items-center">
                             <h6 class="mb-0">{{ __('Edit Data Image Archive') }}</h6>
+                            <a href="{{ route('image-archive.index') }}"
+                                class="btn bg-gradient-danger btn-md mb-0">{{ 'Kembali' }}&nbsp;&nbsp;<i
+                                    class="fa fa-arrow-right"></i></a>
                         </div>
                         <div class="card-body pt-1 p-4">
                             <div class="row">
@@ -83,7 +86,8 @@
                             </div>
                             <div class="d-flex justify-content-end">
                                 <button type="submit"
-                                    class="btn bg-gradient-dark btn-md mt-2 mb-2">{{ 'Edit Data' }}</button>
+                                    class="btn bg-gradient-dark btn-md mt-2 mb-2">{{ 'Simpan' }}&nbsp;&nbsp; <i
+                                        class="fa fa-save"></i></button>
                             </div>
                         </div>
                     </div>

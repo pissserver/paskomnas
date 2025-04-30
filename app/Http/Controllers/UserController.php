@@ -59,9 +59,9 @@ class UserController extends Controller
 
         if ($request->input('password') != null) {
             Auth::logout();
-            return redirect('/login')->with('success', 'Password updated successfully. Please log in again.');
+            return redirect('/login')->with('success', 'Berhasil memperbarui password, silakan login kembali.');
         } else {
-            return redirect()->back()->with('success', 'Profile updated successfully.');
+            return redirect()->back()->with('success', 'Profil diperbarui berhasil.');
         }
     }
 }

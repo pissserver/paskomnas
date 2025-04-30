@@ -12,6 +12,13 @@ use Illuminate\Support\Str;
 
 class ChangePasswordController extends Controller
 {
+    public function create(Request $request)
+    {
+        return view('session/reset-password/resetPassword', [
+            'email' => $request->email,
+        ]);
+    }
+    
     public function changePassword(Request $request)
     {
         
@@ -29,6 +36,6 @@ class ChangePasswordController extends Controller
         $user->update($dataToUpdate);
 
     
-        return redirect()->route('login')->with('success', 'Password changed successfully');
+        return redirect()->route('login')->with('success', 'Password berhasil diubah');
     }
 }

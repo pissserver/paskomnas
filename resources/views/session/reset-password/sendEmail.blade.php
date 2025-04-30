@@ -1,5 +1,7 @@
 @extends('layouts.user_type.guest')
 
+@section('title', 'Reset Password')
+
 @section('content')
 
 <div class="page-header section-height-75">

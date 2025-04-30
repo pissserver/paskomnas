@@ -22,9 +22,10 @@ class ResetController extends Controller
         $email = User::where('email', $request->email)->first();
 
         if (!$email) {
-            return back()->withErrors(['email' => 'Email not found']);
+            return back()->withErrors(['email' => 'Email tidak ditemukan']);
         }
 
-        return view('session/reset-password/resetPassword', ['email' => $email->email])->with(['success' => 'Email found and reset your password']);
+        return redirect()->route('password.change', ['email' => $email->email])
+        ->with('success', 'Email ditemukan, dan ubah password anda');
     }
 }

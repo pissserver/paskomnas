@@ -3,16 +3,6 @@
 @section('content')
 
 <div>
-    <div class="alert alert-secondary mx-4" role="alert">
-        <span class="text-white">
-            <strong>Add, Edit, Delete features are not functional!</strong> This is a
-            <strong>PRO</strong> feature! Click <strong>
-                <a href="https://www.creative-tim.com/live/soft-ui-dashboard-pro-laravel" target="_blank"
-                    class="text-white">here</a></strong>
-            to see the PRO product!
-        </span>
-    </div>
-
     @if($errors->any())
     <div class="mx-4 alert alert-primary alert-dismissible fade show" role="alert">
         <span class="alert-text text-white">
@@ -37,36 +27,39 @@
             <div class="card mb-4 mx-4">
                 <div class="card-header pb-0">
                     <div class="d-flex flex-row justify-content-between">
-                        <div>
-                            <h5 class="mb-0">All Users</h5>
+                        <div class="d-flex align-items-center bg-gradient-secondary ps-3 pe-3 rounded-2 text-white">
+                            <i class="fa fa-users me-2"></i>
+                            <h6 class="mb-0 text-white">Data Pengguna</h6>
                         </div>
                         <div class="d-flex align-items-center">
                             <input type="text" class="form-control form-control-sm me-1" id="searchUser"
-                                placeholder="Search user..." name="search" style="max-width: 200px;">
+                                placeholder="Cari pengguna..." name="search" style="max-width: 200px;">
                             <span class="input-group-text" onclick="togglePassword('password_confirmation', this)">
                                 <i class="fa fa-search" aria-hidden="true"></i>
                             </span>
                         </div>
-                        <a href="{{ route('user-management.create') }}" class="btn bg-gradient-primary btn-sm mb-0"
-                            type="button">+&nbsp; New
-                            User</a>
+                        <div class="d-flex align-items-center">
+                            <a href="{{ route('user-management.create') }}" class="btn bg-gradient-primary btn-sm mb-0"
+                                type="button">Tambah Pengguna &nbsp;&nbsp; <i class="fa fa-plus"></i></a>
+                        </div>
                     </div>
                 </div>
                 <div class="card-body px-0 pt-4 pb-2">
                     <div class="table-responsive p-0">
-                        <table class="table align-items-center mb-0">
+                        <table class="table align-items-center mb-0 table-hover table-striped">
                             <thead>
                                 <tr>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                        ID
+                                    <th
+                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                        No
                                     </th>
                                     <th
-                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                                        Photo
+                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                        Foto
                                     </th>
                                     <th
                                         class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                        Name
+                                        Nama Lengkap
                                     </th>
                                     <th
                                         class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
@@ -78,11 +71,11 @@
                                     </th>
                                     <th
                                         class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                        Creation Date
+                                        Tanggal Dibuat
                                     </th>
                                     <th
                                         class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                        Action
+                                        Aksi
                                     </th>
                                 </tr>
                             </thead>
@@ -104,14 +97,14 @@
 <script>
     function confirmDelete(userId, userName) {
         Swal.fire({
-            title: 'Are you sure delete?',
-            html: `User <strong>${userName}</strong> to permenent delete.`,
+            title: 'Yakin ingin menghapus?',
+            html: `Pengguna <strong>${userName}</strong> akan dihapus permanen.`,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
             cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Yes, delete!',
-            cancelButtonText: 'Cancel'
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
                 document.getElementById(`delete-form-${userId}`).submit();

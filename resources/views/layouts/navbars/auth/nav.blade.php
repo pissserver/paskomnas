@@ -5,7 +5,7 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
                 <li class="breadcrumb-item text-sm">
-                    <a class="opacity-5 text-dark" href="javascript:;">Pages</a>
+                    <a class="opacity-5 text-dark" href="javascript:;">Halaman</a>
                 </li>
                 @foreach (explode('/', Request::path()) as $segment)
                 <li class="breadcrumb-item text-sm text-dark active text-capitalize" aria-current="page">
@@ -18,12 +18,12 @@
             </h6>
         </nav>
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4 d-flex justify-content-end" id="navbar">
-            <div class="ms-md-3 pe-md-3 d-flex align-items-center">
+            {{-- <div class="ms-md-3 pe-md-3 d-flex align-items-center">
                 <div class="input-group">
                     <span class="input-group-text text-body"><i class="fas fa-search" aria-hidden="true"></i></span>
                     <input type="text" class="form-control" placeholder="Type here...">
                 </div>
-            </div>
+            </div> --}}
 
             <div class="card blur shadow-blur pe-2 me-3">
                 <div class="d-flex align-items-center">
@@ -49,7 +49,7 @@
                         <a href="javascript:;" class="btn btn-primary active mb-0 text-white"
                             onclick="confirmSignOut()">
                             <i class="fa fa-sign-out-alt me-sm-1"></i>
-                            <span class="d-sm-inline d-none">Sign Out</span>
+                            <span class="d-sm-inline d-none">Keluar</span>
                         </a>
                     </div>
                 </li>
@@ -57,7 +57,7 @@
                     <a href="javascript:;" class="btn btn-secondary active mb-0 text-white" id="dropdownMenu"
                         data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fa fa-exchange-alt me-sm-1"></i>
-                        <span class="d-sm-inline d-none">Switch</span>
+                        <span class="d-sm-inline d-none">Beralih Akun</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end px-2 py-3 me-3"
                         style="max-height: 300px; overflow-y: auto;" aria-labelledby="dropdownMenu">
@@ -84,9 +84,9 @@
                                     </g>
                                 </svg>
                             </a>
-                            <div class="position-relative text-center">
+                            <div class="position-relative text-center mb-2">
                                 <p class="text-sm font-weight-bold text-secondary text-border d-inline z-index-2">
-                                    Or
+                                    Atau
                                 </p>
                             </div>
                         </div>
@@ -127,7 +127,7 @@
                                         </p>
                                         <div
                                             class="d-flex align-items-center text-xs {{ $user->id == Auth::user()->id ? 'text-success' : 'text-danger' }}">
-                                            {{ $user->id == Auth::user()->id ? 'Logged In' : 'Logged Out' }}
+                                            {{ $user->id == Auth::user()->id ? 'Masuk' : 'Keluar' }}
                                             <div style="
                                                 {{ $user->id == Auth::user()->id ? 'background-color: green;' : 'background-color: red;' }}
                                                 border-radius: 50%;
@@ -241,14 +241,14 @@
 <script>
     function confirmSignOut() {
         Swal.fire({
-            title: 'Are you sure Sign Out?',
-            html: `You will be logged out of the dashboard.`,
+            title: 'Yakin ingin keluar?',
+            html: `Anda akan keluar dari sistem, login kembali untuk masuk`,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
             cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Yes!',
-            cancelButtonText: 'Cancel'
+            confirmButtonText: 'Keluar!',
+            cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
                 window.location.href = "{{ route('logout') }}";
@@ -260,7 +260,7 @@
         const borderColor = role === 'master' ? 'border-primary' : 'border-warning';
 
         Swal.fire({
-            title: 'Are you sure to switch?',
+            title: 'Yakin untuk beralih akun?',
             html: `
                 <hr style="margin: 10px 0;">
                 <div style="
@@ -287,7 +287,7 @@
                         <div style="color: #6c757d; font-size: 13px;">${email}</div>
                     </div>
 
-                    <input type="password" id="switchPassword" class="swal2-input" placeholder="Enter your password" style="max-width: 300px;">
+                    <input type="password" id="switchPassword" class="swal2-input" placeholder="Masukkan password" style="max-width: 300px;">
                 </div>
             `,
             preConfirm: () => {
@@ -301,8 +301,8 @@
             showCancelButton: true,
             confirmButtonColor: '#d33',
             cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Yes, switch!',
-            cancelButtonText: 'Cancel'
+            confirmButtonText: 'Ya, beralih!',
+            cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
                 const password = result.value.password;

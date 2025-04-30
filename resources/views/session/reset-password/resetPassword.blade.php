@@ -1,32 +1,33 @@
 @extends('layouts.user_type.guest')
 
+@section('title', 'Ganti Password')
+
 @section('content')
 
 <div class="page-header section-height-75">
     <div class="container">
         <div class="row">
             <div class="col-xl-4 col-lg-5 col-md-6 d-flex flex-column mx-auto">
-                @if($errors->any())
-                <div class="alert alert-primary alert-dismissible fade show" role="alert">
-                    <span class="alert-text text-white">
-                        {{$errors->first()}}</span>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
-                        <i class="fa fa-close" aria-hidden="true"></i>
-                    </button>
-                </div>
-                @endif
-                @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show" id="alert-success" role="alert">
-                    <span class="alert-text text-white">
-                        {!! session('success') !!}</span>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
-                        <i class="fa fa-close" aria-hidden="true"></i>
-                    </button>
-                </div>
-                @endif
-
                 <div class="card card-plain mt-8">
                     <div class="card-header pb-0 text-left bg-transparent">
+                        @if($errors->any())
+                        <div class="alert alert-primary alert-dismissible fade show" role="alert">
+                            <span class="alert-text text-white">
+                                {{$errors->first()}}</span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                                <i class="fa fa-close" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        @elseif(session('success'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <span class="alert-text text-white">
+                                {{ session('success') }}</span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                                <i class="fa fa-close" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        @endif
+
                         <h4 class="mb-0">Ganti password</h4>
                     </div>
                     <div class="card-body">

@@ -24,19 +24,7 @@
 			</li>
 
 			<li class="nav-item mt-2">
-				<h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Pages</h6>
-			</li>
-
-			<li class="nav-item pb-2">
-				<a class="nav-link {{ Request::is('image-archive') || Request::is('image-archive/create') || Request::is('image-archive/*/edit')  ? 'active' : '' }}"
-					href="{{ route('image-archive.index') }}">
-					<div
-						class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-						<i style="margin-top: -5px;"
-							class="fas fa-images {{ (Request::is('image-archive') || Request::is('image-archive/create') || Request::is('image-archive/*/edit') ? 'text-white' : 'text-dark') }}"></i>
-					</div>
-					<span class="nav-link-text ms-1">Image Archive</span>
-				</a>
+				<h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Halaman Utama</h6>
 			</li>
 
 			<li class="nav-item">
@@ -65,6 +53,7 @@
 					<span class="nav-link-text ms-1">Tables</span>
 				</a>
 			</li>
+
 			<li class="nav-item">
 				<a class="nav-link {{ (Request::is('billing') ? 'active' : '') }}" href="{{ url('billing') }}">
 					<div
@@ -92,8 +81,20 @@
 				</a>
 			</li>
 
+			<li class="nav-item pb-2">
+				<a class="nav-link {{ Request::is('arsip-gambar') || Request::is('arsip-gambar/create') || Request::is('arsip-gambar/*/edit')  ? 'active' : '' }}"
+					href="{{ route('image-archive.index') }}">
+					<div
+						class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+						<i style="margin-top: -5px;"
+							class="fas fa-images {{ (Request::is('arsip-gambar') || Request::is('arsip-gambar/create') || Request::is('arsip-gambar/*/edit') ? 'text-white' : 'text-dark') }}"></i>
+					</div>
+					<span class="nav-link-text ms-1">Arsip Gambar</span>
+				</a>
+			</li>
+
 			<li class="nav-item mt-3">
-				<h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Sweetener Page</h6>
+				<h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Halaman Tambahan</h6>
 			</li>
 
 			<li class="nav-item">
@@ -128,17 +129,17 @@
 			</li>
 
 			<li class="nav-item mt-3">
-				<h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Account</h6>
+				<h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Akun</h6>
 			</li>
 
 			<li class="nav-item">
-				<a class="nav-link {{ (Request::is('profile') ? 'active' : '') }} " href="{{ route('user.index') }}">
+				<a class="nav-link {{ (Request::is('profil') ? 'active' : '') }} " href="{{ route('user.index') }}">
 					<div
 						class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
 						<i style="margin-top: -5px;"
-							class="fas fa-user {{ (Request::is('profile') ? 'text-white' : 'text-dark') }}"></i>
+							class="fas fa-user {{ (Request::is('profil') ? 'text-white' : 'text-dark') }}"></i>
 					</div>
-					<span class="nav-link-text ms-1">Profile</span>
+					<span class="nav-link-text ms-1">Profil</span>
 				</a>
 			</li>
 		</ul>
