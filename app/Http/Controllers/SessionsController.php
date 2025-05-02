@@ -38,8 +38,13 @@ class SessionsController extends Controller
         }
     }
     
-    public function destroy()
+    public function destroy(Request $request)
     {
+        $user = Auth::user();
+        if ($user) {
+            $user->update(['last_active_at' => null]);
+        }
+
         Auth::logout();
 
         return redirect('/login')->with(['success'=>'Berhasil keluar, silakan login kembali untuk akses sistem!']);

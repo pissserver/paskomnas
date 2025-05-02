@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Carbon\Carbon;
 
 class User extends Authenticatable
 {
@@ -27,6 +28,7 @@ class User extends Authenticatable
         'role',
         'photo',
         'google_id',
+        'last_active_at',
     ];
 
     /**
@@ -47,5 +49,9 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-    
+
+    public function getIsOnlineAttribute()
+    {
+        return $this->last_active_at && Carbon::parse($this->last_active_at)->gt(now()->subMinutes(15));
+    }
 }

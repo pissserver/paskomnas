@@ -24,7 +24,7 @@
 
     <div class="row">
         <div class="col-12">
-            <form action="{{ route('image-archive.store') }}" method="POST" role="form text-left"
+            <form action="{{ route('image-archive.store') }}" method="POST" role="form text-left" id="archiveForm"
                 enctype="multipart/form-data">
                 @csrf
                 <div class="container-fluid py-4">
@@ -110,7 +110,7 @@
                             </span>
                         </div>
 
-                        <div class="d-flex">
+                        <div class="d-flex mt-3">
                             <div class="dropdown">
                                 <button class="btn bg-gradient-danger" type="button" id="dropdownHapusSemua"
                                     data-bs-toggle="dropdown" aria-expanded="false">
@@ -118,8 +118,8 @@
                                 </button>
                                 <div class="dropdown-menu dropdown-menu-end p-3 shadow" style="min-width: 300px;"
                                     aria-labelledby="dropdownHapusSemua">
-                                    <form action="" method="POST"
-                                        onsubmit="return confirm('Yakin ingin menghapus semua data dalam rentang waktu ini?')">
+                                    <form action="{{ route('image-archive.delete-selected') }}" method="POST"
+                                        id="deleteAllForm">
                                         @csrf
                                         <div class="mb-2">
                                             <label for="start_date" class="form-label mb-1 text-xs">Dari Tanggal</label>
@@ -131,7 +131,8 @@
                                             <input type="date" name="end_date" id="end_date"
                                                 class="form-control form-control-sm" required>
                                         </div>
-                                        <button type="submit" class="btn btn-sm bg-gradient-danger w-100">
+                                        <button type="submit" class="btn btn-sm bg-gradient-danger w-100"
+                                            onclick="event.preventDefault(); confirmDeleteAll()">
                                             <i class="fas fa-trash-alt me-1"></i> Hapus
                                         </button>
                                     </form>
@@ -142,6 +143,15 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
+                        @if ($archives->isEmpty())
+                        <div class="empty-data">
+                            <div class="text-center">
+                                <img src="{{ asset('assets/img/empty-data.png') }}" alt="No Data" class="img-fluid"
+                                    width="450">
+                                <h4 class="text-secondary">Tidak ada data yang ditemukan</h4>
+                            </div>
+                        </div>
+                        @else
                         <table class="table table-bordered table-striped table-hover align-items-center mb-0">
                             <thead class="bg-gradient-dark">
                                 <tr>
@@ -175,6 +185,7 @@
 
                             </tbody>
                         </table>
+                        @endif
                     </div>
                 </div>
 
@@ -215,6 +226,47 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 document.getElementById(`delete-form-${archiveId}`).submit();
+            }
+        });
+    }
+
+    function formatIndonesianDate(dateStr) {
+        const date = new Date(dateStr);
+        return new Intl.DateTimeFormat('id-ID', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        }).format(date);
+    }
+
+    function confirmDeleteAll() {
+        const startDateRaw = document.getElementById('start_date').value;
+        const endDateRaw = document.getElementById('end_date').value;
+
+        const startDateFormatted = formatIndonesianDate(startDateRaw);
+        const endDateFormatted = formatIndonesianDate(endDateRaw);
+
+        if (new Date(startDateRaw) > new Date(endDateRaw)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Tanggal awal tidak boleh lebih besar dari tanggal akhir!',
+            });
+            return;
+        }
+
+        Swal.fire({
+            title: 'Yakin ingin menghapus semua?',
+            html: `Data dari <strong>${startDateFormatted}</strong> sampai <strong>${endDateFormatted}</strong> akan dihapus permanent.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('deleteAllForm').submit();
             }
         });
     }

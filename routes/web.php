@@ -48,19 +48,15 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
     Route::get('/', [HomeController::class, 'home']);
 
 	Route::get('dashboard', function () {
-		return view('dashboard');
+		return view('pages.dashboard');
 	})->name('dashboard');
 
 	Route::get('billing', function () {
-		return view('billing');
+		return view('pages.billing');
 	})->name('billing');
 
-	Route::get('tables', function () {
-		return view('tables');
-	})->name('tables');
-
     Route::get('virtual-reality', function () {
-		return view('virtual-reality');
+		return view('pages.virtual-reality');
 	})->name('virtual-reality');
 
 	// Image Archive
@@ -70,6 +66,7 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 	Route::get('arsip-gambar/{id}/edit', [ImageArchiveController::class, 'edit'])->name('image-archive.edit');
 	Route::put('arsip-gambar/{id}', [ImageArchiveController::class, 'update'])->name('image-archive.update');
 	Route::delete('arsip-gambar/{id}', [ImageArchiveController::class, 'destroy'])->name('image-archive.destroy');
+	Route::post('arsip-gambar/delete-selected', [ImageArchiveController::class, 'deleteAllSelected'])->name('image-archive.delete-selected');
 
 	// User Profile
 	Route::get('profil', [UserController::class, 'index'])->name('user.index');

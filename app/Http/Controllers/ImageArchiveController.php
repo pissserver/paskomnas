@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\ImageArchive;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class ImageArchiveController extends Controller
 {
     public function index()
     {
-        return view('pages.image-archive.index');
+        $archives = ImageArchive::all();
+        return view('pages.image-archive.index', ['archives' => $archives]);
     }
 
     public function store(Request $request, ImageArchive $imageArchive) 
@@ -112,5 +114,28 @@ class ImageArchiveController extends Controller
         $archive->delete();
 
         return redirect('/arsip-gambar')->with('success','Data berhasil dihapus');
+    }
+
+    public function deleteAllSelected(Request $request)
+    {
+        $request->validate([
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
+        ]);
+
+        $start = Carbon::parse($request->start_date)->startOfDay();
+        $end   = Carbon::parse($request->end_date)->endOfDay();
+    
+        $delete = ImageArchive::whereBetween('created_at', [$start, $end])->get();
+        
+        foreach ($delete as $archive) {
+            if ($archive->photo && file_exists(public_path($archive->photo))) {
+                unlink(public_path($archive->photo));
+            }
+            $archive->delete();
+        }
+
+
+        return redirect('/arsip-gambar')->with('success','Data berhasil dihapus dari tanggal ' . Carbon::parse($request->start_date)->translatedFormat('d F Y') . ' sampai ' . Carbon::parse($request->end_date)->translatedFormat('d F Y'));
     }
 }

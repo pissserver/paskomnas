@@ -19,11 +19,20 @@
             {{ $user->role }}
         </span>
     </td>
+
     <td class="text-center">
         <span class="text-secondary text-xs font-weight-bold">{{ $user->created_at->format('d F Y') }}</span>
     </td>
     <td class="text-center">
-        @if ($user->id != Auth::id())
+        @if ($user->id === Auth::id())
+        <span class="mb-0 btn bg-gradient-info" style="cursor: default !important;">
+            Anda <i class="fas fa-user-circle ms-1"></i>
+        </span>
+        @elseif ($user->is_online)
+        <span class="mb-0 btn bg-gradient-success" style="cursor: default !important;">
+            Sedang Aktif <i class="fas fa-check-circle ms-1"></i>
+        </span>
+        @else
         <a href="{{ route('user-management.edit', $user->id) }}"
             class="mb-0 btn bg-gradient-secondary d-inline-flex align-items-center justify-content-center py-2 px-3"
             data-bs-toggle="tooltip" title="Edit user">
@@ -37,11 +46,8 @@
             href="javascript:;" title="Delete user" onclick="confirmDelete({{ $user->id }}, '{{ $user->name }}')">
             <i class="fas fa-trash-alt text-white me-1"></i>Hapus
         </a>
-
-        @else
-        <span class="mb-0 btn bg-gradient-success" style="cursor: default !important;">Sedang Aktif <i
-                class="fas fa-check-circle ms-1"></i></span>
         @endif
+
     </td>
 </tr>
 @endforeach
