@@ -1,5 +1,7 @@
 @extends('layouts.user_type.auth')
 
+@section('title', 'Dashboard Paskomnas || PISS')
+
 @section('content')
 @if($errors->any())
 <div class="alert alert-primary alert-dismissible fade show" role="alert">

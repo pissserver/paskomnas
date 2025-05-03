@@ -1,5 +1,7 @@
 @extends('layouts.user_type.auth')
 
+@section('title', 'Edit Arsip Gambar')
+
 @section('content')
 
 <div>

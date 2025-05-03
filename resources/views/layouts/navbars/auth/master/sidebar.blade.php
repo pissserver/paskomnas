@@ -23,7 +23,7 @@
 				</a>
 			</li>
 
-			<li class="nav-item mt-2">
+			<li class="nav-item mt-3">
 				<h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Halaman Utama</h6>
 			</li>
 
@@ -54,7 +54,7 @@
 				</a>
 			</li>
 
-			<li class="nav-item pb-2">
+			<li class="nav-item">
 				<a class="nav-link {{ Request::is('arsip-gambar') || Request::is('arsip-gambar/create') || Request::is('arsip-gambar/*/edit')  ? 'active' : '' }}"
 					href="{{ route('image-archive.index') }}">
 					<div
@@ -101,11 +101,11 @@
 				</a>
 			</li>
 
-			<li class="nav-item mt-2">
+			<li class="nav-item mt-3">
 				<h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Dashboard Master</h6>
 			</li>
 
-			<li class="nav-item pb-2">
+			<li class="nav-item">
 				<a class="nav-link {{ Request::is('kelola-pengguna') || Request::is('kelola-pengguna/create') || Request::is('kelola-pengguna/*/edit')  ? 'active' : '' }}"
 					href="{{ route('user-management.index') }}">
 					<div
