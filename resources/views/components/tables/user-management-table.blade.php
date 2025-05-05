@@ -9,7 +9,7 @@
             style="cursor: zoom-in;">
     </td>
     <td class="text-center">
-        <p class="text-xs font-weight-bold mb-0">{{ $user->name }}</p>
+        <p class="text-xs font-weight-bold mb-0 text-capitalize">{{ $user->name }}</p>
     </td>
     <td class="text-center">
         <p class="text-xs font-weight-bold mb-0">{{ $user->email }}</p>

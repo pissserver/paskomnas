@@ -55,6 +55,7 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 		return view('pages.billing');
 	})->name('billing');
 
+	// Virtual Reality
     Route::get('virtual-reality', function () {
 		return view('pages.virtual-reality');
 	})->name('virtual-reality');

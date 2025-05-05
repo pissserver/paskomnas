@@ -9,22 +9,22 @@
   <div class="container">
     <div class="row">
       <div class="col-lg-1 col-md-1 pt-5 pt-lg-0 ms-lg-5 text-center">
-        <a href="javascript:;" class="avatar avatar-md border-0" data-bs-toggle="tooltip" data-bs-placement="left"
+        <a href="javascript:;" class="avatar avatar-md border-0 mb-2" data-bs-toggle="tooltip" data-bs-placement="left"
           title="{{ Auth::user()->name }}">
           <img class="border-radius-lg" alt="Image placeholder"
             src="{{ Auth::user()->photo ? asset(Auth::user()->photo) : asset('assets/img/default-profile.jpg') }}">
         </a>
         <a href="{{ route('dashboard') }}" class="btn btn-white border-radius-lg p-2 mt-2" data-bs-toggle="tooltip"
-          data-bs-placement="left" title="Home">
+          data-bs-placement="left" title="Dashboard">
           <i class="fas fa-home p-2"></i>
         </a>
-        <button class="btn btn-white border-radius-lg p-2" type="button" data-bs-toggle="tooltip"
-          data-bs-placement="left" title="Search">
-          <i class="fas fa-search p-2"></i>
-        </button>
-        <button class="btn btn-white border-radius-lg p-2" type="button" data-bs-toggle="tooltip"
-          data-bs-placement="left" title="Minimize">
-          <i class="fas fa-ellipsis-h p-2"></i>
+        <a href="{{ route('user.index') }}" class="btn btn-white border-radius-lg p-2" data-bs-toggle="tooltip"
+          data-bs-placement="left" title="Profil">
+          <i class="fas fa-User p-2"></i>
+        </a>
+        <button id="change-bg-btn" class="btn btn-white border-radius-lg p-2" type="button" data-bs-toggle="tooltip"
+          data-bs-placement="left" title="Ganti Background">
+          <i class="fas fa-sync-alt p-2"></i>
         </button>
       </div>
       <div class="col-lg-8 col-md-11">
@@ -34,8 +34,11 @@
             <h6 class="text-uppercase mb-0 ms-1">Cloudy</h6>
           </div> --}}
           <div class="me-auto">
-            <h1 id="current-time" class="display-1 font-weight-bold mt-n4 mb-0">--:--</h1>
-            <h6 class="text-uppercase mb-0 ms-1">WIB</h6>
+            <h1 id="current-time" class="d-inline-block text-white display-1 font-weight-bold mt-n4 mb-0">--:--</h1>
+            <h6 class="text-white text-uppercase mb-0 ms-1 d-inline-block">WIB</h6>
+            <h6 class="text-white text-capitalize mb-0 ms-1"><i class="fa fa-map-marker"></i>&nbsp;&nbsp;&nbsp;Sidotopo,
+              Surabaya
+            </h6>
           </div>
           <div class="ms-auto">
             <img class="w-50 float-end mt-lg-n4" src="{{ asset('assets/img/small-logos/icon-sun-cloud.png') }}"
@@ -46,59 +49,25 @@
           <div class="col-lg-4 col-md-4">
             <div class="card move-on-hover overflow-hidden">
               <div class="card-body">
-                <div class="d-flex">
-                  <h6 class="mb-0 me-3">08:00</h6>
-                  <h6 class="mb-0">Synk up with Mark
-                    <small class="text-secondary font-weight-normal">Hangouts</small>
+                <div class="d-flex align-items-center">
+                  <h6 class="mb-0 ms-3 me-5"><i class="fa fa-user-tag"></i></h6>
+                  <h6 class="mb-0">Role <br>
+                    <small class="text-secondary font-weight-normal text-capitalize">{{ Auth::user()->role }}</small>
                   </h6>
                 </div>
                 <hr class="horizontal dark">
-                <div class="d-flex">
-                  <h6 class="mb-0 me-3">09:30</h6>
-                  <h6 class="mb-0">Gym <br />
-                    <small class="text-secondary font-weight-normal">World Class</small>
+                <div class="d-flex align-items-center">
+                  <h6 class="mb-0 ms-3 me-5"><i class="fa fa-phone"></i></h6>
+                  <h6 class="mb-0">No Telepon
+                    <small class="text-secondary font-weight-normal">0{{ Auth::user()->phone }}</small>
                   </h6>
                 </div>
                 <hr class="horizontal dark">
-                <div class="d-flex">
-                  <h6 class="mb-0 me-3">11:00</h6>
-                  <h6 class="mb-0">Design Review<br />
-                    <small class="text-secondary font-weight-normal">Zoom</small>
+                <div class="d-flex align-items-center">
+                  <h6 class="mb-0 ms-3 me-5"><i class="fa fa-map-marker"></i></h6>
+                  <h6 class="mb-0">Lokasi <br />
+                    <small class="text-secondary font-weight-normal">{{ Auth::user()->location }}</small>
                   </h6>
-                </div>
-              </div>
-              <a href="javascript:;" class="bg-gray-100 w-100 text-center py-1" data-bs-toggle="tooltip"
-                data-bs-placement="top" title="Show More">
-                <i class="fas fa-chevron-down text-primary"></i>
-              </a>
-            </div>
-          </div>
-          <div class="col-lg-4 col-md-4 mt-4 mt-sm-0">
-            <div class="card bg-gradient-dark move-on-hover">
-              <div class="card-body">
-                <div class="d-flex">
-                  <h5 class="mb-0 text-white">To Do</h5>
-                  <div class="ms-auto">
-                    <h1 class="text-white text-end mb-0 mt-n2">7</h1>
-                    <p class="text-sm mb-0 text-white">items</p>
-                  </div>
-                </div>
-                <p class="text-white mb-0">Shopping</p>
-                <p class="mb-0 text-white">Meeting</p>
-              </div>
-              <a href="javascript:;" class="w-100 text-center py-1" data-bs-toggle="tooltip" data-bs-placement="top"
-                title="Show More">
-                <i class="fas fa-chevron-down text-white"></i>
-              </a>
-            </div>
-            <div class="card move-on-hover mt-4">
-              <div class="card-body">
-                <div class="d-flex">
-                  <p class="mb-0 mt-1"><i class="fa fa-envelope"></i></p>
-                  <a href="{{ route('user.index') }}" class="ms-auto text-truncate" style="max-width: 130px;"
-                    data-bs-toggle=" tooltip" data-bs-placement="top" title="Cek email anda">
-                    {{ Auth::user()->email }}
-                  </a>
                 </div>
               </div>
             </div>
@@ -110,8 +79,9 @@
                   style="background-image: url('{{ asset('assets/img/curved-images/curved14.jpg') }}')">
                 </div>
                 <div class="card-body">
-                  <h5 class="text-white mb-0" id="song-title">Some Kind Of Blues</h5>
-                  <p class="text-white text-sm" id="song-artist">Deftones</p>
+                  <h5 class="text-white text-sm text-bold">Music&nbsp;&nbsp; <i class="fa fa-music"></i></h5>
+                  <h5 class="text-white mb-0" id="song-title"></h5>
+                  <p class="text-white text-sm" id="song-artist"></p>
 
                   <audio id="audio-player" class="d-none">
                     <source id="audio-source" src="{{ asset('assets/music/some-kind-of-blues.mp3') }}" type="audio/mp3">
@@ -137,28 +107,45 @@
             </div>
             <div class="card move-on-hover mt-4">
               <div class="card-body">
+                <div class="d-flex justify-content-evenly">
+                  <p class="mb-0 mt-1"><i class="fa fa-envelope"></i></p>
+                  <a href="{{ route('user.index') }}" class="ms-3 text-truncate" style="max-width: 200px;"
+                    data-bs-toggle=" tooltip" data-bs-placement="top" title="Cek email anda">
+                    {{ Auth::user()->email }}
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-4 mt-4 mt-sm-0">
+            <div class="card bg-gradient-dark move-on-hover">
+              <div class="card-body">
                 <div class="d-flex">
-                  <p class="my-auto">Users</p>
+                  <h5 class="mb-0 text-white">Daftar</h5>
                   <div class="ms-auto">
-                    <div class="avatar-group">
-                      <a href="javascript:;" class="avatar avatar-sm border-0 rounded-circle" data-bs-toggle="tooltip"
-                        data-bs-placement="top" title="2 New Messages">
-                        <img alt="Image placeholder" src="{{ asset('assets/img/team-1.jpg') }}">
-                      </a>
-                      <a href="javascript:;" class="avatar avatar-sm border-0 rounded-circle" data-bs-toggle="tooltip"
-                        data-bs-placement="top" title="1 New Message">
-                        <img alt="Image placeholder" src="{{ asset('assets/img/team-2.jpg') }}">
-                      </a>
-                      <a href="javascript:;" class="avatar avatar-sm border-0 rounded-circle" data-bs-toggle="tooltip"
-                        data-bs-placement="top" title="13 New Messages">
-                        <img alt="Image placeholder" src="{{ asset('assets/img/team-3.jpg') }}">
-                      </a>
-                      <a href="javascript:;" class="avatar avatar-sm border-0 rounded-circle" data-bs-toggle="tooltip"
-                        data-bs-placement="top" title="7 New Messages">
-                        <img alt="Image placeholder" src="{{ asset('assets/img/team-4.jpg') }}">
-                      </a>
-                    </div>
+                    <h1 class="text-white text-end mb-0 mt-n2">{{ $totalUsers }}</h1>
+                    <p class="text-sm mb-0 text-white text-center">Total</p>
                   </div>
+                </div>
+                <p class="text-white mb-0">Akun</p>
+                <p class="mb-0 text-white">Pengguna</p>
+              </div>
+              <a href="javascript:;" class="w-100 text-center py-1" data-bs-toggle="tooltip" data-bs-placement="top"
+                title="Semua Pengguna">
+                <i class="fas fa-chevron-down text-white"></i>
+              </a>
+            </div>
+            <div class="card move-on-hover mt-4">
+              <div class="card-body">
+                <p class="mb-3"><i class="fa fa-users"></i>&nbsp;&nbsp;Semua Pengguna</p>
+                <div class="avatar-group">
+                  @foreach ($users as $user)
+                  <a href="javascript:;" class="avatar avatar-sm rounded-circle me-1" data-bs-toggle="tooltip"
+                    data-bs-placement="top" title="{{ $user->name }}">
+                    <img alt="Image placeholder"
+                      src="{{ $user->photo ? asset($user->photo) : asset('assets/img/default-profile.jpg') }}">
+                  </a>
+                  @endforeach
                 </div>
               </div>
             </div>
@@ -173,6 +160,21 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
+    // Ganti background
+    const backgrounds = [
+      "{{ asset('assets/img/vr-bg1.jpg') }}",
+      "{{ asset('assets/img/vr-bg2.jpg') }}",
+      "{{ asset('assets/img/vr-bg3.jpg') }}",
+      "{{ asset('assets/img/vr-bg4.jpg') }}"
+    ];
+    let currentIndex = 0;
+
+    document.getElementById("change-bg-btn").addEventListener("click", function () {
+      const wrapper = document.getElementById("background-wrapper");
+      currentIndex = (currentIndex + 1) % backgrounds.length;
+      wrapper.style.backgroundImage = `url('${backgrounds[currentIndex]}')`;
+    });
+
     // Update waktu
     function updateTime() {
       const now = new Date();

@@ -67,7 +67,34 @@
 			</li>
 
 			<li class="nav-item mt-3">
-				<h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Halaman Tambahan</h6>
+				<h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Dashboard Master</h6>
+			</li>
+
+			<li class="nav-item">
+				<a class="nav-link {{ Request::is('kelola-pengguna') || Request::is('kelola-pengguna/create') || Request::is('kelola-pengguna/*/edit')  ? 'active' : '' }}"
+					href="{{ route('user-management.index') }}">
+					<div
+						class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+						<i style="margin-top: -5px;"
+							class="fas fa-users {{ (Request::is('kelola-pengguna') || Request::is('kelola-pengguna/create') || Request::is('kelola-pengguna/*/edit') ? 'text-white' : 'text-dark') }}"></i>
+					</div>
+					<span class="nav-link-text ms-1">Kelola Pengguna</span>
+				</a>
+			</li>
+
+			<li class="nav-item mt-3">
+				<h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Akun</h6>
+			</li>
+
+			<li class="nav-item">
+				<a class="nav-link {{ (Request::is('profil') ? 'active' : '') }} " href="{{ route('user.index') }}">
+					<div
+						class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+						<i style="margin-top: -5px;"
+							class="fas fa-user {{ (Request::is('profil') ? 'text-white' : 'text-dark') }}"></i>
+					</div>
+					<span class="nav-link-text ms-1">Profil</span>
+				</a>
 			</li>
 
 			<li class="nav-item">
@@ -98,37 +125,6 @@
 						</svg>
 					</div>
 					<span class="nav-link-text ms-1">Virtual Reality</span>
-				</a>
-			</li>
-
-			<li class="nav-item mt-3">
-				<h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Dashboard Master</h6>
-			</li>
-
-			<li class="nav-item">
-				<a class="nav-link {{ Request::is('kelola-pengguna') || Request::is('kelola-pengguna/create') || Request::is('kelola-pengguna/*/edit')  ? 'active' : '' }}"
-					href="{{ route('user-management.index') }}">
-					<div
-						class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-						<i style="margin-top: -5px;"
-							class="fas fa-users {{ (Request::is('kelola-pengguna') || Request::is('kelola-pengguna/create') || Request::is('kelola-pengguna/*/edit') ? 'text-white' : 'text-dark') }}"></i>
-					</div>
-					<span class="nav-link-text ms-1">Kelola Pengguna</span>
-				</a>
-			</li>
-
-			<li class="nav-item mt-3">
-				<h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Akun</h6>
-			</li>
-
-			<li class="nav-item">
-				<a class="nav-link {{ (Request::is('profil') ? 'active' : '') }} " href="{{ route('user.index') }}">
-					<div
-						class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-						<i style="margin-top: -5px;"
-							class="fas fa-user {{ (Request::is('profil') ? 'text-white' : 'text-dark') }}"></i>
-					</div>
-					<span class="nav-link-text ms-1">Profil</span>
 				</a>
 			</li>
 		</ul>

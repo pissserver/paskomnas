@@ -5,13 +5,14 @@
 @if (Auth::user()->role === 'master')
 @if (\Request::is('virtual-reality'))
 {{-- @include('layouts.navbars.auth.nav') --}}
-<div class="border-radius-xl my-3 mx-3 position-relative" style="background-image: url('{{ asset('assets/img/vr-bg.jpg') }}');
+<div id="background-wrapper" class="border-radius-xl my-3 mx-3 position-relative" style="background-image: url('{{ asset('assets/img/vr-bg1.jpg') }}');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
-            height: 94vh;
+            height: 96vh;
             overflow: hidden;">
+
     {{-- @include('layouts.navbars.auth.master.sidebar') --}}
     <main class="main-content mt-1 border-radius-lg">
         @yield('content')
@@ -34,12 +35,12 @@
 @elseif (Auth::user()->role === 'user')
 @if (\Request::is('virtual-reality'))
 {{-- @include('layouts.navbars.auth.nav') --}}
-<div class="border-radius-xl my-3 mx-3 position-relative" style="background-image: url('{{ asset('assets/img/vr-bg.jpg') }}');
+<div id="background-wrapper" class="border-radius-xl my-3 mx-3 position-relative" style="background-image: url('{{ asset('assets/img/vr-bg1.jpg') }}');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
-            height: 94vh;
+            height: 96vh;
             overflow: hidden;">
 
     {{-- Sidebar jika perlu --}}

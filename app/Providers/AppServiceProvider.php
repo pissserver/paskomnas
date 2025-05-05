@@ -31,6 +31,14 @@ class AppServiceProvider extends ServiceProvider
             $view->with('users', User::whereNull('google_id')->get());
         });
 
+        View::composer('pages.virtual-reality', function ($view) {
+            $view->with([
+                'totalUsers' => User::count(),
+                'users' => User::limit(5)->get()
+            ]);
+        });
+        
+
         Blade::directive('role', function ($role) {
             return "<?php if(auth()->check() && auth()->user()->role === {$role}): ?>";
         });

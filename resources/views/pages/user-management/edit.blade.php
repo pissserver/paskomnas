@@ -26,13 +26,13 @@
                             <a href="javascript:;" onclick="document.getElementById('imageInput').click()"
                                 class="btn btn-sm btn-icon-only bg-gradient-light position-absolute bottom-0 end-0 mb-n2 me-n2">
                                 <i class="fa fa-pen top-0" data-bs-toggle="tooltip" data-bs-placement="top"
-                                    title="Edit Image"></i>
+                                    title="Ganti Foto"></i>
                             </a>
                             <input type="hidden" name="reset_photo" id="resetPhoto" value="0">
                             <a href="javascript:;" onclick="resetImageToDefault()"
                                 class="btn btn-sm btn-icon-only bg-gradient-danger position-absolute bottom-0 start-0 mb-n2 ms-n2">
                                 <i class="fa fa-trash top-0" data-bs-toggle="tooltip" data-bs-placement="top"
-                                    title="Remove Picture"></i>
+                                    title="Hapus Foto"></i>
                             </a>
                         </div>
                     </div>
