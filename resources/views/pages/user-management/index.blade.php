@@ -42,7 +42,8 @@
                         </div>
                         <div class="d-flex align-items-center">
                             <a href="{{ route('user-management.create') }}" class="btn bg-gradient-primary btn-sm mb-0"
-                                type="button">Tambah Pengguna &nbsp;&nbsp; <i class="fa fa-plus"></i></a>
+                                type="button">Tambah Pengguna &nbsp;&nbsp; <i class="fa fa-plus"
+                                    style="padding-bottom: 7px;"></i></a>
                         </div>
                     </div>
                 </div>

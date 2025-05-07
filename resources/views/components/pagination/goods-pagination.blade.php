@@ -1,0 +1,1 @@
+{{ $goods->withQueryString()->links('pagination::bootstrap-5') }}
