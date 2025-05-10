@@ -55,6 +55,18 @@
 			</li>
 
 			<li class="nav-item">
+				<a class="nav-link {{ Request::is('order') || Request::is('buat-order/*') || Request::is('arsip-gambar/*/edit')  ? 'active' : '' }}"
+					href="{{ route('order.index') }}">
+					<div
+						class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+						<i style="margin-top: -5px;"
+							class="fas fa-shopping-cart {{ (Request::is('order') || Request::is('buat-order/*') || Request::is('arsip-gambar/*/edit') ? 'text-white' : 'text-dark') }}"></i>
+					</div>
+					<span class="nav-link-text ms-1">Order</span>
+				</a>
+			</li>
+
+			<li class="nav-item">
 				<a class="nav-link {{ Request::is('arsip-gambar') || Request::is('arsip-gambar/create') || Request::is('arsip-gambar/*/edit')  ? 'active' : '' }}"
 					href="{{ route('image-archive.index') }}">
 					<div

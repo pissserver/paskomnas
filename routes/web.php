@@ -16,6 +16,7 @@ use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\ImageArchiveController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\GoodsController;
+use App\Http\Controllers\OrderController;
 
 
 /*
@@ -59,10 +60,10 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 		return view('pages.billing');
 	})->name('billing');
 
-	// Virtual Reality
-    Route::get('virtual-reality', function () {
-		return view('pages.virtual-reality');
-	})->name('virtual-reality');
+	// Order
+	Route::get('order', [OrderController::class, 'index'])->name('order.index');
+	Route::get('buat-order/{id}', [OrderController::class, 'create'])->name('order.create');
+	Route::post('buat-order/{id}', [OrderController::class, 'store'])->name('order.store');
 
 	// Image Archive
 	Route::get('arsip-gambar', [ImageArchiveController::class, 'index'])->name('image-archive.index');
@@ -103,6 +104,11 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 	// User Profile
 	Route::get('profil', [UserController::class, 'index'])->name('user.index');
 	Route::put('profil', [UserController::class, 'update'])->name('user.update');
+
+	// Virtual Reality
+	Route::get('virtual-reality', function () {
+		return view('pages.virtual-reality');
+	})->name('virtual-reality');
 
 	// Sessions
     Route::get('logout', [SessionsController::class, 'destroy'])->name('logout');
