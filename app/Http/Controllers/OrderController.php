@@ -18,9 +18,9 @@ class OrderController extends Controller
         return view('pages.order.index', compact('customers', 'totalCustomers'));
     }
 
-    public function create($id)
+    public function create($customerId)
     {
-        $customer = Customer::findOrFail($id);
+        $customer = Customer::findOrFail($customerId);
         $goods = Goods::orderBy('name', 'asc')->get();
 
         return view('pages.order.create', compact('customer', 'goods'));
@@ -102,7 +102,7 @@ class OrderController extends Controller
             DB::commit(); // Commit transaksi
         
             // Kembali ke halaman dengan pesan sukses
-            return redirect()->route('order.create', ['id' => $order->customer_id])->with('success', 'Order dengan kode ' .$order->order_code. ' berhasil dibuat!');
+            return redirect()->route('order.create', ['customer_id' => $order->customer_id])->with('success', 'Order dengan kode ' .$order->order_code. ' berhasil dibuat!');
         } catch (\Exception $e) {
             DB::rollBack(); // Rollback transaksi jika ada kesalahan
         
@@ -113,23 +113,110 @@ class OrderController extends Controller
         }   
     }
 
-    public function show(string $id)
+    public function data(Request $request, string $customerId)
     {
-        //
+        $keyword = $request->input('keyword');
+        $query = Order::with('customer')
+            ->where('customer_id', $customerId);
+
+        if ($keyword) {
+            $query->where(function ($q) use ($keyword) {
+                $q->where('order_code', 'like', "%$keyword%")
+                    ->orWhere('status', 'like', "%$keyword%")
+                    ->orWhereRaw("DATE_FORMAT(order_date, '%d %M %Y') LIKE ?", ["%$keyword%"]);
+            });
+        }
+
+        $orders = $query->orderBy('order_code', 'desc')->paginate(10);
+
+        $html = view('components.tables.order-table', compact('orders'))->render();
+        $pagination = view('components.pagination.order-pagination', compact('orders'))->render();
+
+        return response()->json([
+            'html' => $html,
+            'pagination' => $pagination
+        ]);
     }
 
-    public function edit(string $id)
+    public function show(string $customerId, string $orderId)
     {
-        //
+        $order = Order::with(['customer', 'orderItems.goods'])
+            ->where('customer_id', $customerId)
+            ->where('id', $orderId)
+            ->firstOrFail();
+
+        $goods = Goods::all();
+
+        return view('pages.order.detail-order', compact('order', 'goods'));
     }
 
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $customerId, string $orderId)
     {
-        //
+        $order = Order::with(['customer', 'orderItems'])->where('customer_id', $customerId)->where('id', $orderId)->firstOrFail();
+
+        $request->validate([
+            'order_date' => 'required|date',
+            'goods_id' => 'required|array',
+            'quantity' => 'required|array',
+            'goods_id.*' => 'required|exists:goods,id',
+            'quantity.*' => 'required|integer|min:1',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            // Update tanggal order
+            $order->order_date = $request->order_date;
+            $order->save();
+
+            $existingItemIds = []; // Untuk menampung ID item yang tetap ada
+
+            foreach ($request->goods_id as $index => $goodsId) {
+                $quantity = $request->quantity[$index];
+                $orderItemId = $request->order_item_id[$index];
+
+                $goods = Goods::findOrFail($goodsId);
+                $price = $goods->price;
+                $total = $price * $quantity;
+
+                if ($orderItemId !== null && $orderItemId !== '') {
+                    // Update data jika item lama
+                    $orderItem = OrderItem::where('order_id', $order->id)->where('id', $orderItemId)->first();
+                    if ($orderItem) {
+                        $orderItem->goods_id = $goodsId;
+                        $orderItem->quantity = $quantity;
+                        $orderItem->price = $price;
+                        $orderItem->total = $total;
+                        $orderItem->save();
+
+                        $existingItemIds[] = $orderItemId;
+                    }
+                } else {
+                    // Tambahkan item baru
+                    $newItem = $order->orderItems()->create([
+                        'goods_id' => $goodsId,
+                        'quantity' => $quantity,
+                        'price' => $price,
+                        'total' => $total,
+                    ]);
+
+                    $existingItemIds[] = $newItem->id;
+                }
+            }
+
+            // Hapus item yang tidak ada di form
+            $order->orderItems()->whereNotIn('id', $existingItemIds)->delete();
+
+            DB::commit();
+
+            return redirect()
+                ->route('order.show', ['customer_id' => $order->customer_id, 'order_id' => $order->id])
+                ->with('success', 'Order berhasil diperbarui!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Error updating order: ' . $e->getMessage());
+            return back()->withErrors(['error' => 'Gagal memperbarui order: ' . $e->getMessage()]);
+        }
     }
 
-    public function destroy(string $id)
-    {
-        //
-    }
 }

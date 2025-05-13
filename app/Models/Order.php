@@ -17,6 +17,7 @@ class Order extends Model
         'order_code',
         'customer_id',
         'order_date',
+        'status',
     ];
 
     public function customer()

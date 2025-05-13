@@ -62,8 +62,11 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 
 	// Order
 	Route::get('order', [OrderController::class, 'index'])->name('order.index');
-	Route::get('buat-order/{id}', [OrderController::class, 'create'])->name('order.create');
-	Route::post('buat-order/{id}', [OrderController::class, 'store'])->name('order.store');
+	Route::get('buat-order/{customer_id}', [OrderController::class, 'create'])->name('order.create');
+	Route::post('buat-order/{customer_id}', [OrderController::class, 'store'])->name('order.store');
+	Route::get('buat-order/data/{customer_id}', [OrderController::class, 'data'])->name('order.data');
+	Route::get('buat-order/{customer_id}/detail/{order_id}', [OrderController::class, 'show'])->name('order.show');
+	Route::put('buat-order/{customer_id}/detail/{order_id}', [OrderController::class, 'update'])->name('order.update');
 
 	// Image Archive
 	Route::get('arsip-gambar', [ImageArchiveController::class, 'index'])->name('image-archive.index');

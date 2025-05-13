@@ -132,6 +132,67 @@
     </form>
 </div>
 
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4 mx-4">
+                <div class="card-header pb-0">
+                    <div class="d-flex flex-row justify-content-between">
+                        <div class="d-flex align-items-center bg-gradient-secondary ps-3 pe-3 rounded-2 text-white">
+                            <i class="fa fa-shopping-cart me-2"></i>
+                            <h6 class="mb-0 text-white">Data Order</h6>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <input type="text" class="form-control form-control-sm me-1" id="searchOrder"
+                                placeholder="Cari order..." name="search" style="max-width: 200px;">
+                            <span class="input-group-text" onclick="togglePassword('password_confirmation', this)">
+                                <i class="fa fa-search" aria-hidden="true"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body px-0 pt-4 pb-2">
+                    <div class="table-responsive p-0">
+                        <table class="table align-items-center mb-0 table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <th
+                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                        No
+                                    </th>
+                                    <th
+                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                        Kode Order
+                                    </th>
+                                    <th
+                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                        Tanggal Order
+                                    </th>
+                                    <th
+                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                        Status
+                                    </th>
+                                    <th
+                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                        Aksi
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="orderTableBody">
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-center mt-3 mb-2" id="pagination">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     let orderItemCount = 0;
 
@@ -215,6 +276,61 @@
         $(`#unit-${id}`).val(unit);
         $(`#price-${id}`).val(price);
     }
+
+    function confirmDelete(orderId, orderCode) {
+        Swal.fire({
+            title: 'Yakin ingin menghapus?',
+            html: `Order <strong>${orderCode}</strong> akan dihapus permanen.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(`delete-form-${orderId}`).submit();
+            }
+        });
+    }
+
+    function loadOrder(keyword = '', page = 1) {
+        const customerId = {{ $customer->id }};
+
+        fetch(`{{ route('order.data', ['customer_id' => $customer->id]) }}?keyword=${encodeURIComponent(keyword)}&page=${page}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log('DATA:', data);
+                document.getElementById('orderTableBody').innerHTML = data.html;
+                document.getElementById('pagination').innerHTML = data.pagination;
+
+                // Pagination binding
+                document.querySelectorAll('#pagination a').forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const url = new URL(this.href);
+                        const page = url.searchParams.get('page');
+                        const keyword = document.getElementById('searchOrder').value;
+                        loadOrder(keyword, page);
+                    });
+                });
+
+                // Zoom handler
+                if (window.activeZoom) {
+                    window.activeZoom.detach();
+                }
+                window.activeZoom = mediumZoom('.zoomable', {
+                    margin: 24,
+                    background: '#000'
+                });
+            });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => loadOrder());
+
+    document.getElementById('searchOrder').addEventListener('keyup', function () {
+        loadOrder(this.value);
+    });
 </script>
 
 

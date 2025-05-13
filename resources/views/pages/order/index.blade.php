@@ -66,7 +66,7 @@
                         <a href="{{ route('order.create', $customer->id) }}" class="btn  btn-primary">
                             <i class="fas fa-shopping-cart me-2"></i> Order
                         </a>
-                        <a href="" class="btn  btn-info">
+                        <a href="{{ route('customer.edit', $customer->id) }}" class="btn  btn-info">
                             <i class="fas fa-info-circle me-2"></i> Detail
                         </a>
                     </div>
