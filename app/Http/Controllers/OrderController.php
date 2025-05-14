@@ -11,6 +11,7 @@ use App\Models\OrderItem;
 
 class OrderController extends Controller
 {
+    // Function order
     public function index()
     {
         $customers = Customer::orderBy('name', 'asc')->get();
@@ -22,8 +23,9 @@ class OrderController extends Controller
     {
         $customer = Customer::findOrFail($customerId);
         $goods = Goods::orderBy('name', 'asc')->get();
+        $orders = Order::where('customer_id', $customerId)->get();
 
-        return view('pages.order.create', compact('customer', 'goods'));
+        return view('pages.order.create', compact('customer', 'goods', 'orders'));
     }
 
     public function generateOrderCode($customerId)
@@ -115,6 +117,8 @@ class OrderController extends Controller
 
     public function data(Request $request, string $customerId)
     {
+        DB::statement("SET lc_time_names = 'id_ID'");
+
         $keyword = $request->input('keyword');
         $query = Order::with('customer')
             ->where('customer_id', $customerId);
@@ -123,7 +127,7 @@ class OrderController extends Controller
             $query->where(function ($q) use ($keyword) {
                 $q->where('order_code', 'like', "%$keyword%")
                     ->orWhere('status', 'like', "%$keyword%")
-                    ->orWhereRaw("DATE_FORMAT(order_date, '%d %M %Y') LIKE ?", ["%$keyword%"]);
+                    ->orWhereRaw("DATE_FORMAT(order_date, '%W, %d %M %Y') LIKE ?", ["%$keyword%"]);
             });
         }
 
@@ -219,4 +223,52 @@ class OrderController extends Controller
         }
     }
 
+    // Function cancel order
+    public function cancelOrderView()
+    {
+        return view('pages.order.cancel-order');
+    }
+
+    public function cancelOrderData(Request $request)
+    {
+        DB::statement("SET lc_time_names = 'id_ID'");
+
+        $keyword = $request->input('keyword');
+        $query = Order::with(['customer', 'orderItems.goods'])
+            ->where('status', 'confirmed');
+
+        $goods = Goods::all();
+
+        if ($keyword) {
+            $query->where(function ($q) use ($keyword) {
+                $q->where('order_code', 'like', "%$keyword%")
+                ->orWhereRaw("DATE_FORMAT(order_date, '%W, %d %M %Y') LIKE ?", ["%$keyword%"])
+                ->orWhereHas('customer', function ($q2) use ($keyword) {
+                    $q2->where('name', 'like', "%$keyword%");
+                });
+            });
+        }
+
+        $cancelOrders = $query->orderBy('order_date', 'desc')->orderBy('order_code', 'desc')->paginate(10);
+
+        $html = view('components.tables.cancel-order-table', compact('cancelOrders', 'goods'))->render();
+        $pagination = view('components.pagination.cancel-order-pagination', compact('cancelOrders', 'goods'))->render();
+
+        return response()->json([
+            'html' => $html,
+            'pagination' => $pagination
+        ]);
+    }
+
+    public function cancelOrderAction($id)
+    {
+        $cancelOrder = Order::with('customer')
+            ->findOrFail($id);
+
+        $cancelOrder->status = 'cancelled';
+        $cancelOrder->save();
+
+        return redirect()->back()
+            ->with('success', 'Order dengan kode order <b>' . e($cancelOrder->order_code) . '</b> dari customer <b>' . e($cancelOrder->customer->name) . '</b> berhasil dibatalkan.');
+    }
 }

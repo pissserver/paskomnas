@@ -68,6 +68,11 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 	Route::get('buat-order/{customer_id}/detail/{order_id}', [OrderController::class, 'show'])->name('order.show');
 	Route::put('buat-order/{customer_id}/detail/{order_id}', [OrderController::class, 'update'])->name('order.update');
 
+	// Cancel Order
+	Route::get('batalkan-order', [OrderController::class, 'cancelOrderView'])->name('cancel.order.view');
+	Route::get('batalkan-order/data', [OrderController::class, 'cancelOrderData'])->name('cancel.order.data');
+	Route::put('batalkan-order/{id}', [OrderController::class, 'cancelOrderAction'])->name('cancel.order.action');
+
 	// Image Archive
 	Route::get('arsip-gambar', [ImageArchiveController::class, 'index'])->name('image-archive.index');
 	Route::post('arsip-gambar', [ImageArchiveController::class, 'store'])->name('image-archive.store');

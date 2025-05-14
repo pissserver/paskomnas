@@ -13,7 +13,8 @@
                 <div class="card">
                     <div class="card-header p-4 d-flex justify-content-between">
                         <div class="customer">
-                            <h6 class="mb-2 btn btn-primary"><i class="fa fa-briefcase me-2"></i>{{ $customer->name }}
+                            <h6 class="mb-2 btn bg-gradient-primary"><i
+                                    class="fa fa-briefcase me-2"></i>{{ $customer->name }}
                             </h6>
                             <p class="text-sm d-flex align-items-center mb-1">
                                 <i class="fa fa-map-marker-alt me-2" style="width: 20px; text-align: center;"></i>
@@ -112,7 +113,7 @@
                             <div class="d-flex justify-content-end mb-4">
                                 <button type="button" class="btn btn-outline-primary btn-sm me-2"
                                     onclick="addOrderItem()">
-                                    <i class="fa fa-plus"></i> Tambah Barang
+                                    <i class="fa fa-plus me-2"></i> Tambah Barang
                                 </button>
                             </div>
 
@@ -152,6 +153,15 @@
                     </div>
                 </div>
                 <div class="card-body px-0 pt-4 pb-2">
+                    @if($orders->isEmpty())
+                    <div class="empty-data">
+                        <div class="text-center">
+                            <img src="{{ asset('assets/img/empty-data.png') }}" alt="No Data" class="img-fluid"
+                                width="450">
+                            <h4 class="text-secondary">Belum ada data order</h4>
+                        </div>
+                    </div>
+                    @else
                     <div class="table-responsive p-0">
                         <table class="table align-items-center mb-0 table-hover table-striped">
                             <thead>
@@ -183,6 +193,7 @@
                             </tbody>
                         </table>
                     </div>
+                    @endif
                 </div>
 
                 <div class="d-flex justify-content-center mt-3 mb-2" id="pagination">

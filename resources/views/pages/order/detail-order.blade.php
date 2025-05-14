@@ -38,7 +38,7 @@
                     <div class="card">
                         <div class="card-header p-4 d-flex justify-content-between">
                             <div class="order">
-                                <h6 class="mb-3 btn btn-primary"><i
+                                <h6 class="mb-3 btn bg-gradient-primary"><i
                                         class="fa fa-shopping-cart me-2"></i>{{ $order->order_code }}
                                 </h6>
                                 <p class="text-sm d-flex align-items-center mb-2">
