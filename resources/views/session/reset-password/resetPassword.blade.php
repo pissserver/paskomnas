@@ -74,6 +74,7 @@
                                     <button type="submit" class="btn bg-gradient-info w-100 mt-4 mb-0">Perbarui
                                         Password <i class="fas fa-key ms-2"></i></button>
                                 </div>
+                            </div>
                         </form>
                     </div>
                 </div>

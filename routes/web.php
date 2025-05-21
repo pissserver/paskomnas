@@ -100,6 +100,15 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 	Route::put('barang-komoditi/{id}', [GoodsController::class, 'update'])->name('goods.update');
 	Route::delete('barang-komoditi/{id}', [GoodsController::class, 'destroy'])->name('goods.destroy');
 
+	// Specification
+	Route::get('spesifikasi-komoditi', [SpecificationController::class, 'index'])->name('spec.index');
+	Route::get('spesifikasi-komoditi/data', [SpecificationController::class, 'data'])->name('spec.data');
+	Route::get('spesifikasi-komoditi/tambah', [SpecificationController::class, 'create'])->name('spec.create');
+	Route::put('spesifikasi-komoditi', [SpecificationController::class, 'store'])->name('spec.store');
+	Route::get('spesifikasi-komoditi/{id}/edit', [SpecificationController::class, 'edit'])->name('spec.edit');
+	Route::put('spesifikasi-komoditi/{id}', [SpecificationController::class, 'update'])->name('spec.update');
+	Route::delete('spesifikasi-komoditi/{id}', [SpecificationController::class, 'destroy'])->name('spec.destroy');
+
 	// User Management
 	Route::get('kelola-pengguna', [UserManagementController::class, 'index'])->name('user-management.index');
 	Route::get('kelola-pengguna/data', [UserManagementController::class, 'data'])->name('user-management.data');	

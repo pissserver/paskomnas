@@ -21,8 +21,7 @@ class GoodsController extends Controller
         if ($keyword) {
             $query->where(function ($q) use ($keyword) {
                 $q->where('name', 'like', "%$keyword%")
-                    ->orWhere('unit', 'like', "%$keyword%")
-                    ->orWhere('price', 'like', "%$keyword%");
+                    ->orWhere('unit', 'like', "%$keyword%");
             });
         }
 
@@ -47,18 +46,16 @@ class GoodsController extends Controller
         $attributes = request()->validate([
             'name' => ['required', 'max:50'],
             'unit' => ['required', 'max:50'],
-            'price' => ['nullable', 'numeric'],
         ]);
 
         $dataToCreate = [
             'name' => $attributes['name'],
             'unit' => $attributes['unit'],
-            'price' => $attributes['price'],
         ];
 
         Goods::create($dataToCreate);
 
-        return redirect()->route('goods.index')->with('success', 'Barang komoditi berhasil ditambahkan.');
+        return redirect()->route('goods.index')->with('success', $request->name .' berhasil ditambahkan ke Barang Komoditi.');
     }
 
     public function edit(string $id)
@@ -74,18 +71,16 @@ class GoodsController extends Controller
         $attributes = request()->validate([
             'name' => ['required', 'max:50'],
             'unit' => ['required', 'max:50'],
-            'price' => ['nullable', 'numeric'],
         ]);
 
         $dataToUpdate = [
             'name' => $attributes['name'],
             'unit' => $attributes['unit'],
-            'price' => $attributes['price'],
         ];
 
         $goods->update($dataToUpdate);
 
-        return redirect()->route('goods.index')->with('success', 'Barang komoditi berhasil diperbarui.');
+        return redirect()->route('goods.index')->with('success', $request->name .' berhasil diupdate.');
     }
 
     public function destroy(string $id)

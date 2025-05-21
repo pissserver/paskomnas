@@ -31,7 +31,6 @@
                         <h4 class="mb-0">Lupa password anda? Masukkan email disini</h4>
                     </div>
                     <div class="card-body">
-
                         <form action="{{ route('password.request') }}" method="POST" role="form text-left">
                             @csrf
                             <div>

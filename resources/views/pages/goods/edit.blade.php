@@ -39,17 +39,6 @@
                         </div>
                         @endif
                         <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label for="id" class="form-control-label">{{ __('ID Barang Komoditi') }}</label>
-                                    <div class="rounded-3">
-                                        <input class="form-control" type="text" placeholder="ID Barang Komoditi" id="id"
-                                            name="name" value="BK-{{ $goods->id }}" disabled>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="goods-name"
@@ -70,20 +59,6 @@
                                         <input class="form-control" type="text" placeholder="Satuan" id="unit"
                                             name="unit" value="{{ $goods->unit }}">
                                         @error('unit')
-                                        <p class="text-danger text-xs mt-2">{{ $message }}</p>
-                                        @enderror
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label for="price" class="form-control-label">{{ __('Harga') }}</label>
-                                    <div class="@error('price') border border-danger rounded-3 @enderror">
-                                        <input class="form-control" type="number" placeholder="0" id="price"
-                                            name="price" step="1000" value="{{ $goods->price }}">
-                                        @error('price')
                                         <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                         @enderror
                                     </div>

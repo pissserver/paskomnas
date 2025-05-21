@@ -4,17 +4,10 @@
         <p class="text-xs font-weight-bold mb-0">{{ $index + 1 }}</p>
     </td>
     <td class="text-center">
-        <p class="text-xs font-weight-bold mb-0 text-capitalize">BK-{{ $good->id }}</p>
-    </td>
-    <td class="text-center">
         <p class="text-xs font-weight-bold mb-0">{{ $good->name }}</p>
     </td>
     <td class="text-center">
         <span class="text-secondary text-xs font-weight-bold text-capitalize">{{ $good->unit }}</span>
-    </td>
-    <td class="text-center">
-        <span
-            class="text-secondary text-xs font-weight-bold">{{ $good->price !== null ? 'Rp ' . number_format($good->price, 0, ',', '.') : '-' }}</span>
     </td>
     <td class="text-center">
         <a href="{{ route('goods.edit', $good->id) }}"

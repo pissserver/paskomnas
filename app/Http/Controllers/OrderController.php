@@ -23,9 +23,13 @@ class OrderController extends Controller
     {
         $customer = Customer::findOrFail($customerId);
         $goods = Goods::orderBy('name', 'asc')->get();
-        $orders = Order::where('customer_id', $customerId)->get();
+        $allOrders = Order::where('customer_id', $customerId)->get();
+        $orders = Order::with(['customer', 'orderItems.goods'])
+            ->where('customer_id', $customerId)
+            ->latest()
+            ->first();
 
-        return view('pages.order.create', compact('customer', 'goods', 'orders'));
+        return view('pages.order.create', compact('customer', 'goods', 'allOrders', 'orders'));
     }
 
     public function generateOrderCode($customerId)
@@ -63,6 +67,7 @@ class OrderController extends Controller
             'order_date' => 'required|date',
             'goods_id' => 'required|array',
             'quantity' => 'required|array',
+            'price' => 'required|array',
             'goods_id.*' => 'exists:goods,id', // Memastikan goods_id valid
             'quantity.*' => 'required|integer|min:1', // Validasi jumlah barang
         ]);
@@ -83,17 +88,18 @@ class OrderController extends Controller
             $orderItems = [];
             foreach ($request->goods_id as $index => $goodsId) {
                 $quantity = $request->quantity[$index];
+                $price = $request->price[$index];
         
                 // Ambil harga barang
                 $goods = Goods::findOrFail($goodsId);
 
                 // Hitung total harga
-                $total = $goods->price * $quantity;
+                $total = $price * $quantity;
         
                 $orderItems[] = new OrderItem([
                     'goods_id' => $goodsId,
                     'quantity' => $quantity,
-                    'price' => $goods->price,
+                    'price' => $price,
                     'total' => $total,
                 ]);
             }
@@ -162,6 +168,7 @@ class OrderController extends Controller
             'order_date' => 'required|date',
             'goods_id' => 'required|array',
             'quantity' => 'required|array',
+            'price' => 'required|array',
             'goods_id.*' => 'required|exists:goods,id',
             'quantity.*' => 'required|integer|min:1',
         ]);
@@ -177,11 +184,11 @@ class OrderController extends Controller
 
             foreach ($request->goods_id as $index => $goodsId) {
                 $quantity = $request->quantity[$index];
+                $price = $request->price[$index];
                 $orderItemId = $request->order_item_id[$index];
+                $total = $price * $quantity;
 
                 $goods = Goods::findOrFail($goodsId);
-                $price = $goods->price;
-                $total = $price * $quantity;
 
                 if ($orderItemId !== null && $orderItemId !== '') {
                     // Update data jika item lama

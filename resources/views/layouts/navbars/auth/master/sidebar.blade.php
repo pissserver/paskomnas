@@ -123,6 +123,18 @@
 			</li>
 
 			<li class="nav-item">
+				<a class="nav-link {{ Request::is('spesifikasi-komoditi') || Request::is('spesifikasi-komoditi/tambah') || Request::is('spesifikasi-komoditi/*/edit')  ? 'active' : '' }}"
+					href="{{ route('spec.index') }}">
+					<div
+						class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+						<i style="margin-top: -5px;"
+							class="fa fa-puzzle-piece {{ (Request::is('spesifikasi-komoditi') || Request::is('spesifikasi-komoditi/tambah') || Request::is('spesifikasi-komoditi/*/edit') ? 'text-white' : 'text-dark') }}"></i>
+					</div>
+					<span class="nav-link-text ms-1">Spesifikasi Komoditi</span>
+				</a>
+			</li>
+
+			<li class="nav-item">
 				<a class="nav-link {{ Request::is('kelola-pengguna') || Request::is('kelola-pengguna/tambah') || Request::is('kelola-pengguna/*/edit')  ? 'active' : '' }}"
 					href="{{ route('user-management.index') }}">
 					<div
