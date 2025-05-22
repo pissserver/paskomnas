@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Customer;
 use App\Models\Goods;
+use App\Models\Specification;
 use App\Models\Order;
 use App\Models\OrderItem;
 
@@ -23,13 +24,14 @@ class OrderController extends Controller
     {
         $customer = Customer::findOrFail($customerId);
         $goods = Goods::orderBy('name', 'asc')->get();
+        $specifications = Specification::orderBy('name', 'asc')->get();
         $allOrders = Order::where('customer_id', $customerId)->get();
         $orders = Order::with(['customer', 'orderItems.goods'])
             ->where('customer_id', $customerId)
             ->latest()
             ->first();
 
-        return view('pages.order.create', compact('customer', 'goods', 'allOrders', 'orders'));
+        return view('pages.order.create', compact('customer', 'goods', 'specifications', 'allOrders', 'orders'));
     }
 
     public function generateOrderCode($customerId)
@@ -66,6 +68,8 @@ class OrderController extends Controller
         $request->validate([
             'order_date' => 'required|date',
             'goods_id' => 'required|array',
+            'specification_id' => 'nullable|array',
+            'specification_id.*' => 'nullable|exists:specifications,id',
             'quantity' => 'required|array',
             'price' => 'required|array',
             'goods_id.*' => 'exists:goods,id', // Memastikan goods_id valid
@@ -87,17 +91,16 @@ class OrderController extends Controller
             // Simpan OrderItems
             $orderItems = [];
             foreach ($request->goods_id as $index => $goodsId) {
+                $specificationId = isset($request->specification_id[$index]) ? $request->specification_id[$index] : null;
                 $quantity = $request->quantity[$index];
                 $price = $request->price[$index];
-        
-                // Ambil harga barang
-                $goods = Goods::findOrFail($goodsId);
 
                 // Hitung total harga
                 $total = $price * $quantity;
         
                 $orderItems[] = new OrderItem([
                     'goods_id' => $goodsId,
+                    'specification_id' => $specificationId,
                     'quantity' => $quantity,
                     'price' => $price,
                     'total' => $total,

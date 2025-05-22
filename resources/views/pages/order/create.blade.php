@@ -144,13 +144,31 @@
                                             <select class="form-control select2" id="goods-select" name="goods_id[]">
                                                 <option value="">-- Pilih Barang Komoditi --</option>
                                                 @foreach ($goods as $item)
-                                                <option value="{{ $item->id }}" data-unit="{{ $item->unit }}"
-                                                    data-price="{{ $item->price }}">
+                                                <option value="{{ $item->id }}" data-unit="{{ $item->unit }}">
                                                     {{ $item->name }}
                                                 </option>
                                                 @endforeach
                                             </select>
                                             @error('goods_id')
+                                            <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label for="specification" class="form-control-label">Spesifikasi</label>
+                                        <div class="@error('specification') border border-danger rounded-3 @enderror">
+                                            <select class="form-control select-specification2" id="specification-select"
+                                                name="specification_id[]">
+                                                <option value="">-- Pilih Spesifikasi --</option>
+                                                @foreach ($specifications as $specification)
+                                                <option value="{{ $specification->id }}">
+                                                    {{ $specification->name }}
+                                                </option>
+                                                @endforeach
+                                            </select>
+                                            @error('specification')
                                             <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                             @enderror
                                         </div>
@@ -165,7 +183,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="price" class="form-control-label">{{ __('Harga Satuan') }}</label>
                                         <div class="@error('price') border border-danger rounded-3 @enderror">
@@ -174,7 +192,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-2">
+                                <div class="col-md-1">
                                     <div class="form-group">
                                         <label for="unit" class="form-control-label">{{ __('Jumlah') }}</label>
                                         <div class="@error('quantity') border border-danger rounded-3 @enderror">
@@ -420,6 +438,13 @@
         $('.select2').select2({
             theme: 'bootstrap-5',
             placeholder: "-- Pilih Barang Komoditi --",
+            allowClear: true,
+            width: '100%'
+        });
+
+        $('.select-specification2').select2({
+            theme: 'bootstrap-5',
+            placeholder: "-- Pilih Spesifikasi --",
             allowClear: true,
             width: '100%'
         });

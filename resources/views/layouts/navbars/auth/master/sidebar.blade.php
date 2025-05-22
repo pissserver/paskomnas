@@ -124,7 +124,7 @@
 
 			<li class="nav-item">
 				<a class="nav-link {{ Request::is('spesifikasi-komoditi') || Request::is('spesifikasi-komoditi/tambah') || Request::is('spesifikasi-komoditi/*/edit')  ? 'active' : '' }}"
-					href="{{ route('spec.index') }}">
+					href="{{ route('specification.index') }}">
 					<div
 						class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
 						<i style="margin-top: -5px;"

@@ -16,6 +16,7 @@ use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\ImageArchiveController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\GoodsController;
+use App\Http\Controllers\SpecificationController;
 use App\Http\Controllers\OrderController;
 
 
@@ -101,13 +102,13 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 	Route::delete('barang-komoditi/{id}', [GoodsController::class, 'destroy'])->name('goods.destroy');
 
 	// Specification
-	Route::get('spesifikasi-komoditi', [SpecificationController::class, 'index'])->name('spec.index');
-	Route::get('spesifikasi-komoditi/data', [SpecificationController::class, 'data'])->name('spec.data');
-	Route::get('spesifikasi-komoditi/tambah', [SpecificationController::class, 'create'])->name('spec.create');
-	Route::put('spesifikasi-komoditi', [SpecificationController::class, 'store'])->name('spec.store');
-	Route::get('spesifikasi-komoditi/{id}/edit', [SpecificationController::class, 'edit'])->name('spec.edit');
-	Route::put('spesifikasi-komoditi/{id}', [SpecificationController::class, 'update'])->name('spec.update');
-	Route::delete('spesifikasi-komoditi/{id}', [SpecificationController::class, 'destroy'])->name('spec.destroy');
+	Route::get('spesifikasi-komoditi', [SpecificationController::class, 'index'])->name('specification.index');
+	Route::get('spesifikasi-komoditi/data', [SpecificationController::class, 'data'])->name('specification.data');
+	Route::get('spesifikasi-komoditi/tambah', [SpecificationController::class, 'create'])->name('specification.create');
+	Route::put('spesifikasi-komoditi', [SpecificationController::class, 'store'])->name('specification.store');
+	Route::get('spesifikasi-komoditi/{id}/edit', [SpecificationController::class, 'edit'])->name('specification.edit');
+	Route::put('spesifikasi-komoditi/{id}', [SpecificationController::class, 'update'])->name('specification.update');
+	Route::delete('spesifikasi-komoditi/{id}', [SpecificationController::class, 'destroy'])->name('specification.destroy');
 
 	// User Management
 	Route::get('kelola-pengguna', [UserManagementController::class, 'index'])->name('user-management.index');

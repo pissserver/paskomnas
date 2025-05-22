@@ -263,6 +263,10 @@
                                                 <tr>
                                                     <th
                                                         class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                        No
+                                                    </th>
+                                                    <th
+                                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                                         Nama Barang
                                                     </th>
                                                     <th
@@ -288,8 +292,38 @@
                                                 </tr>
                                             </thead>
                                             <tbody id="customerTableBody">
+                                                @php
+                                                $no = 1;
+                                                @endphp
                                                 @foreach($order->orderItems as $index => $orderItem)
-
+                                                <tr>
+                                                    <td class="text-center">
+                                                        <p class="text-xs font-weight-bold mb-0"> {{ $no++ }} </p>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <p class="text-xs font-weight-bold mb-0">
+                                                            {{$orderItem->goods->name}} </p>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <p class="text-xs font-weight-bold mb-0"> - </p>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <p class="text-xs font-weight-bold mb-0">
+                                                            {{ $orderItem->goods->unit }} </p>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <p class="text-xs font-weight-bold mb-0">
+                                                            Rp {{ number_format($orderItem->price, 0, ',', '.') }} </p>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <p class="text-xs font-weight-bold mb-0">
+                                                            {{ $orderItem->quantity }} </p>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <p class="text-xs font-weight-bold mb-0">
+                                                            Rp {{ number_format($orderItem->total, 0, ',', '.') }} </p>
+                                                    </td>
+                                                </tr>
                                                 @endforeach
                                             </tbody>
                                         </table>

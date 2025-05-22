@@ -25,7 +25,7 @@ class GoodsController extends Controller
             });
         }
 
-        $goods = $query->orderBy('id', 'asc')->paginate(10);
+        $goods = $query->orderBy('name', 'asc')->paginate(10);
 
         $html = view('components.tables.goods-table', compact('goods'))->render();
         $pagination = view('components.pagination.goods-pagination', compact('goods'))->render();
@@ -74,7 +74,7 @@ class GoodsController extends Controller
         ]);
 
         $dataToUpdate = [
-            'name' => $attributes['name'],
+            'name' => $attributes['name'],  
             'unit' => $attributes['unit'],
         ];
 
