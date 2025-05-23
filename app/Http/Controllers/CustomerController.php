@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Customer;
+use App\Models\Order;
+use App\Models\Goods;
 use Illuminate\Validation\Rule;
 
 class CustomerController extends Controller
@@ -80,8 +82,26 @@ class CustomerController extends Controller
 
     public function edit(string $id)
     {
-        $customer = Customer::findOrFail($id);
-        return view('pages.customer.edit', compact('customer'));
+        $customer = Customer::withCount('orders')->findOrFail($id);
+        $orderCount = $customer->orders_count;
+
+        if ($orderCount >= 500) {
+            $level = 'Platinum';
+            $badgeClass = 'bg-gradient-dark';
+        } elseif ($orderCount >= 100) {
+            $level = 'Gold';
+            $badgeClass = 'bg-gradient-warning';
+        } elseif ($orderCount >= 10) {
+            $level = 'Silver';
+            $badgeClass = 'bg-gradient-secondary';
+        } else {
+            $level = 'Basic';
+            $badgeClass = 'bg-gradient-light text-dark';
+        }
+
+        $goods = Goods::orderBy('name', 'asc')->get();
+
+        return view('pages.customer.edit', compact('customer', 'level', 'badgeClass', 'goods'));
     }
 
     public function update(Request $request, string $id)

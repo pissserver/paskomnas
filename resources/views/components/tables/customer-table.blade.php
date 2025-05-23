@@ -20,9 +20,9 @@
     <td class="text-center">
 
         <a href="{{ route('customer.edit', $customer->id) }}"
-            class="mb-0 btn bg-gradient-secondary d-inline-flex align-items-center justify-content-center py-2 px-3"
-            data-bs-toggle="tooltip" title="Edit customer">
-            <i class="fas fa-edit text-white me-1"></i>Edit
+            class="mb-0 btn bg-gradient-info d-inline-flex align-items-center justify-content-center py-2 px-3"
+            data-bs-toggle="tooltip" title="Detail customer">
+            <i class="fas fa-info-circle text-white me-1"></i>Detail
         </a>
         <form id="delete-form-{{ $customer->id }}" action="{{ route('customer.destroy', $customer->id) }}" method="POST"
             class="d-none">

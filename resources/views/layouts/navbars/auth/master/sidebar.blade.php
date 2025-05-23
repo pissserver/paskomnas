@@ -99,12 +99,12 @@
 			</li>
 
 			<li class="nav-item">
-				<a class="nav-link {{ Request::is('customer') || Request::is('customer/tambah') || Request::is('customer/*/edit')  ? 'active' : '' }}"
+				<a class="nav-link {{ Request::is('customer') || Request::is('customer/tambah') || Request::is('customer/*/detail')  ? 'active' : '' }}"
 					href="{{ route('customer.index') }}">
 					<div
 						class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
 						<i style="margin-top: -5px;"
-							class="fa fa-briefcase {{ (Request::is('customer') || Request::is('customer/tambah') || Request::is('customer/*/edit') ? 'text-white' : 'text-dark') }}"></i>
+							class="fa fa-briefcase {{ (Request::is('customer') || Request::is('customer/tambah') || Request::is('customer/*/detail') ? 'text-white' : 'text-dark') }}"></i>
 					</div>
 					<span class="nav-link-text ms-1">Customer</span>
 				</a>

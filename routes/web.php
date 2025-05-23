@@ -88,7 +88,7 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 	Route::get('customer/data', [CustomerController::class, 'data'])->name('customer.data');
 	Route::get('customer/tambah', [CustomerController::class, 'create'])->name('customer.create');
 	Route::put('customer', [CustomerController::class, 'store'])->name('customer.store');
-	Route::get('customer/{id}/edit', [CustomerController::class, 'edit'])->name('customer.edit');
+	Route::get('customer/{id}/detail', [CustomerController::class, 'edit'])->name('customer.edit');
 	Route::put('customer/{id}', [CustomerController::class, 'update'])->name('customer.update');
 	Route::delete('customer/{id}', [CustomerController::class, 'destroy'])->name('customer.destroy');
 

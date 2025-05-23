@@ -45,7 +45,7 @@
                         <li class="nav-item" role="presentation">
                             <a class="nav-link active mb-2" id="new-order-tab" data-bs-toggle="tab" href="#new-order"
                                 role="tab" aria-controls="new-order" aria-selected="true">
-                                <i class="fas fa-plus-circle me-1 text-primary"></i> Order Baru
+                                <i class="fas fa-plus-circle me-1"></i> Order Baru
                             </a>
                         </li>
 
@@ -53,7 +53,7 @@
                         <li class="nav-item" role="presentation">
                             <a class="nav-link mb-2" id="template-order-tab" data-bs-toggle="tab" href="#template-order"
                                 role="tab" aria-controls="template-order" aria-selected="false">
-                                <i class="fas fa-copy me-1 text-primary"></i> Template Order
+                                <i class="fas fa-copy me-1"></i> Template Order
                             </a>
                         </li>
 
@@ -61,7 +61,7 @@
                         <li class="nav-item" role="presentation">
                             <a class="nav-link" id="data-order-tab" data-bs-toggle="tab" href="#data-order" role="tab"
                                 aria-controls="data-order" aria-selected="false">
-                                <i class="fas fa-shopping-cart me-1 text-primary"></i> Data Order
+                                <i class="fas fa-shopping-cart me-1"></i> Data Order
                             </a>
                         </li>
                     </ul>
@@ -159,7 +159,7 @@
                                     <div class="form-group">
                                         <label for="specification" class="form-control-label">Spesifikasi</label>
                                         <div class="@error('specification') border border-danger rounded-3 @enderror">
-                                            <select class="form-control select-specification2" id="specification-select"
+                                            <select class="form-control select2-specification" id="specification-select"
                                                 name="specification_id[]">
                                                 <option value="">-- Pilih Spesifikasi --</option>
                                                 @foreach ($specifications as $specification)
@@ -293,18 +293,42 @@
                                         </div>
 
                                         <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="specification"
+                                                    class="form-control-label">Spesifikasi</label>
+                                                <div
+                                                    class="@error('specification') border border-danger rounded-3 @enderror">
+                                                    <select class="form-control select2-specification"
+                                                        id="template-specification-select-{{ $index }}"
+                                                        name="specification_id[]">
+                                                        <option value="">-- Pilih Spesifikasi --</option>
+                                                        @foreach ($specifications as $specification)
+                                                        <option value="{{ $specification->id }}"
+                                                            {{ $orderItem->specification_id == $specification->id ? 'selected' : '' }}>
+                                                            {{ $specification->name }}
+                                                        </option>
+                                                        @endforeach
+                                                    </select>
+                                                    @error('specification')
+                                                    <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-2">
                                             <label>Satuan</label>
                                             <input type="text" class="form-control" id="template-unit-{{ $index }}"
                                                 value="{{ $orderItem->goods->unit }}" disabled>
                                         </div>
 
-                                        <div class="col-md-3">
+                                        <div class="col-md-2">
                                             <label>Harga Satuan</label>
                                             <input type="number" step="1000" class="form-control" name="price[]"
                                                 value="{{ $orderItem->price }}">
                                         </div>
 
-                                        <div class="col-md-2">
+                                        <div class="col-md-1">
                                             <label>Jumlah</label>
                                             <input type="number" class="form-control" name="quantity[]"
                                                 value="{{ $orderItem->quantity }}">
@@ -442,7 +466,7 @@
             width: '100%'
         });
 
-        $('.select-specification2').select2({
+        $('.select2-specification').select2({
             theme: 'bootstrap-5',
             placeholder: "-- Pilih Spesifikasi --",
             allowClear: true,
@@ -472,11 +496,28 @@
             width: '100%'
         });
     }
+    function initSelect2Specification(selector) {
+        $(selector).select2({
+            theme: 'bootstrap-5',
+            placeholder: "-- Pilih Spesifikasi --",
+            allowClear: true,
+            width: '100%'
+        });
+    }
 
     function initTemplateSelect2(selector) {
         $(selector).select2({
             theme: 'bootstrap-5',
             placeholder: "-- Pilih Barang Komoditi --",
+            allowClear: true,
+            width: '100%'
+        });
+    }
+
+    function initTemplateSelect2Specification(selector) {
+        $(selector).select2({
+            theme: 'bootstrap-5',
+            placeholder: "-- Pilih Spesifikasi --",
             allowClear: true,
             width: '100%'
         });
@@ -497,14 +538,33 @@
                 </select>
             </div>
             <div class="col-md-2">
+                <div class="form-group">
+                    <label for="specification" class="form-control-label">Spesifikasi</label>
+                        <div class="@error('specification') border border-danger rounded-3 @enderror">
+                            <select class="form-control select2-specification" id="specification-select-${orderItemCount}"
+                                name="specification_id[]">
+                                <option value="">-- Pilih Spesifikasi --</option>
+                                @foreach ($specifications as $specification)
+                                <option value="{{ $specification->id }}">
+                                    {{ $specification->name }}
+                                </option>
+                                @endforeach
+                            </select>
+                        @error('specification')
+                        <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
                 <label>Satuan</label>
                 <input type="text" class="form-control" placeholder="Satuan" id="unit-${orderItemCount}" name="unit[]" disabled>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label>Harga Satuan</label>
                 <input type="number" step="1000" class="form-control" placeholder="Harga Satuan" name="price[]">
             </div>
-            <div class="col-md-2">
+            <div class="col-md-1">
                 <label>Jumlah</label>
                 <input type="number" class="form-control" name="quantity[]" placeholder="0">
             </div>
@@ -518,6 +578,7 @@
 
         $('#order-items-container').append(newItem);
         initSelect2(`#goods-select-${orderItemCount}`);
+        initSelect2Specification(`#specification-select-${orderItemCount}`);
     }
 
     function addTemplateOrderItem() {
@@ -534,14 +595,33 @@
                 </select>
             </div>
             <div class="col-md-2">
+                <div class="form-group">
+                    <label for="specification" class="form-control-label">Spesifikasi</label>
+                    <div class="@error('specification') border border-danger rounded-3 @enderror">
+                        <select class="form-control select2-specification" id="template-specification-select-${orderTemplateItemCount}"
+                            name="specification_id[]">
+                            <option value="">-- Pilih Spesifikasi --</option>
+                            @foreach ($specifications as $specification)
+                            <option value="{{ $specification->id }}">
+                                {{ $specification->name }}
+                            </option>
+                            @endforeach
+                        </select>
+                        @error('specification')
+                        <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
                 <label>Satuan</label>
                 <input type="text" class="form-control" placeholder="Satuan" id="template-unit-${orderTemplateItemCount}" name="unit[]" disabled>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label>Harga Satuan</label>
                 <input type="number" step="1000" class="form-control" placeholder="Harga Satuan" name="price[]">
             </div>
-            <div class="col-md-2">
+            <div class="col-md-1">
                 <label>Jumlah</label>
                 <input type="number" class="form-control" name="quantity[]" placeholder="0">
             </div>
@@ -555,6 +635,7 @@
 
         $('#template-order-items-container').append(newItem);
         initTemplateSelect2(`#template-goods-select-${orderTemplateItemCount}`);
+        initTemplateSelect2Specification(`#template-specification-select-${orderTemplateItemCount}`);
     }
 
     // Fungsi hapus baris orderan
