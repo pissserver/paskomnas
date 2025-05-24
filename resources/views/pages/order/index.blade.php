@@ -52,16 +52,39 @@
     <div class="row mt-n2 p-4">
         @foreach($customers as $customer)
         <div class="col-md-3 mt-4">
-            <div class="card">
+            <div class="card ">
                 <div class="card-header mx-4 p-3 text-center">
                     <img src="{{ $customer->photo ?? asset('assets/img/default-profile.jpg') }}"
                         alt="{{ $customer->name }}" class="avatar shadow-lg img-fluid"
                         style="width: 80px; height: 80px; object-fit: cover;">
                 </div>
+                @php
+                $orderCount = $customer->orders_count;
+
+                if ($orderCount >= 500) {
+                $level = 'Platinum';
+                $badgeClass = 'bg-gradient-dark';
+                } elseif ($orderCount >= 100) {
+                $level = 'Gold';
+                $badgeClass = 'bg-gradient-warning';
+                } elseif ($orderCount >= 20) {
+                $level = 'Silver';
+                $badgeClass = 'bg-gradient-secondary';
+                } else {
+                $level = 'Basic';
+                $badgeClass = 'bg-gradient-light text-dark';
+                }
+                @endphp
                 <div class="card-body pt-0 p-3 text-center">
                     <h6 class="text-center mb-0">{{ $customer->name }}</h6>
+                    <div class="d-flex justify-content-center mb-1">
+                        <span class="badge {{ $badgeClass }} px-3 mt-2 py-1 rounded-pill text-uppercase small">
+                            <i class="fa fa-award me-1"></i>
+                            {{ $level }}
+                        </span>
+                    </div>
                     <span class="text-xs">{{ $customer->address }}</span>
-                    <hr class="horizontal dark my-3">
+                    <hr class="horizontal dark mt-2 mb-3">
                     <div class="d-flex justify-content-center gap-2">
                         <a href="{{ route('order.create', $customer->id) }}" class="btn  btn-primary">
                             <i class="fas fa-shopping-cart me-2"></i> Order

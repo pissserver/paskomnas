@@ -15,8 +15,11 @@ class OrderController extends Controller
     // Function order
     public function index()
     {
-        $customers = Customer::orderBy('name', 'asc')->get();
+        $customers = Customer::withCount('orders')
+            ->orderBy('name', 'asc')
+            ->get();
         $totalCustomers = $customers->count();
+
         return view('pages.order.index', compact('customers', 'totalCustomers'));
     }
 

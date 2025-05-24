@@ -91,7 +91,7 @@ class CustomerController extends Controller
         } elseif ($orderCount >= 100) {
             $level = 'Gold';
             $badgeClass = 'bg-gradient-warning';
-        } elseif ($orderCount >= 10) {
+        } elseif ($orderCount >= 20) {
             $level = 'Silver';
             $badgeClass = 'bg-gradient-secondary';
         } else {
