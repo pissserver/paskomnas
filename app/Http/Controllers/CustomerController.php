@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Goods;
+use App\Models\Periode;
+use App\Models\Price;
 use Illuminate\Validation\Rule;
 
 class CustomerController extends Controller
@@ -100,8 +102,21 @@ class CustomerController extends Controller
         }
 
         $goods = Goods::orderBy('name', 'asc')->get();
+        $periode = Periode::where('customer_id', $customer->id)->first();
+        
+        if ($periode) {
+            $goods->each(function ($item) use ($periode) {
+                $item->price = Price::where('periode_id', $periode->id)
+                    ->where('goods_id', $item->id)
+                    ->value('price');
+            });
+        } else {
+            $goods->each(function ($item) {
+                $item->price = null;
+            });
+        }
 
-        return view('pages.customer.edit', compact('customer', 'level', 'badgeClass', 'goods'));
+        return view('pages.customer.edit', compact('customer', 'level', 'badgeClass', 'goods', 'periode'));
     }
 
     public function update(Request $request, string $id)
@@ -135,6 +150,57 @@ class CustomerController extends Controller
         $customer->update($dataToUpdate);
 
         return redirect()->route('customer.index')->with('success', 'Customer berhasil diperbarui.');
+    }
+
+    public function updatePrice(Request $request, string $id)
+    {
+        $customer = Customer::findOrFail($id);
+
+        // create or update periode
+        $periodeAttributes = request()->validate([
+            'periode_name' => ['required', 'max:50'],
+            'start_date' => ['required', 'date'],
+            'end_date' => ['required', 'date', 'after_or_equal:start_date'],
+        ]);
+
+        $dataPeriode = [
+            'periode_name' => $periodeAttributes['periode_name'],
+            'start_date' => $periodeAttributes['start_date'],
+            'end_date' => $periodeAttributes['end_date'],
+            'customer_id' => $customer->id,
+        ];
+
+        $periode = Periode::updateOrCreate(
+            ['customer_id' => $customer->id],
+            $dataPeriode
+        );
+
+        // create or update price
+        $priceAttributes = $request->validate([
+            'goods_id' => ['required', 'array'],
+            'goods_id.*' => ['exists:goods,id'],
+
+            'price' => ['required', 'array'],
+            'price.*' => ['required', 'numeric', 'min:0'],
+        ]);
+
+        foreach ($priceAttributes['goods_id'] as $index => $goodsId) {
+            $dataPrice = [
+                'periode_id' => $periode->id,
+                'goods_id' => $goodsId,
+                'price' => $priceAttributes['price'][$index],
+            ];
+
+            Price::updateOrCreate(
+                [
+                    'periode_id' => $periode->id,
+                    'goods_id' => $goodsId,
+                ],
+                $dataPrice
+            );
+        }
+
+        return redirect()->route('customer.edit', $customer->id)->with('success', 'Harga berhasil diperbarui.');
     }
 
     public function destroy(string $id)

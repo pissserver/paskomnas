@@ -48,13 +48,13 @@
                                 <span class="ms-1">{{ __('Harga') }}</span>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        {{-- <li class="nav-item">
                             <a class="nav-link mb-0 px-0 py-1 " id="order-tab" data-bs-toggle="tab" href="#order"
                                 role="tab" aria-controls="order" aria-selected="true">
                                 <i class="fas fa-shopping-cart me-1"></i>
                                 <span class="ms-1">{{ __('Data Order') }}</span>
-                            </a>
-                        </li>
+                        </a>
+                        </li> --}}
                     </ul>
                 </div>
             </div>
@@ -188,7 +188,7 @@
 
     <div class="tab-pane" id="price" role="tabpanel" aria-labelledby="price-tab">
         <div class="container-fluid py-4">
-            <form action="{{ route('customer.update', $customer->id) }}" method="POST" role="form text-left"
+            <form action="{{ route('customer.update.price', $customer->id) }}" method="POST" role="form text-left"
                 enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
@@ -219,19 +219,65 @@
                             </button>
                         </div>
                         @endif
-                        @foreach($goods as $item)
+
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="goods-name"
-                                        class="form-control-label">{{ __('Barang Komoditi') }}</label>
-                                    <div class="@error('goods_name')border border-danger rounded-3 @enderror">
-                                        <input class="form-control" type="text" id="goods-name" name="goods_name"
-                                            value="{{ $item->name }}" disabled>
-                                        @error('goods_name')
+                                    <label for="periode-name"
+                                        class="form-control-label">{{ __('Nama Periode') }}</label>
+                                    <div class="@error('periode_name')border border-danger rounded-3 @enderror">
+                                        <input class="form-control" type="text" id="periode-name" name="periode_name"
+                                            placeholder="Nama Periode"
+                                            value="{{ old('periode_name', optional($periode)->periode_name) }}">
+                                        @error('periode_name')
                                         <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                         @enderror
                                     </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="start-date" class="form-control-label">{{ __('Tanggal Awal') }}</label>
+                                    <div class="@error('start_date') border border-danger rounded-3 @enderror">
+                                        <input class="form-control" type="date" id="start-date" name="start_date"
+                                            value="{{ old('start_date', optional($periode)->start_date) }}">
+                                        @error('start_date')
+                                        <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="end-date" class="form-control-label">{{ __('Tanggal Akhir') }}</label>
+                                    <div class="@error('end_date') border border-danger rounded-3 @enderror">
+                                        <input class="form-control" type="date" id="end-date" name="end_date"
+                                            value="{{ old('end_date', optional($periode)->end_date) }}">
+                                        @error('end_date')
+                                        <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        @foreach($goods as $index => $item)
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="@error('goods_id') border border-danger rounded-3 @enderror">
+                                    <label for="goods-name"
+                                        class="form-control-label">{{ __('Barang Komoditi') }}</label>
+
+                                    {{-- Hidden input to send goods_id --}}
+                                    <input type="hidden" name="goods_id[]" value="{{ $item->id }}">
+
+                                    {{-- Visible but disabled input for display only --}}
+                                    <input class="form-control" type="text" id="goods-name" value="{{ $item->name }}"
+                                        disabled>
+
+                                    @error('goods_id')
+                                    <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                    @enderror
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -249,10 +295,11 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="goods-price" class="form-control-label">{{ __('Harga') }}</label>
-                                    <div class="@error('nominal') border border-danger rounded-3 @enderror">
+                                    <div class="@error('price') border border-danger rounded-3 @enderror">
                                         <input class="form-control" type="number" step="1000" placeholder="0"
-                                            id="goods-price" name="nominal" value="">
-                                        @error('nominal')
+                                            id="goods-price" name="price[]"
+                                            value="{{ old('price.' . $index, $item->price) }}">
+                                        @error('price')
                                         <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                         @enderror
                                     </div>
@@ -273,20 +320,61 @@
     </div>
 </div>
 
-<script>
-    function previewSelectedImage(event) {
-        const input = event.target;
-        const preview = document.getElementById('imagePreview');
+@include('components.modal.crop-image-modal')
 
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                preview.style.backgroundImage = `url('${e.target.result}')`;
-            };
-            reader.readAsDataURL(input.files[0]);
-        } else {
-            preview.style.backgroundImage = '';
-        }
+<script>
+    let cropper;
+    const input = document.getElementById('imageInput');
+    const preview = document.getElementById('imagePreview');
+    const cropImage = document.getElementById('cropperImage');
+    const cropModal = new bootstrap.Modal(document.getElementById('cropModal'));
+
+    function previewSelectedImage(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            cropImage.src = e.target.result;
+            cropModal.show();
+        };
+        reader.readAsDataURL(file);
     }
+
+    document.getElementById('cropModal').addEventListener('shown.bs.modal', function () {
+        cropper = new Cropper(cropImage, {
+            aspectRatio: 1,
+            viewMode: 1,
+            responsive: true,
+        });
+    });
+
+    document.getElementById('cropModal').addEventListener('hidden.bs.modal', function () {
+        cropper.destroy();
+        cropper = null;
+    });
+
+    document.getElementById('cropButton').addEventListener('click', function () {
+        const canvas = cropper.getCroppedCanvas({
+            width: 200,
+            height: 200,
+        });
+
+        canvas.toBlob(function (blob) {
+            const url = URL.createObjectURL(blob);
+            preview.style.backgroundImage = `url('${url}')`;
+
+            // Jika ingin submit ke server, simpan blob di FormData
+            const file = new File([blob], "cropped.jpg", { type: "image/jpeg" });
+
+            // Gantikan file asli agar bisa dikirim lewat form biasa
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            input.files = dataTransfer.files;
+
+            cropModal.hide();
+        }, 'image/jpeg');
+    });
 </script>
+
 @endsection

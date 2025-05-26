@@ -90,6 +90,7 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 	Route::put('customer', [CustomerController::class, 'store'])->name('customer.store');
 	Route::get('customer/{id}/detail', [CustomerController::class, 'edit'])->name('customer.edit');
 	Route::put('customer/{id}', [CustomerController::class, 'update'])->name('customer.update');
+	Route::put('customer/{id}/price', [CustomerController::class, 'updatePrice'])->name('customer.update.price');
 	Route::delete('customer/{id}', [CustomerController::class, 'destroy'])->name('customer.destroy');
 
 	// Goods

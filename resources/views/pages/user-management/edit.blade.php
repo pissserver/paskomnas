@@ -187,23 +187,68 @@
     </form>
 </div>
 
+@include('components.modal.crop-image-modal')
+
 <script>
+    let cropper;
+    const imageInput = document.getElementById('imageInput');
+    const cropperImage = document.getElementById('cropperImage');
+    const previewImage = document.getElementById('previewImage');
+    const cropModal = new bootstrap.Modal(document.getElementById('cropModal'));
+
     function previewSelectedImage(event) {
         const file = event.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                document.getElementById('previewImage').src = e.target.result;
+                cropperImage.src = e.target.result;
+                cropModal.show();
+
+                cropperModalShown(e.target.result);
             };
             reader.readAsDataURL(file);
         }
     }
 
+    function cropperModalShown(imageSrc) {
+        // Tunggu modal terlihat
+        setTimeout(() => {
+            if (cropper) cropper.destroy();
+
+            cropper = new Cropper(cropperImage, {
+                aspectRatio: 1,
+                viewMode: 1,
+                autoCropArea: 1,
+                responsive: true,
+                background: false
+            });
+        }, 300);
+    }
+
+    document.getElementById('cropButton').addEventListener('click', () => {
+        const canvas = cropper.getCroppedCanvas({
+            width: 300,
+            height: 300
+        });
+
+        canvas.toBlob(blob => {
+            const url = URL.createObjectURL(blob);
+            previewImage.src = url;
+
+            // Simpan ke input hidden jika mau submit via form
+            const fileInput = document.getElementById('imageInput');
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(new File([blob], 'cropped.jpg', { type: 'image/jpeg' }));
+            fileInput.files = dataTransfer.files;
+
+            cropModal.hide();
+        }, 'image/jpeg');
+    });
+
     function resetImageToDefault() {
-        const preview = document.getElementById('previewImage');
-        preview.src = "{{ asset('assets/img/default-profile.jpg') }}";
+        previewImage.src = "{{ asset('assets/img/default-profile.jpg') }}";
         document.getElementById('resetPhoto').value = 1;
-        document.getElementById('imageInput').value = '';
+        imageInput.value = '';
     }
 
     function togglePassword(inputId, iconElement) {

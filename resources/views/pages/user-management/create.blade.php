@@ -163,21 +163,61 @@
     </form>
 </div>
 
-<script>
-    function previewSelectedImage(event) {
-        const input = event.target;
-        const preview = document.getElementById('imagePreview');
+@include('components.modal.crop-image-modal')
 
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                preview.style.backgroundImage = `url('${e.target.result}')`;
-            };
-            reader.readAsDataURL(input.files[0]);
-        } else {
-            preview.style.backgroundImage = '';
-        }
+<script>
+    let cropper;
+    const input = document.getElementById('imageInput');
+    const preview = document.getElementById('imagePreview');
+    const cropImage = document.getElementById('cropperImage');
+    const cropModal = new bootstrap.Modal(document.getElementById('cropModal'));
+
+    function previewSelectedImage(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            cropImage.src = e.target.result;
+            cropModal.show();
+        };
+        reader.readAsDataURL(file);
     }
+
+    document.getElementById('cropModal').addEventListener('shown.bs.modal', function () {
+        cropper = new Cropper(cropImage, {
+            aspectRatio: 1,
+            viewMode: 1,
+            responsive: true,
+        });
+    });
+
+    document.getElementById('cropModal').addEventListener('hidden.bs.modal', function () {
+        cropper.destroy();
+        cropper = null;
+    });
+
+    document.getElementById('cropButton').addEventListener('click', function () {
+        const canvas = cropper.getCroppedCanvas({
+            width: 200,
+            height: 200,
+        });
+
+        canvas.toBlob(function (blob) {
+            const url = URL.createObjectURL(blob);
+            preview.style.backgroundImage = `url('${url}')`;
+
+            // Jika ingin submit ke server, simpan blob di FormData
+            const file = new File([blob], "cropped.jpg", { type: "image/jpeg" });
+
+            // Gantikan file asli agar bisa dikirim lewat form biasa
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            input.files = dataTransfer.files;
+
+            cropModal.hide();
+        }, 'image/jpeg');
+    });
 
     function togglePassword(inputId, iconElement) {
         const input = document.getElementById(inputId);

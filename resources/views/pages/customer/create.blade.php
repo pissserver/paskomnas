@@ -124,20 +124,56 @@
     </form>
 </div>
 
-<script>
-    function previewSelectedImage(event) {
-        const input = event.target;
-        const preview = document.getElementById('imagePreview');
+@include('components.modal.crop-image-modal')
 
-        if (input.files && input.files[0]) {
+<script>
+    let cropper;
+    const cropperImage = document.getElementById('cropperImage');
+    const imageInput = document.getElementById('imageInput');
+    const imagePreview = document.getElementById('imagePreview');
+    const cropModal = new bootstrap.Modal(document.getElementById('cropModal'));
+
+    function previewSelectedImage(event) {
+        const file = event.target.files[0];
+        if (file) {
             const reader = new FileReader();
-            reader.onload = function (e) {
-                preview.style.backgroundImage = `url('${e.target.result}')`;
+            reader.onload = function(e) {
+                cropperImage.src = e.target.result;
+                cropModal.show();
+
+                // Inisialisasi cropper setelah modal muncul
+                setTimeout(() => {
+                    if (cropper) cropper.destroy();
+                    cropper = new Cropper(cropperImage, {
+                        aspectRatio: 1,
+                        viewMode: 1,
+                        autoCropArea: 1,
+                        background: false,
+                        responsive: true,
+                    });
+                }, 300);
             };
-            reader.readAsDataURL(input.files[0]);
-        } else {
-            preview.style.backgroundImage = '';
+            reader.readAsDataURL(file);
         }
     }
+
+    document.getElementById('cropButton').addEventListener('click', () => {
+        const canvas = cropper.getCroppedCanvas({
+            width: 300,
+            height: 300,
+        });
+
+        canvas.toBlob(blob => {
+            const url = URL.createObjectURL(blob);
+            imagePreview.style.backgroundImage = `url('${url}')`;
+
+            // Replace input file dengan blob hasil crop
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(new File([blob], 'cropped.jpg', { type: 'image/jpeg' }));
+            imageInput.files = dataTransfer.files;
+
+            cropModal.hide();
+        }, 'image/jpeg');
+    });
 </script>
 @endsection
