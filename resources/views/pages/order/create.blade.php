@@ -144,7 +144,8 @@
                                             <select class="form-control select2" id="goods-select" name="goods_id[]">
                                                 <option value="">-- Pilih Barang Komoditi --</option>
                                                 @foreach ($goods as $item)
-                                                <option value="{{ $item->id }}" data-unit="{{ $item->unit }}">
+                                                <option value="{{ $item->id }}" data-unit="{{ $item->unit }}"
+                                                    data-price="{{ optional($periode->prices)->firstWhere('goods_id', $item->id)?->price }}">
                                                     {{ $item->name }}
                                                 </option>
                                                 @endforeach
@@ -188,7 +189,7 @@
                                         <label for="price" class="form-control-label">{{ __('Harga Satuan') }}</label>
                                         <div class="@error('price') border border-danger rounded-3 @enderror">
                                             <input class="form-control" type="number" step="1000"
-                                                placeholder="Harga Satuan" name="price[]">
+                                                placeholder="Harga Satuan" id="price-0" name="price[]" disabled>
                                         </div>
                                     </div>
                                 </div>
@@ -477,13 +478,17 @@
         $('#goods-select').on('change', function () {
             const selected = $(this).find(':selected');
             const unit = selected.data('unit') || '';
+            const price = selected.data('price') || '';
             $('#unit-0').val(unit);
+            $('#price-0').val(price);
         });
 
         $('#template-goods-select').on('change', function () {
             const selected = $(this).find(':selected');
             const unit = selected.data('unit') || '';
+            const price = selected.data('price') || '';
             $('#template-unit-0').val(unit);
+            $('#template-price-0').val(price);
         });
     });
 

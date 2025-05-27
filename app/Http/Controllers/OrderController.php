@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Customer;
 use App\Models\Goods;
 use App\Models\Specification;
+use App\Models\Periode;
+use App\Models\Price;
 use App\Models\Order;
 use App\Models\OrderItem;
 
@@ -27,6 +29,9 @@ class OrderController extends Controller
     {
         $customer = Customer::findOrFail($customerId);
         $goods = Goods::orderBy('name', 'asc')->get();
+        $periode = Periode::with(['prices.goods'])
+            ->where('customer_id', $customerId)
+            ->first();
         $specifications = Specification::orderBy('name', 'asc')->get();
         $allOrders = Order::where('customer_id', $customerId)->get();
         $orders = Order::with(['customer', 'orderItems.goods'])
@@ -34,7 +39,14 @@ class OrderController extends Controller
             ->latest()
             ->first();
 
-        return view('pages.order.create', compact('customer', 'goods', 'specifications', 'allOrders', 'orders'));
+        return view('pages.order.create', compact(
+            'customer',
+            'goods',
+            'specifications',
+            'allOrders',
+            'orders',
+            'periode'
+        ));
     }
 
     public function generateOrderCode($customerId)
