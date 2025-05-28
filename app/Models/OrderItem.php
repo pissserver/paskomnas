@@ -28,4 +28,9 @@ class OrderItem extends Model
     {
         return $this->belongsTo(Goods::class);
     }
+    
+    public function specification()
+    {
+        return $this->belongsTo(Specification::class);
+    }
 }

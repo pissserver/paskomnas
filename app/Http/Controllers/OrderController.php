@@ -28,12 +28,17 @@ class OrderController extends Controller
     public function create($customerId)
     {
         $customer = Customer::findOrFail($customerId);
+
         $goods = Goods::orderBy('name', 'asc')->get();
+
         $periode = Periode::with(['prices.goods'])
             ->where('customer_id', $customerId)
             ->first();
+
         $specifications = Specification::orderBy('name', 'asc')->get();
+
         $allOrders = Order::where('customer_id', $customerId)->get();
+
         $orders = Order::with(['customer', 'orderItems.goods'])
             ->where('customer_id', $customerId)
             ->latest()
@@ -86,7 +91,7 @@ class OrderController extends Controller
             'specification_id' => 'nullable|array',
             'specification_id.*' => 'nullable|exists:specifications,id',
             'quantity' => 'required|array',
-            'price' => 'required|array',
+            'price' => 'array',
             'goods_id.*' => 'exists:goods,id', // Memastikan goods_id valid
             'quantity.*' => 'required|integer|min:1', // Validasi jumlah barang
         ]);
@@ -168,14 +173,20 @@ class OrderController extends Controller
 
     public function show(string $customerId, string $orderId)
     {
-        $order = Order::with(['customer', 'orderItems.goods'])
+        $order = Order::with(['customer', 'orderItems.goods', 'orderItems.specification'])
             ->where('customer_id', $customerId)
             ->where('id', $orderId)
             ->firstOrFail();
 
         $goods = Goods::all();
 
-        return view('pages.order.detail-order', compact('order', 'goods'));
+        $periode = Periode::with(['prices.goods'])
+            ->where('customer_id', $customerId)
+            ->first();
+
+        $specifications = Specification::orderBy('name', 'asc')->get();
+
+        return view('pages.order.detail-order', compact('order', 'goods', 'periode', 'specifications'));
     }
 
     public function update(Request $request, string $customerId, string $orderId)
@@ -185,6 +196,8 @@ class OrderController extends Controller
         $request->validate([
             'order_date' => 'required|date',
             'goods_id' => 'required|array',
+            'specification_id' => 'nullable|array',
+            'specification_id.*' => 'nullable|exists:specifications,id',
             'quantity' => 'required|array',
             'price' => 'required|array',
             'goods_id.*' => 'required|exists:goods,id',
@@ -202,6 +215,7 @@ class OrderController extends Controller
 
             foreach ($request->goods_id as $index => $goodsId) {
                 $quantity = $request->quantity[$index];
+                $specificationId = isset($request->specification_id[$index]) ? $request->specification_id[$index] : null;
                 $price = $request->price[$index];
                 $orderItemId = $request->order_item_id[$index];
                 $total = $price * $quantity;
@@ -213,6 +227,7 @@ class OrderController extends Controller
                     $orderItem = OrderItem::where('order_id', $order->id)->where('id', $orderItemId)->first();
                     if ($orderItem) {
                         $orderItem->goods_id = $goodsId;
+                        $orderItem->specification_id = $specificationId;
                         $orderItem->quantity = $quantity;
                         $orderItem->price = $price;
                         $orderItem->total = $total;
@@ -224,6 +239,7 @@ class OrderController extends Controller
                     // Tambahkan item baru
                     $newItem = $order->orderItems()->create([
                         'goods_id' => $goodsId,
+                        'specification_id' => $specificationId,
                         'quantity' => $quantity,
                         'price' => $price,
                         'total' => $total,

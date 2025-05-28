@@ -130,8 +130,8 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label for="order-date">Tanggal Order</label>
-                                        <input type="date" class="form-control" id="order-date" name="order_date"
-                                            required>
+                                        <input type="date" class="form-control datepicker" id="order-date"
+                                            name="order_date" placeholder="Tanggal Order" required>
                                     </div>
                                 </div>
                             </div>
@@ -189,7 +189,7 @@
                                         <label for="price" class="form-control-label">{{ __('Harga Satuan') }}</label>
                                         <div class="@error('price') border border-danger rounded-3 @enderror">
                                             <input class="form-control" type="number" step="1000"
-                                                placeholder="Harga Satuan" id="price-0" name="price[]" disabled>
+                                                placeholder="Harga Satuan" id="price-0" name="price[]" readonly>
                                         </div>
                                     </div>
                                 </div>
@@ -266,8 +266,8 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label for="order-date">Tanggal Order</label>
-                                        <input type="date" class="form-control" id="order-date" name="order_date"
-                                            required>
+                                        <input type="date" class="form-control datepicker" id="order-date"
+                                            name="order_date" placeholder="Tanggal Order" required>
                                     </div>
                                 </div>
                             </div>
@@ -285,6 +285,7 @@
                                                     <option value="">-- Pilih Barang Komoditi --</option>
                                                     @foreach ($goods as $item)
                                                     <option value="{{ $item->id }}" data-unit="{{ $item->unit }}"
+                                                        data-price="{{ optional($periode->prices)->firstWhere('goods_id', $item->id)?->price }}"
                                                         {{ $orderItem->goods_id == $item->id ? 'selected' : '' }}>
                                                         {{ $item->name }}
                                                     </option>
@@ -325,8 +326,9 @@
 
                                         <div class="col-md-2">
                                             <label>Harga Satuan</label>
-                                            <input type="number" step="1000" class="form-control" name="price[]"
-                                                value="{{ $orderItem->price }}">
+                                            <input type="number" step="1000" class="form-control"
+                                                id="template-price-{{ $index }}" name="price[]"
+                                                value="{{ $orderItem->price }}" readonly>
                                         </div>
 
                                         <div class="col-md-1">
@@ -501,6 +503,7 @@
             width: '100%'
         });
     }
+
     function initSelect2Specification(selector) {
         $(selector).select2({
             theme: 'bootstrap-5',
@@ -538,7 +541,7 @@
                 <select class="form-control select2" id="goods-select-${orderItemCount}" name="goods_id[]" onchange="updateUnitAndPrice(${orderItemCount})">
                     <option value="">-- Pilih Barang Komoditi --</option>
                     @foreach ($goods as $item)
-                    <option value="{{ $item->id }}" data-unit="{{ $item->unit }}">{{ $item->name }}</option>
+                    <option value="{{ $item->id }}" data-unit="{{ $item->unit }}" data-price="{{ optional($periode->prices)->firstWhere('goods_id', $item->id)?->price }}">{{ $item->name }}</option>
                     @endforeach
                 </select>
             </div>
@@ -567,7 +570,7 @@
             </div>
             <div class="col-md-2">
                 <label>Harga Satuan</label>
-                <input type="number" step="1000" class="form-control" placeholder="Harga Satuan" name="price[]">
+                <input type="number" step="1000" class="form-control" placeholder="Harga Satuan" id="price-${orderItemCount}" name="price[]" readonly>
             </div>
             <div class="col-md-1">
                 <label>Jumlah</label>
@@ -595,7 +598,8 @@
                 <select class="form-control select2" id="template-goods-select-${orderTemplateItemCount}" name="goods_id[]" onchange="updateTemplateUnitAndPrice(${orderTemplateItemCount})">
                     <option value="">-- Pilih Barang Komoditi --</option>
                     @foreach ($goods as $item)
-                    <option value="{{ $item->id }}" data-unit="{{ $item->unit }}">{{ $item->name }}</option>
+                    <option value="{{ $item->id }}" data-unit="{{ $item->unit }}"
+                    data-price="{{ optional($periode->prices)->firstWhere('goods_id', $item->id)?->price }}">{{ $item->name }}</option>
                     @endforeach
                 </select>
             </div>
@@ -624,7 +628,7 @@
             </div>
             <div class="col-md-2">
                 <label>Harga Satuan</label>
-                <input type="number" step="1000" class="form-control" placeholder="Harga Satuan" name="price[]">
+                <input type="number" step="1000" class="form-control" placeholder="Harga Satuan" id="template-price-${orderTemplateItemCount}" name="price[]" readonly>
             </div>
             <div class="col-md-1">
                 <label>Jumlah</label>
@@ -656,13 +660,17 @@
     function updateUnitAndPrice(id) {
         const selected = $(`#goods-select-${id}`).find(':selected');
         const unit = selected.data('unit') || '';
+        const price = selected.data('price') || '';
         $(`#unit-${id}`).val(unit);
+        $(`#price-${id}`).val(price);
     }
 
     function updateTemplateUnitAndPrice(id) {
         const selected = $(`#template-goods-select-${id}`).find(':selected');
         const unit = selected.data('unit') || '';
+        const price = selected.data('price') || '';
         $(`#template-unit-${id}`).val(unit);
+        $(`#template-price-${id}`).val(price);
     }
 
     function confirmDelete(orderId, orderCode) {
@@ -718,6 +726,18 @@
 
     document.getElementById('searchOrder').addEventListener('keyup', function () {
         loadOrder(this.value);
+    });
+
+    flatpickr(".datepicker", {
+        locale: "id",
+        altInput: true,
+        altFormat: "l, d F Y",
+        dateFormat: "Y-m-d",
+        onReady: function (selectedDates, dateStr, instance) {
+            if (instance.altInput) {
+                instance.altInput.setAttribute("style", "background-color: white; cursor: text;");
+            }
+        }
     });
 </script>
 

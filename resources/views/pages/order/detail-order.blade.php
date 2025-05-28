@@ -114,7 +114,7 @@
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <label for="order-date">Tanggal Order</label>
-                                                <input type="date" class="form-control" id="order-date"
+                                                <input type="date" class="form-control datepicker" id="order-date"
                                                     name="order_date" value="{{ $order->order_date }}" required>
                                             </div>
                                         </div>
@@ -136,6 +136,7 @@
                                                             @foreach ($goods as $item)
                                                             <option value="{{ $item->id }}"
                                                                 data-unit="{{ $item->unit }}"
+                                                                data-price="{{ optional($periode->prices)->firstWhere('goods_id', $item->id)?->price }}"
                                                                 {{ $orderItem->goods_id == $item->id ? 'selected' : '' }}>
                                                                 {{ $item->name }}
                                                             </option>
@@ -145,18 +146,45 @@
                                                 </div>
 
                                                 <div class="col-md-2">
-                                                    <label>Satuan</label>
-                                                    <input type="text" class="form-control" id="unit-{{ $index }}"
-                                                        value="{{ $orderItem->goods->unit }}" disabled>
-                                                </div>
-
-                                                <div class="col-md-3">
-                                                    <label>Harga Satuan</label>
-                                                    <input type="number" step="1000" class="form-control" name="price[]"
-                                                        value="{{ $orderItem->price }}">
+                                                    <div class="form-group">
+                                                        <label for="specification"
+                                                            class="form-control-label">Spesifikasi</label>
+                                                        <div
+                                                            class="@error('specification') border border-danger rounded-3 @enderror">
+                                                            <select class="form-control select2-specification"
+                                                                id="template-specification-select-{{ $index }}"
+                                                                name="specification_id[]">
+                                                                <option value="">-- Pilih Spesifikasi --</option>
+                                                                @foreach ($specifications as $specification)
+                                                                <option value="{{ $specification->id }}"
+                                                                    {{ $orderItem->specification_id == $specification->id ? 'selected' : '' }}>
+                                                                    {{ $specification->name }}
+                                                                </option>
+                                                                @endforeach
+                                                            </select>
+                                                            @error('specification')
+                                                            <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                                            @enderror
+                                                        </div>
+                                                    </div>
                                                 </div>
 
                                                 <div class="col-md-2">
+                                                    <label>Satuan</label>
+                                                    <input type="text" class="form-control" id="unit-{{ $index }}"
+                                                        placeholder="Satuan" value="{{ $orderItem->goods->unit }}"
+                                                        disabled>
+                                                </div>
+
+                                                <div class="col-md-2">
+                                                    <label>Harga Satuan</label>
+                                                    <input type="number" step="1000" class="form-control"
+                                                        id="price-{{ $index }}" name="price[]"
+                                                        placeholder="Harga Satuan" value="{{ $orderItem->price }}"
+                                                        readonly>
+                                                </div>
+
+                                                <div class="col-md-1">
                                                     <label>Jumlah</label>
                                                     <input type="number" class="form-control" name="quantity[]"
                                                         value="{{ $orderItem->quantity }}">
@@ -251,8 +279,9 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label for="order-date">Tanggal Order</label>
-                                            <input type="date" class="form-control" id="order-date" name="order_date"
-                                                value="{{ $order->order_date }}" disabled>
+                                            <input type="text" class="form-control" id="order-date" name="order_date"
+                                                value="{{ \Carbon\Carbon::parse($order->order_date)->translatedFormat('l, d F Y') }}"
+                                                disabled>
                                         </div>
                                     </div>
                                 </div>
@@ -270,7 +299,7 @@
                                                         Nama Barang
                                                     </th>
                                                     <th
-                                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                                         Spesifikasi
                                                     </th>
                                                     <th
@@ -294,6 +323,8 @@
                                             <tbody id="customerTableBody">
                                                 @php
                                                 $no = 1;
+                                                $grandTotal = $order->orderItems->sum('total');
+                                                $rowCount = $order->orderItems->count();
                                                 @endphp
                                                 @foreach($order->orderItems as $index => $orderItem)
                                                 <tr>
@@ -302,10 +333,11 @@
                                                     </td>
                                                     <td class="text-center">
                                                         <p class="text-xs font-weight-bold mb-0">
-                                                            {{$orderItem->goods->name}} </p>
+                                                            {{ $orderItem->goods->name }} </p>
                                                     </td>
                                                     <td class="text-center">
-                                                        <p class="text-xs font-weight-bold mb-0"> - </p>
+                                                        <p class="text-xs font-weight-bold mb-0">
+                                                            {{ $orderItem->specification->name ?? 'Tidak ada' }} </p>
                                                     </td>
                                                     <td class="text-center">
                                                         <p class="text-xs font-weight-bold mb-0">
@@ -325,6 +357,15 @@
                                                     </td>
                                                 </tr>
                                                 @endforeach
+
+                                                <tr>
+                                                    <td colspan="6" class="text-end text-bold">
+                                                        Total Keseluruhan :
+                                                    </td>
+                                                    <td class="text-center text-bold">
+                                                        Rp {{ number_format($grandTotal, 0, ',', '.') }}
+                                                    </td>
+                                                </tr>
                                             </tbody>
                                         </table>
                                     </div>
@@ -350,6 +391,13 @@
             width: '100%'
         });
 
+        $('.select2-specification').select2({
+            theme: 'bootstrap-5',
+            placeholder: "-- Pilih Spesifikasi --",
+            allowClear: true,
+            width: '100%'
+        });
+
         // Update unit dan price untuk semua order item yang sudah ada
         @foreach ($order->orderItems as $index => $orderItem)
             updateUnitAndPrice({{ $index }});
@@ -358,6 +406,15 @@
 
     // Fungsi inisialisasi Select2 untuk elemen baru
     function initSelect2(selector) {
+        $(selector).select2({
+            theme: 'bootstrap-5',
+            placeholder: "-- Pilih Barang Komoditi --",
+            allowClear: true,
+            width: '100%'
+        });
+    }
+
+    function initSelect2Specification(selector) {
         $(selector).select2({
             theme: 'bootstrap-5',
             placeholder: "-- Pilih Barang Komoditi --",
@@ -381,9 +438,29 @@
                 <select class="form-control select2" id="goods-select-${orderItemCount}" name="goods_id[]" onchange="updateUnitAndPrice(${orderItemCount})">
                     <option value="">-- Pilih Barang Komoditi --</option>
                     @foreach ($goods as $item)
-                    <option value="{{ $item->id }}" data-unit="{{ $item->unit }}" data-price="{{ $item->price }}">{{ $item->name }}</option>
+                    <option value="{{ $item->id }}" data-unit="{{ $item->unit }}" data-price="{{ optional($periode->prices)->firstWhere('goods_id', $item->id)?->price }}">{{ $item->name }}</option>
                     @endforeach
                 </select>
+            </div>
+
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label for="specification" class="form-control-label">Spesifikasi</label>
+                        <div class="@error('specification') border border-danger rounded-3 @enderror">
+                            <select class="form-control select2-specification" id="specification-select-${orderItemCount}"
+                                name="specification_id[]">
+                                <option value="">-- Pilih Spesifikasi --</option>
+                                @foreach ($specifications as $specification)
+                                <option value="{{ $specification->id }}">
+                                    {{ $specification->name }}
+                                </option>
+                                @endforeach
+                            </select>
+                        @error('specification')
+                        <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
             </div>
 
             <div class="col-md-2">
@@ -391,12 +468,12 @@
                 <input type="text" class="form-control" placeholder="Satuan" id="unit-${orderItemCount}" disabled>
             </div>
 
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label>Harga Satuan</label>
-                <input type="number" step="1000" name="price[]" class="form-control" placeholder="Harga Satuan">
+                <input type="number" step="1000" name="price[]" class="form-control" id="price-${orderItemCount}" placeholder="Harga Satuan" readonly>
             </div>
 
-            <div class="col-md-2">
+            <div class="col-md-1">
                 <label>Jumlah</label>
                 <input type="number" class="form-control" name="quantity[]" placeholder="0">
             </div>
@@ -408,16 +485,31 @@
             </div>
         </div>
         `;
+
         $('#order-items-container').append(newItem);
         initSelect2(`#goods-select-${orderItemCount}`);
+        initSelect2Specification(`#specification-select-${orderItemCount}`);
     }
 
     function updateUnitAndPrice(id) {
         const selected = $(`#goods-select-${id}`).find(':selected');
         const unit = selected.data('unit') || '';
+        const price = selected.data('price') || '';
         $(`#unit-${id}`).val(unit);
         $(`#price-${id}`).val(price);
     }
+
+    flatpickr(".datepicker", {
+        locale: "id",
+        altInput: true,
+        altFormat: "l, d F Y",
+        dateFormat: "Y-m-d",
+        onReady: function (selectedDates, dateStr, instance) {
+            if (instance.altInput) {
+                instance.altInput.setAttribute("style", "background-color: white; cursor: text;");
+            }
+        }
+    });
 </script>
 
 

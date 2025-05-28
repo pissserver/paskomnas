@@ -239,8 +239,10 @@
                                 <div class="form-group">
                                     <label for="start-date" class="form-control-label">{{ __('Tanggal Awal') }}</label>
                                     <div class="@error('start_date') border border-danger rounded-3 @enderror">
-                                        <input class="form-control" type="date" id="start-date" name="start_date"
-                                            value="{{ old('start_date', optional($periode)->start_date) }}">
+                                        <input class="form-control datepicker" type="text" id="start-date"
+                                            name="start_date"
+                                            value="{{ old('start_date', optional($periode)->start_date) }}"
+                                            placeholder="Tanggal Awal" autocomplete="off">
                                         @error('start_date')
                                         <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                         @enderror
@@ -250,71 +252,72 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="end-date" class="form-control-label">{{ __('Tanggal Akhir') }}</label>
-                                    <div class="@error('end_date') border border-danger rounded-3 @enderror">
-                                        <input class="form-control" type="date" id="end-date" name="end_date"
-                                            value="{{ old('end_date', optional($periode)->end_date) }}">
+                                    <div class="@error('start_date') border border-danger rounded-3 @enderror">
+                                        <input class="form-control datepicker" type="text" id="end-date" name="end_date"
+                                            placeholder="Tanggal Akhir"
+                                            value="{{ old('end_date', optional($periode)->end_date) }}"
+                                            autocomplete="off">
                                         @error('end_date')
                                         <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                         @enderror
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        @foreach($goods as $index => $item)
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="@error('goods_id') border border-danger rounded-3 @enderror">
-                                    <label for="goods-name"
-                                        class="form-control-label">{{ __('Barang Komoditi') }}</label>
+                            @foreach($goods as $index => $item)
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="@error('goods_id') border border-danger rounded-3 @enderror">
+                                        <label for="goods-name"
+                                            class="form-control-label">{{ __('Barang Komoditi') }}</label>
 
-                                    {{-- Hidden input to send goods_id --}}
-                                    <input type="hidden" name="goods_id[]" value="{{ $item->id }}">
+                                        {{-- Hidden input to send goods_id --}}
+                                        <input type="hidden" name="goods_id[]" value="{{ $item->id }}">
 
-                                    {{-- Visible but disabled input for display only --}}
-                                    <input class="form-control" type="text" id="goods-name" value="{{ $item->name }}"
-                                        disabled>
+                                        {{-- Visible but disabled input for display only --}}
+                                        <input class="form-control" type="text" id="goods-name"
+                                            value="{{ $item->name }}" disabled>
 
-                                    @error('goods_id')
-                                    <p class="text-danger text-xs mt-2">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="goods_unit" class="form-control-label">{{ __('Satuan') }}</label>
-                                    <div class="@error('goods_unit') border border-danger rounded-3 @enderror">
-                                        <input class="form-control" type="text" id="goods_unit" name="goods_unit"
-                                            value="{{ $item->unit }}" disabled>
-                                        @error('goods_unit')
+                                        @error('goods_id')
                                         <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                         @enderror
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="goods-price" class="form-control-label">{{ __('Harga') }}</label>
-                                    <div class="@error('price') border border-danger rounded-3 @enderror">
-                                        <input class="form-control" type="number" step="1000" placeholder="0"
-                                            id="goods-price" name="price[]"
-                                            value="{{ old('price.' . $index, $item->price) }}">
-                                        @error('price')
-                                        <p class="text-danger text-xs mt-2">{{ $message }}</p>
-                                        @enderror
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="goods_unit" class="form-control-label">{{ __('Satuan') }}</label>
+                                        <div class="@error('goods_unit') border border-danger rounded-3 @enderror">
+                                            <input class="form-control" type="text" id="goods_unit" name="goods_unit"
+                                                value="{{ $item->unit }}" disabled>
+                                            @error('goods_unit')
+                                            <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="goods-price" class="form-control-label">{{ __('Harga') }}</label>
+                                        <div class="@error('price') border border-danger rounded-3 @enderror">
+                                            <input class="form-control" type="number" step="1000" placeholder="0"
+                                                id="goods-price" name="price[]"
+                                                value="{{ old('price.' . $index, $item->price) }}">
+                                            @error('price')
+                                            <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                            @enderror
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        @endforeach
+                            @endforeach
 
-                        <div class="d-flex justify-content-end">
-                            <button type="submit"
-                                class="btn bg-gradient-dark btn-md mt-4 mb-4">{{ 'Update Harga' }}&nbsp;&nbsp;<i
-                                    class="fa fa-save"></i></button>
+                            <div class="d-flex justify-content-end">
+                                <button type="submit"
+                                    class="btn bg-gradient-dark btn-md mt-4 mb-4">{{ 'Update Harga' }}&nbsp;&nbsp;<i
+                                        class="fa fa-save"></i></button>
+                            </div>
                         </div>
                     </div>
-                </div>
             </form>
         </div>
     </div>
@@ -374,6 +377,18 @@
 
             cropModal.hide();
         }, 'image/jpeg');
+    });
+
+    flatpickr(".datepicker", {
+        locale: "id",
+        altInput: true,
+        altFormat: "l, d F Y",
+        dateFormat: "Y-m-d",
+        onReady: function (selectedDates, dateStr, instance) {
+            if (instance.altInput) {
+                instance.altInput.setAttribute("style", "background-color: white; cursor: text;");
+            }
+        }
     });
 </script>
 
