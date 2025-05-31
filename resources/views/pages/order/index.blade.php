@@ -83,7 +83,7 @@
                             {{ $level }}
                         </span>
                     </div>
-                    <span class="text-xs">{{ $customer->address }}</span>
+                    <span class="text-xs">{{ $customer->company_address }}</span>
                     <hr class="horizontal dark mt-2 mb-3">
                     <div class="d-flex justify-content-center gap-2">
                         <a href="{{ route('order.create', $customer->id) }}" class="btn  btn-primary">

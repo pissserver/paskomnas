@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('order_code')->unique();
             $table->foreignId('customer_id')->constrained('customers')->onDelete('cascade');
             $table->date('order_date');
+            $table->enum('status', ['confirmed', 'done', 'cancelled'])->default('confirmed');
 
             $table->softDeletes();
             $table->timestamps();

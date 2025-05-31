@@ -16,9 +16,10 @@ return new class extends Migration
 
             $table->foreignId('order_id')->constrained('orders')->onDelete('cascade');
             $table->foreignId('goods_id')->constrained('goods')->onDelete('cascade');
+            $table->foreignId('specification_id')->nullable()->constrained('specifications')->onDelete('cascade');
             $table->integer('quantity')->default(1);
-            $table->decimal('price', 15, 2);
-            $table->decimal('total', 15, 2);
+            $table->float('price');
+            $table->float('total');
             
             $table->timestamps();
         });

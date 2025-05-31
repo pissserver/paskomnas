@@ -45,10 +45,10 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="customer-name">Nama Perusahaan</label>
-                                        <div class="@error('customer.name')border border-danger rounded-3 @enderror">
+                                        <label for="name">Nama Perusahaan</label>
+                                        <div class="@error('name')border border-danger rounded-3 @enderror">
                                             <input class="form-control" type="text" placeholder="Nama Perusahaan"
-                                                id="customer-name" name="name" value="{{ old('name') }}">
+                                                id="name" name="name" value="{{ old('name') }}">
                                             @error('name')
                                             <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                             @enderror
@@ -61,14 +61,15 @@
                                         <div
                                             class="@error('status') border border-danger rounded-3 p-2 @enderror d-flex mt-1">
                                             <div class="form-check me-4">
-                                                <input class="form-check-input" type="radio" name="status" value="pusat"
-                                                    id="status-pusat" {{ old('status') == 'pusat' ? 'checked' : '' }}>
+                                                <input class="form-check-input" type="radio" name="company_status"
+                                                    value="pusat" id="status-pusat"
+                                                    {{ old('company_status') == 'pusat' ? 'checked' : '' }}>
                                                 <label class="form-check-label" for="status-pusat">Pusat</label>
                                             </div>
                                             <div class="form-check me-4">
                                                 <input class="form-check-input" type="radio" name="status"
                                                     value="cabang" id="status-cabang"
-                                                    {{ old('status') == 'cabang' ? 'checked' : '' }}>
+                                                    {{ old('company_status') == 'cabang' ? 'checked' : '' }}>
                                                 <label class="form-check-label" for="status-cabang">Cabang</label>
                                             </div>
                                         </div>
@@ -81,12 +82,12 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="alamat-kantor">Alamat Kantor</label>
-                                        <div class="@error('alamat_kantor') border border-danger rounded-3 @enderror">
+                                        <label for="company-address">Alamat Kantor</label>
+                                        <div class="@error('company_address') border border-danger rounded-3 @enderror">
                                             <textarea class="form-control" placeholder="Alamat Kantor"
-                                                id="alamat-kantor" name="alamat_kantor"
-                                                rows="3">{{ old('alamat_kantor') }}</textarea>
-                                            @error('alamat_kantor')
+                                                id="company-address" name="company_address"
+                                                rows="3">{{ old('company_address') }}</textarea>
+                                            @error('company_address')
                                             <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                             @enderror
                                         </div>
@@ -94,12 +95,12 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="alamat-surat">Alamat Surat Menyurat</label>
-                                        <div class="@error('alamat_surat') border border-danger rounded-3 @enderror">
+                                        <label for="mailing-address">Alamat Surat Menyurat</label>
+                                        <div class="@error('mailing_address') border border-danger rounded-3 @enderror">
                                             <textarea class="form-control" placeholder="Alamat Surat Menyurat"
-                                                id="alamat-surat" name="alamat_surat"
-                                                rows="3">{{ old('alamat_surat') }}</textarea>
-                                            @error('alamat_surat')
+                                                id="mailing-address" name="mailing_address"
+                                                rows="3">{{ old('mailing_address') }}</textarea>
+                                            @error('mailing_address')
                                             <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                             @enderror
                                         </div>
@@ -111,7 +112,7 @@
                                     <div class="form-group">
                                         <label for="no-telp">No. Telepon Kantor</label>
                                         <div class="@error('no_telp') border border-danger rounded-3 @enderror">
-                                            <input class="form-control" type="text" placeholder="No. Telepon Kantor"
+                                            <input class="form-control" type="number" placeholder="No. Telepon Kantor"
                                                 id="no-telp" name="no_telp" value="{{ old('no_telp') }}">
                                             @error('no_telp')
                                             <p class="text-danger text-xs mt-2">{{ $message }}</p>
@@ -137,23 +138,23 @@
                                     <div class="form-group">
                                         <label>Kategori</label>
                                         <div
-                                            class="@error('kategori') border border-danger rounded-3 p-2 @enderror d-flex">
+                                            class="@error('category') border border-danger rounded-3 p-2 @enderror d-flex">
                                             <div class="form-check me-4">
-                                                <input class="form-check-input" type="radio" name="kategori"
+                                                <input class="form-check-input" type="radio" name="category"
                                                     value="perseorangan" id="kategori-perseorangan"
-                                                    {{ old('kategori') == 'perseorangan' ? 'checked' : '' }}>
+                                                    {{ old('category') == 'perseorangan' ? 'checked' : '' }}>
                                                 <label class="form-check-label"
                                                     for="kategori-perseorangan">Perseorangan</label>
                                             </div>
                                             <div class="form-check me-4">
-                                                <input class="form-check-input" type="radio" name="kategori"
+                                                <input class="form-check-input" type="radio" name="category"
                                                     value="badan_usaha" id="kategori-badan-usaha"
-                                                    {{ old('kategori') == 'badan_usaha' ? 'checked' : '' }}>
+                                                    {{ old('category') == 'badan_usaha' ? 'checked' : '' }}>
                                                 <label class="form-check-label" for="kategori-badan-usaha">Badan
                                                     Usaha</label>
                                             </div>
                                         </div>
-                                        @error('kategori')
+                                        @error('category')
                                         <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                         @enderror
                                     </div>
@@ -162,34 +163,34 @@
                                     <div class="form-group">
                                         <label>Jenis Usaha</label>
                                         <div
-                                            class="@error('jenis_usaha') border border-danger rounded-3 p-2 @enderror d-flex flex-wrap">
+                                            class="@error('business_type') border border-danger rounded-3 p-2 @enderror d-flex flex-wrap">
                                             <div class="form-check me-4">
-                                                <input class="form-check-input" type="radio" name="jenis_usaha"
+                                                <input class="form-check-input" type="radio" name="business_type"
                                                     value="restoran" id="usaha-restoran"
-                                                    {{ old('jenis_usaha') == 'restoran' ? 'checked' : '' }}>
+                                                    {{ old('business_type') == 'restoran' ? 'checked' : '' }}>
                                                 <label class="form-check-label" for="usaha-restoran">Restoran / Rumah
                                                     Makan</label>
                                             </div>
                                             <div class="form-check me-4">
-                                                <input class="form-check-input" type="radio" name="jenis_usaha"
+                                                <input class="form-check-input" type="radio" name="business_type"
                                                     value="katering" id="usaha-katering"
-                                                    {{ old('jenis_usaha') == 'katering' ? 'checked' : '' }}>
+                                                    {{ old('business_type') == 'katering' ? 'checked' : '' }}>
                                                 <label class="form-check-label" for="usaha-katering">Katering</label>
                                             </div>
                                             <div class="form-check me-4">
-                                                <input class="form-check-input" type="radio" name="jenis_usaha"
+                                                <input class="form-check-input" type="radio" name="business_type"
                                                     value="hotel" id="usaha-hotel"
-                                                    {{ old('jenis_usaha') == 'hotel' ? 'checked' : '' }}>
+                                                    {{ old('business_type') == 'hotel' ? 'checked' : '' }}>
                                                 <label class="form-check-label" for="usaha-hotel">Hotel</label>
                                             </div>
                                             <div class="form-check me-4">
-                                                <input class="form-check-input" type="radio" name="jenis_usaha"
+                                                <input class="form-check-input" type="radio" name="business_type"
                                                     value="lainnya" id="usaha-lainnya"
-                                                    {{ old('jenis_usaha') == 'lainnya' ? 'checked' : '' }}>
+                                                    {{ old('business_type') == 'lainnya' ? 'checked' : '' }}>
                                                 <label class="form-check-label" for="usaha-lainnya">Lainnya</label>
                                             </div>
                                         </div>
-                                        @error('jenis_usaha')
+                                        @error('business_type')
                                         <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                         @enderror
                                     </div>
@@ -201,7 +202,7 @@
                                         <label for="npwp">NPWP</label>
                                         <div class="@error('npwp')border border-danger rounded-3 @enderror">
                                             <input class="form-control" type="text" placeholder="NPWP" id="npwp"
-                                                name="npwp" value="{{ old('npqp') }}">
+                                                name="npwp" value="{{ old('npwp') }}">
                                             @error('npwp')
                                             <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                             @enderror
@@ -212,11 +213,11 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label for="alasan">Alasan Menggunakan</label>
-                                        <div class="@error('alasan') border border-danger rounded-3 @enderror">
+                                        <label for="reason">Alasan Menggunakan</label>
+                                        <div class="@error('reason') border border-danger rounded-3 @enderror">
                                             <textarea class="form-control" placeholder="Alasan menggunakan layanan ini"
-                                                id="alasan" name="alasan" rows="4">{{ old('alasan') }}</textarea>
-                                            @error('alasan')
+                                                id="reason" name="reason" rows="4">{{ old('reason') }}</textarea>
+                                            @error('reason')
                                             <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                             @enderror
                                         </div>
@@ -258,7 +259,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="owner-phone" class="form-label">Telepon</label>
-                                        <input type="text"
+                                        <input type="number"
                                             class="form-control @error('owner_phone') is-invalid @enderror"
                                             id="owner-phone" name="owner_phone" value="{{ old('owner_phone') }}"
                                             placeholder="Telepon Pemilik">
@@ -270,7 +271,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="owner-whatsapp" class="form-label">WhatsApp</label>
-                                        <input type="text"
+                                        <input type="number"
                                             class="form-control @error('owner_whatsapp') is-invalid @enderror"
                                             id="owner-whatsapp" name="owner_whatsapp"
                                             value="{{ old('owner_whatsapp') }}" placeholder="WhatsApp Pemilik">
@@ -283,7 +284,7 @@
                             <div class="row g-3">
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="purchasing-name" class="form-label">Nama</label>
+                                        <label for="purchasing-name" class="form-label">Nama Purchasing</label>
                                         <input type="text"
                                             class="form-control @error('purchasing_name') is-invalid @enderror"
                                             id="purchasing-name" name="purchasing_name"
@@ -310,7 +311,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="purchasing-phone" class="form-label">Telepon</label>
-                                        <input type="text"
+                                        <input type="number"
                                             class="form-control @error('purchasing_phone') is-invalid @enderror"
                                             id="purchasing-phone" name="purchasing_phone"
                                             value="{{ old('purchasing_phone') }}"
@@ -323,7 +324,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="purchasing-whatsapp" class="form-label">WhatsApp</label>
-                                        <input type="text"
+                                        <input type="number"
                                             class="form-control @error('purchasing_whatsapp') is-invalid @enderror"
                                             id="purchasing-whatsapp" name="purchasing_whatsapp"
                                             value="{{ old('purchasing_whatsapp') }}"
@@ -337,7 +338,7 @@
                             <div class="row g-3">
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="finance-name" class="form-label">Nama</label>
+                                        <label for="finance-name" class="form-label">Nama Keuangan</label>
                                         <input type="text"
                                             class="form-control @error('finance_name') is-invalid @enderror"
                                             id="finance-name" name="finance_name" value="{{ old('finance_name') }}"
@@ -362,7 +363,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="finance-phone" class="form-label">Telepon</label>
-                                        <input type="text"
+                                        <input type="number"
                                             class="form-control @error('finance_phone') is-invalid @enderror"
                                             id="finance-phone" name="finance_phone" value="{{ old('finance_phone') }}"
                                             placeholder="Telepon Penanggung Jawab Keuangan">
@@ -374,7 +375,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="finance-whatsapp" class="form-label">WhatsApp</label>
-                                        <input type="text"
+                                        <input type="number"
                                             class="form-control @error('finance_whatsapp') is-invalid @enderror"
                                             id="finance-whatsapp" name="finance_whatsapp"
                                             value="{{ old('finance_whatsapp') }}"
@@ -523,7 +524,7 @@
                                     <div class="form-group">
                                         <label for="invoice_pic_phone" class="form-label">PIC Tukar Faktur (Telepon /
                                             WhatsApp)</label>
-                                        <input type="text"
+                                        <input type="number"
                                             class="form-control @error('invoice_pic_phone') is-invalid @enderror"
                                             id="invoice_pic_phone" name="invoice_pic_phone"
                                             value="{{ old('invoice_pic_phone') }}" placeholder="08123456789">
@@ -549,7 +550,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="account_number" class="form-label">Nomor Rekening Bank</label>
-                                        <input type="text"
+                                        <input type="number"
                                             class="form-control @error('account_number') is-invalid @enderror"
                                             id="account_number" name="account_number"
                                             value="{{ old('account_number') }}" placeholder="Contoh: 1234567890">
@@ -661,7 +662,7 @@
                                     </div>
                                     <div class="col-md-4">
                                         <label for="delivery_phone_1" class="form-label">No. HP / WhatsApp</label>
-                                        <input type="text"
+                                        <input type="number"
                                             class="form-control @error('delivery_phone_1') is-invalid @enderror"
                                             id="delivery_phone_1" name="delivery_phone_1"
                                             value="{{ old('delivery_phone_1') }}" placeholder="Nomor HP/WA penerima">
@@ -728,7 +729,7 @@
                                     </div>
                                     <div class="col-md-4">
                                         <label for="delivery_phone_2" class="form-label">No. HP / WhatsApp</label>
-                                        <input type="text"
+                                        <input type="number"
                                             class="form-control @error('delivery_phone_2') is-invalid @enderror"
                                             id="delivery_phone_2" name="delivery_phone_2"
                                             value="{{ old('delivery_phone_2') }}" placeholder="Nomor HP/WA penerima">

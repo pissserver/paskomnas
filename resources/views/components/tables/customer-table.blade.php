@@ -12,7 +12,7 @@
         <p class="text-xs font-weight-bold mb-0 text-capitalize">{{ $customer->name }}</p>
     </td>
     <td class="text-center">
-        <p class="text-xs font-weight-bold mb-0">{{ $customer->address }}</p>
+        <p class="text-xs font-weight-bold mb-0">{{ $customer->company_address }}</p>
     </td>
     <td class="text-center">
         <span class="text-secondary text-xs font-weight-bold">{{ $customer->npwp }}</span>

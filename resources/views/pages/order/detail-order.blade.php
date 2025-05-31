@@ -15,7 +15,7 @@
                 </div>
                 <div class="card-body pt-0 p-3 text-center">
                     <h6 class="text-center mb-0">{{ $order->customer->name }}</h6>
-                    <span class="text-xs">{{ $order->customer->address }}</span>
+                    <span class="text-xs">{{ $order->customer->company_address }}</span>
                     <hr class="horizontal dark my-3">
                     <div class="d-flex justify-content-center gap-2">
                         <a href="{{ route('order.create', $order->customer->id) }}" class="btn  btn-primary">

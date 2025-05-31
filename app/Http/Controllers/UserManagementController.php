@@ -79,7 +79,7 @@ class UserManagementController extends Controller
         
         $user->create($dataToCreate);
 
-        return redirect('/user-management')->with('success','Pengguna baru berhasil ditambahkan');
+        return redirect('/kelola-pengguna')->with('success','Pengguna baru berhasil ditambahkan');
     }
 
     public function edit($id)

@@ -96,61 +96,826 @@
                             </button>
                         </div>
                         @endif
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="customer-name"
-                                        class="form-control-label">{{ __('Nama Customer') }}</label>
-                                    <div class="@error('customer.name')border border-danger rounded-3 @enderror">
-                                        <input class="form-control" type="text" placeholder="Nama Customer"
-                                            id="customer-name" name="name" value="{{ $customer->name }}">
-                                        @error('name')
+
+                        {{-- Informasi Umum --}}
+                        <div class="basic-information">
+                            <h6 class="mb-3 p-2 bg-gradient-dark text-white rounded d-inline-flex align-items-center">
+                                <i class="fas fa-info-circle me-2"></i> {{ __('Informasi Umum') }}
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="name">Nama Perusahaan</label>
+                                        <div class="@error('name')border border-danger rounded-3 @enderror">
+                                            <input class="form-control" type="text" placeholder="Nama Perusahaan"
+                                                id="name" name="name" value="{{ old('name', $customer->name) }}">
+                                            @error('name')
+                                            <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Status Perusahaan</label>
+                                        <div
+                                            class="@error('status') border border-danger rounded-3 p-2 @enderror d-flex mt-1">
+                                            <div class="form-check me-4">
+                                                <input class="form-check-input" type="radio" name="company_status"
+                                                    value="pusat" id="status-pusat"
+                                                    {{ old('company_status', $customer->company_status) == 'pusat' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="status-pusat">Pusat</label>
+                                            </div>
+                                            <div class="form-check me-4">
+                                                <input class="form-check-input" type="radio" name="status"
+                                                    value="cabang" id="status-cabang"
+                                                    {{ old('company_status', $customer->company_status) == 'cabang' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="status-cabang">Cabang</label>
+                                            </div>
+                                        </div>
+                                        @error('status')
                                         <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                         @enderror
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="pic-receiver" class="form-control-label">{{ __('PIC') }}</label>
-                                    <div class="@error('pic_receiver') border border-danger rounded-3 @enderror">
-                                        <input class="form-control" type="number" placeholder="PIC" id="pic-receiver"
-                                            name="pic_receiver" value="{{ $customer->pic_receiver }}">
-                                        @error('pic_receiver')
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="company-address">Alamat Kantor</label>
+                                        <div class="@error('company_address') border border-danger rounded-3 @enderror">
+                                            <textarea class="form-control" placeholder="Alamat Kantor"
+                                                id="company-address" name="company_address"
+                                                rows="3">{{ old('company_address', $customer->company_address) }}</textarea>
+                                            @error('company_address')
+                                            <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="mailing-address">Alamat Surat Menyurat</label>
+                                        <div class="@error('mailing_address') border border-danger rounded-3 @enderror">
+                                            <textarea class="form-control" placeholder="Alamat Surat Menyurat"
+                                                id="mailing-address" name="mailing_address"
+                                                rows="3">{{ old('mailing_address', $customer->mailing_address) }}</textarea>
+                                            @error('mailing_address')
+                                            <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="no-telp">No. Telepon Kantor</label>
+                                        <div class="@error('no_telp') border border-danger rounded-3 @enderror">
+                                            <input class="form-control" type="number" placeholder="No. Telepon Kantor"
+                                                id="no-telp" name="no_telp"
+                                                value="{{ old('no_telp', $customer->no_telp) }}">
+                                            @error('no_telp')
+                                            <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="email">Email Kantor</label>
+                                        <div class="@error('email') border border-danger rounded-3 @enderror">
+                                            <input class="form-control" type="email" placeholder="Email Kantor"
+                                                id="email" name="email" value="{{ old('email', $customer->email) }}">
+                                            @error('email')
+                                            <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Kategori</label>
+                                        <div
+                                            class="@error('category') border border-danger rounded-3 p-2 @enderror d-flex">
+                                            <div class="form-check me-4">
+                                                <input class="form-check-input" type="radio" name="category"
+                                                    value="perseorangan" id="kategori-perseorangan"
+                                                    {{ old('category', $customer->category) == 'perseorangan' ? 'checked' : '' }}>
+                                                <label class="form-check-label"
+                                                    for="kategori-perseorangan">Perseorangan</label>
+                                            </div>
+                                            <div class="form-check me-4">
+                                                <input class="form-check-input" type="radio" name="category"
+                                                    value="badan_usaha" id="kategori-badan-usaha"
+                                                    {{ old('category', $customer->category) == 'badan_usaha' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="kategori-badan-usaha">Badan
+                                                    Usaha</label>
+                                            </div>
+                                        </div>
+                                        @error('category')
+                                        <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Jenis Usaha</label>
+                                        <div
+                                            class="@error('business_type') border border-danger rounded-3 p-2 @enderror d-flex flex-wrap">
+                                            <div class="form-check me-4">
+                                                <input class="form-check-input" type="radio" name="business_type"
+                                                    value="restoran" id="usaha-restoran"
+                                                    {{ old('business_type', $customer->business_type) == 'restoran' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="usaha-restoran">Restoran / Rumah
+                                                    Makan</label>
+                                            </div>
+                                            <div class="form-check me-4">
+                                                <input class="form-check-input" type="radio" name="business_type"
+                                                    value="katering" id="usaha-katering"
+                                                    {{ old('business_type', $customer->business_type) == 'katering' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="usaha-katering">Katering</label>
+                                            </div>
+                                            <div class="form-check me-4">
+                                                <input class="form-check-input" type="radio" name="business_type"
+                                                    value="hotel" id="usaha-hotel"
+                                                    {{ old('business_type', $customer->business_type) == 'hotel' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="usaha-hotel">Hotel</label>
+                                            </div>
+                                            <div class="form-check me-4">
+                                                <input class="form-check-input" type="radio" name="business_type"
+                                                    value="lainnya" id="usaha-lainnya"
+                                                    {{ old('business_type', $customer->business_type) == 'lainnya' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="usaha-lainnya">Lainnya</label>
+                                            </div>
+                                        </div>
+                                        @error('business_type')
                                         <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                         @enderror
                                     </div>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="npwp">NPWP</label>
+                                        <div class="@error('npwp')border border-danger rounded-3 @enderror">
+                                            <input class="form-control" type="text" placeholder="NPWP" id="npwp"
+                                                name="npwp" value="{{ old('npwp', $customer->npwp) }}">
+                                            @error('npwp')
+                                            <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="reason">Alasan Menggunakan</label>
+                                        <div class="@error('reason') border border-danger rounded-3 @enderror">
+                                            <textarea class="form-control" placeholder="Alasan menggunakan layanan ini"
+                                                id="reason" name="reason"
+                                                rows="4">{{ old('reason', $customer->reason) }}</textarea>
+                                            @error('reason')
+                                            <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label for="npwp" class="form-control-label">{{ __('NPWP') }}</label>
-                                    <div class="@error('npwp') border border-danger rounded-3 @enderror">
-                                        <input class="form-control" type="text" placeholder="xx.xxx.xxx.x-xxx.xxx"
-                                            id="npwp" name="npwp" value="{{ $customer->npwp }}">
-                                        @error('npwp')
-                                        <p class="text-danger text-xs mt-2">{{ $message }}</p>
+
+                        {{-- Data Kontak --}}
+                        <div class="data-contact mt-5">
+                            <h6 class="mb-3 p-2 bg-gradient-dark text-white rounded d-inline-flex align-items-center">
+                                <i class="fas fa-envelope me-2"></i> {{ __('Data Kontak') }}
+                            </h6>
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="owner-name" class="form-label">Nama Pemilik</label>
+                                        <input type="text"
+                                            class="form-control @error('owner_name') is-invalid @enderror"
+                                            id="owner-name" name="owner_name"
+                                            value="{{ old('owner_name', $customer->owner_name) }}"
+                                            placeholder="Nama Pemilik">
+                                        @error('owner_name')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="owner-email" class="form-label">Email</label>
+                                        <input type="email"
+                                            class="form-control @error('owner_email') is-invalid @enderror"
+                                            id="owner-email" name="owner_email"
+                                            value="{{ old('owner_email', $customer->owner_email) }}"
+                                            placeholder="Email Pemilik">
+                                        @error('owner_email')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="owner-phone" class="form-label">Telepon</label>
+                                        <input type="number"
+                                            class="form-control @error('owner_phone') is-invalid @enderror"
+                                            id="owner-phone" name="owner_phone"
+                                            value="{{ old('owner_phone', $customer->owner_phone) }}"
+                                            placeholder="Telepon Pemilik">
+                                        @error('owner_phone')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="owner-whatsapp" class="form-label">WhatsApp</label>
+                                        <input type="number"
+                                            class="form-control @error('owner_whatsapp') is-invalid @enderror"
+                                            id="owner-whatsapp" name="owner_whatsapp"
+                                            value="{{ old('owner_whatsapp', $customer->owner_whatsapp) }}"
+                                            placeholder="WhatsApp Pemilik">
+                                        @error('owner_whatsapp')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="purchasing-name" class="form-label">Nama Purchasing</label>
+                                        <input type="text"
+                                            class="form-control @error('purchasing_name') is-invalid @enderror"
+                                            id="purchasing-name" name="purchasing_name"
+                                            value="{{ old('purchasing_name', $customer->purchasing_name) }}"
+                                            placeholder="Nama Penanggung Jawab Purchasing">
+                                        @error('purchasing_name')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="purchasing-email" class="form-label">Email</label>
+                                        <input type="email"
+                                            class="form-control @error('purchasing_email') is-invalid @enderror"
+                                            id="purchasing-email" name="purchasing_email"
+                                            value="{{ old('purchasing_email', $customer->purchasing_email) }}"
+                                            placeholder="Email Penanggung Jawab Purchasing">
+                                        @error('purchasing_email')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="purchasing-phone" class="form-label">Telepon</label>
+                                        <input type="number"
+                                            class="form-control @error('purchasing_phone') is-invalid @enderror"
+                                            id="purchasing-phone" name="purchasing_phone"
+                                            value="{{ old('purchasing_phone', $customer->purchasing_phone) }}"
+                                            placeholder="Telepon Penanggung Jawab">
+                                        @error('purchasing_phone')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="purchasing-whatsapp" class="form-label">WhatsApp</label>
+                                        <input type="number"
+                                            class="form-control @error('purchasing_whatsapp') is-invalid @enderror"
+                                            id="purchasing-whatsapp" name="purchasing_whatsapp"
+                                            value="{{ old('purchasing_whatsapp', $customer->purchasing_whatsapp) }}"
+                                            placeholder="WhatsApp Penanggung Jawab Purchasing">
+                                        @error('purchasing_whatsapp')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="finance-name" class="form-label">Nama Keuangan</label>
+                                        <input type="text"
+                                            class="form-control @error('finance_name') is-invalid @enderror"
+                                            id="finance-name" name="finance_name"
+                                            value="{{ old('finance_name', $customer->finance_name) }}"
+                                            placeholder="Nama Penanggung Jawab Keuangan">
+                                        @error('finance_name')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="finance-email" class="form-label">Email</label>
+                                        <input type="email"
+                                            class="form-control @error('finance_email') is-invalid @enderror"
+                                            id="finance-email" name="finance_email"
+                                            value="{{ old('finance_email', $customer->finance_email) }}"
+                                            placeholder="Email Penanggung Jawab Keuangan">
+                                        @error('finance_email')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="finance-phone" class="form-label">Telepon</label>
+                                        <input type="number"
+                                            class="form-control @error('finance_phone') is-invalid @enderror"
+                                            id="finance-phone" name="finance_phone"
+                                            value="{{ old('finance_phone', $customer->finance_phone) }}"
+                                            placeholder="Telepon Penanggung Jawab Keuangan">
+                                        @error('finance_phone')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="finance-whatsapp" class="form-label">WhatsApp</label>
+                                        <input type="number"
+                                            class="form-control @error('finance_whatsapp') is-invalid @enderror"
+                                            id="finance-whatsapp" name="finance_whatsapp"
+                                            value="{{ old('finance_whatsapp', $customer->finance_whatsapp) }}"
+                                            placeholder="WhatsApp Penanggung Jawab Keuangan">
+                                        @error('finance_whatsapp')
+                                        <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label for="about">{{ 'Alamat Perusahaan' }}</label>
-                            <div class="@error('adress') border border-danger rounded-3 @enderror">
-                                <textarea class="form-control" id="about" rows="3" placeholder="Alamat Perusahaan"
-                                    name="address">{{ $customer->address }}</textarea>
+
+                        {{-- Sistem Pembayaran --}}
+                        <div class="payment-system mt-5">
+                            <h6 class="mb-3 p-2 bg-gradient-dark text-white rounded d-inline-flex align-items-center">
+                                <i class="fas fa-credit-card me-2"></i> {{ __('Sistem Pembayaran') }}
+                            </h6>
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label d-block">Metode Pembayaran</label>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="payment_method"
+                                                id="payment-cod" value="COD"
+                                                {{ old('payment_method', $customer->payment_method) == 'COD' ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="payment-cod">COD / Cash</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="payment_method"
+                                                id="payment-transfer" value="Transfer"
+                                                {{ old('payment_method', $customer->payment_method) == 'Transfer' ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="payment-transfer">Transfer</label>
+                                        </div>
+                                        @error('payment_method')
+                                        <div class="text-danger small">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="payment_term" class="form-label">Jangka Waktu Pembayaran</label>
+                                        <input type="text"
+                                            class="form-control @error('payment_term') is-invalid @enderror"
+                                            id="payment_term" name="payment_term"
+                                            value="{{ old('payment_term', $customer->payment_term) }}"
+                                            placeholder="Contoh: 30 Hari setelah invoice">
+                                        @error('payment_term')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="payment_estimate" class="form-label">Estimasi Kebutuhan</label>
+                                        <div class="input-group">
+                                            <input type="text"
+                                                class="form-control @error('payment_estimate') is-invalid @enderror"
+                                                id="payment_estimate" name="payment_estimate"
+                                                value="{{ old('payment_estimate', $customer->payment_estimate) }}"
+                                                placeholder="Contoh: 2">
+                                            <div class="input-group-text">
+                                                <div class="form-check form-check-inline mb-0">
+                                                    <input class="form-check-input" type="radio" name="estimate_unit"
+                                                        id="estimate-week" value="minggu"
+                                                        {{ old('estimate_unit', $customer->estimate_unit) == 'minggu' ? 'checked' : '' }}>
+                                                    <label class="form-check-label" for="estimate-week">/Minggu</label>
+                                                </div>
+                                                <div class="form-check form-check-inline mb-0">
+                                                    <input class="form-check-input" type="radio" name="estimate_unit"
+                                                        id="estimate-month" value="bulan"
+                                                        {{ old('estimate_unit', $customer->estimate_unit) == 'bulan' ? 'checked' : '' }}>
+                                                    <label class="form-check-label" for="estimate-month">/Bulan</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @error('payment_estimate')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                        @enderror
+                                        @error('estimate_unit')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="minimum_order" class="form-label">Minimal Order</label>
+                                        <input type="text"
+                                            class="form-control @error('minimum_order') is-invalid @enderror"
+                                            id="minimum_order" name="minimum_order"
+                                            value="{{ old('minimum_order', $customer->minimum_order) }}"
+                                            placeholder="/Hari atau sekali pengiriman">
+                                        @error('minimum_order')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label for="about">{{ 'Alamat Delivery' }}</label>
-                            <div class="@error('delivery_address') border border-danger rounded-3 @enderror">
-                                <textarea class="form-control" id="about" rows="3" placeholder="Alamat Delivery"
-                                    name="delivery_address">{{ $customer->delivery_address }}</textarea>
+
+                        {{-- Sistem Tukar Faktur & Rekening Bank Customer --}}
+                        <div class="invoice-bank-system mt-5">
+                            <h6 class="mb-3 p-2 bg-gradient-dark text-white rounded d-inline-flex align-items-center">
+                                <i class="fas fa-file-invoice-dollar me-2"></i>
+                                {{ __('Sistem Tukar Faktur & Rekening Bank Customer') }}
+                            </h6>
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="invoice_day_time" class="form-label">Hari & Jam Tukar Faktur</label>
+                                        <input type="text"
+                                            class="form-control @error('invoice_day_time') is-invalid @enderror"
+                                            id="invoice_day_time" name="invoice_day_time"
+                                            value="{{ old('invoice_day_time', $customer->invoice_day_time) }}"
+                                            placeholder="Contoh: Senin & Rabu, pukul 13.00 - 16.00">
+                                        @error('invoice_day_time')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="invoice_address" class="form-label">Alamat Tukar Faktur</label>
+                                        <input type="text"
+                                            class="form-control @error('invoice_address') is-invalid @enderror"
+                                            id="invoice_address" name="invoice_address"
+                                            value="{{ old('invoice_address', $customer->invoice_address) }}"
+                                            placeholder="Masukkan alamat lengkap">
+                                        @error('invoice_address')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="invoice_pic_name" class="form-label">PIC Tukar Faktur (Nama)</label>
+                                        <input type="text"
+                                            class="form-control @error('invoice_pic_name') is-invalid @enderror"
+                                            id="invoice_pic_name" name="invoice_pic_name"
+                                            value="{{ old('invoice_pic_name', $customer->invoice_pic_name) }}"
+                                            placeholder="Nama PIC">
+                                        @error('invoice_pic_name')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="invoice_pic_phone" class="form-label">PIC Tukar Faktur (Telepon /
+                                            WhatsApp)</label>
+                                        <input type="number"
+                                            class="form-control @error('invoice_pic_phone') is-invalid @enderror"
+                                            id="invoice_pic_phone" name="invoice_pic_phone"
+                                            value="{{ old('invoice_pic_phone', $customer->invoice_pic_phone) }}"
+                                            placeholder="08123456789">
+                                        @error('invoice_pic_phone')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="account_name" class="form-label">Nama Rekening Bank</label>
+                                        <input type="text"
+                                            class="form-control @error('account_name') is-invalid @enderror"
+                                            id="account_name" name="account_name"
+                                            value="{{ old('account_name', $customer->account_name) }}"
+                                            placeholder="Contoh: PT Maju Jaya">
+                                        @error('account_name')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="account_number" class="form-label">Nomor Rekening Bank</label>
+                                        <input type="number"
+                                            class="form-control @error('account_number') is-invalid @enderror"
+                                            id="account_number" name="account_number"
+                                            value="{{ old('account_number', $customer->account_number) }}"
+                                            placeholder="Contoh: 1234567890">
+                                        @error('account_number')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="bank_name" class="form-label">Nama Bank</label>
+                                        <input type="text" class="form-control @error('bank_name') is-invalid @enderror"
+                                            id="bank_name" name="bank_name"
+                                            value="{{ old('bank_name', $customer->bank_name) }}"
+                                            placeholder="Contoh: BCA, Mandiri">
+                                        @error('bank_name')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="bank_branch" class="form-label">Cabang</label>
+                                        <input type="text"
+                                            class="form-control @error('bank_branch') is-invalid @enderror"
+                                            id="bank_branch" name="bank_branch"
+                                            value="{{ old('bank_branch', $customer->bank_branch) }}"
+                                            placeholder="Contoh: Cabang Sudirman">
+                                        @error('bank_branch')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="bank_address" class="form-label">Alamat Bank</label>
+                                        <textarea class="form-control @error('bank_address') is-invalid @enderror"
+                                            id="bank_address" name="bank_address" rows="3"
+                                            placeholder="Alamat lengkap kantor cabang bank">{{ old('bank_address', $customer->bank_address) }}</textarea>
+                                        @error('bank_address')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
                             </div>
                         </div>
+
+                        {{-- Alamat Pengiriman --}}
+                        <div class="delivery-address-section mt-5">
+                            <h6 class="mb-3 p-2 bg-gradient-dark text-white rounded d-inline-flex align-items-center">
+                                <i class="fas fa-map-marker-alt me-2"></i> Alamat Pengiriman
+                            </h6>
+                            <div class="border rounded p-3 mb-4">
+                                <h6 class="fw-semibold mb-3">Alamat 1</h6>
+                                <div class="row g-3">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="delivery_address_1" class="form-label">Alamat Lengkap</label>
+                                            <textarea
+                                                class="form-control @error('delivery_address_1') is-invalid @enderror"
+                                                id="delivery_address_1" name="delivery_address_1" rows="3"
+                                                placeholder="Alamat lengkap pengiriman 1">{{ old('delivery_address_1', $customer->delivery_address_1 ?? '') }}</textarea>
+                                            @error('delivery_address_1')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="delivery_email_1" class="form-label">Email</label>
+                                        <input type="email"
+                                            class="form-control @error('delivery_email_1') is-invalid @enderror"
+                                            id="delivery_email_1" name="delivery_email_1"
+                                            value="{{ old('delivery_email_1', $customer->delivery_email_1 ?? '') }}"
+                                            placeholder="Email penerima alamat 1">
+                                        @error('delivery_email_1')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label for="delivery_postal_1" class="form-label">Kode Pos</label>
+                                        <input type="text"
+                                            class="form-control @error('delivery_postal_1') is-invalid @enderror"
+                                            id="delivery_postal_1" name="delivery_postal_1"
+                                            value="{{ old('delivery_postal_1', $customer->delivery_postal_1 ?? '') }}"
+                                            placeholder="Kode Pos">
+                                        @error('delivery_postal_1')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="delivery_time_1" class="form-label">Jam Penerimaan</label>
+                                        <input type="text"
+                                            class="form-control @error('delivery_time_1') is-invalid @enderror"
+                                            id="delivery_time_1" name="delivery_time_1"
+                                            value="{{ old('delivery_time_1', $customer->delivery_time_1 ?? '') }}"
+                                            placeholder="Contoh: 08.00 - 16.00">
+                                        @error('delivery_time_1')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="delivery_pic_1" class="form-label">PIC Penerima</label>
+                                        <input type="text"
+                                            class="form-control @error('delivery_pic_1') is-invalid @enderror"
+                                            id="delivery_pic_1" name="delivery_pic_1"
+                                            value="{{ old('delivery_pic_1', $customer->delivery_pic_1 ?? '') }}"
+                                            placeholder="Nama PIC penerima">
+                                        @error('delivery_pic_1')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="delivery_phone_1" class="form-label">No. HP / WhatsApp</label>
+                                        <input type="number"
+                                            class="form-control @error('delivery_phone_1') is-invalid @enderror"
+                                            id="delivery_phone_1" name="delivery_phone_1"
+                                            value="{{ old('delivery_phone_1', $customer->delivery_phone_1 ?? '') }}"
+                                            placeholder="Nomor HP/WA penerima">
+                                        @error('delivery_phone_1')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="border rounded p-3">
+                                <h6 class="fw-semibold mb-3">Alamat 2</h6>
+                                <div class="row g-3">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="delivery_address_2" class="form-label">Alamat Lengkap</label>
+                                            <textarea
+                                                class="form-control @error('delivery_address_2') is-invalid @enderror"
+                                                id="delivery_address_2" name="delivery_address_2" rows="3"
+                                                placeholder="Alamat lengkap pengiriman 2">{{ old('delivery_address_2', $customer->delivery_address_2 ?? '') }}</textarea>
+                                            @error('delivery_address_2')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="delivery_email_2" class="form-label">Email</label>
+                                        <input type="email"
+                                            class="form-control @error('delivery_email_2') is-invalid @enderror"
+                                            id="delivery_email_2" name="delivery_email_2"
+                                            value="{{ old('delivery_email_2', $customer->delivery_email_2 ?? '') }}"
+                                            placeholder="Email penerima alamat 2">
+                                        @error('delivery_email_2')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label for="delivery_postal_2" class="form-label">Kode Pos</label>
+                                        <input type="text"
+                                            class="form-control @error('delivery_postal_2') is-invalid @enderror"
+                                            id="delivery_postal_2" name="delivery_postal_2"
+                                            value="{{ old('delivery_postal_2', $customer->delivery_postal_2 ?? '') }}"
+                                            placeholder="Kode Pos">
+                                        @error('delivery_postal_2')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="delivery_time_2" class="form-label">Jam Penerimaan</label>
+                                        <input type="text"
+                                            class="form-control @error('delivery_time_2') is-invalid @enderror"
+                                            id="delivery_time_2" name="delivery_time_2"
+                                            value="{{ old('delivery_time_2', $customer->delivery_time_2 ?? '') }}"
+                                            placeholder="Contoh: 09.00 - 15.00">
+                                        @error('delivery_time_2')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="delivery_pic_2" class="form-label">PIC Penerima</label>
+                                        <input type="text"
+                                            class="form-control @error('delivery_pic_2') is-invalid @enderror"
+                                            id="delivery_pic_2" name="delivery_pic_2"
+                                            value="{{ old('delivery_pic_2', $customer->delivery_pic_2 ?? '') }}"
+                                            placeholder="Nama PIC penerima">
+                                        @error('delivery_pic_2')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="delivery_phone_2" class="form-label">No. HP / WhatsApp</label>
+                                        <input type="number"
+                                            class="form-control @error('delivery_phone_2') is-invalid @enderror"
+                                            id="delivery_phone_2" name="delivery_phone_2"
+                                            value="{{ old('delivery_phone_2', $customer->delivery_phone_2 ?? '') }}"
+                                            placeholder="Nomor HP/WA penerima">
+                                        @error('delivery_phone_2')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Kelengkapan Dokumen --}}
+                        <div class="document-completeness-section mt-5">
+                            <h6 class="mb-3 p-2 bg-gradient-dark text-white rounded d-inline-flex align-items-center">
+                                <i class="fas fa-folder-open me-2"></i> Kelengkapan Dokumen
+                            </h6>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="copy_ktp" id="copy_ktp"
+                                            {{ old('copy_ktp', $customer->copy_ktp) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="copy_ktp">Fotocopy KTP Pemilik</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="copy_npwp" id="copy_npwp"
+                                            {{ old('copy_npwp', $customer->copy_npwp) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="copy_npwp">Fotocopy NPWP</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="copy_tdp" id="copy_tdp"
+                                            {{ old('copy_tdp', $customer->copy_tdp) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="copy_tdp">Fotocopy TDP</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="copy_akta" id="copy_akta"
+                                            {{ old('copy_akta', $customer->copy_akta) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="copy_akta">Fotocopy Akta Pendirian
+                                            Perusahaan</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="copy_domisili"
+                                            id="copy_domisili"
+                                            {{ old('copy_domisili', $customer->copy_domisili) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="copy_domisili">Fotocopy Domisili
+                                            Usaha</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="copy_siup" id="copy_siup"
+                                            {{ old('copy_siup', $customer->copy_siup) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="copy_siup">Fotocopy SIUP</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="company_profile"
+                                            id="company_profile"
+                                            {{ old('company_profile', $customer->company_profile) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="company_profile">Company Profile</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="other_docs"
+                                            id="other_docs"
+                                            {{ old('other_docs', $customer->other_docs) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="other_docs">Lainnya</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        {{-- Logo Customer --}}
                         <div class="form-group">
                             <label for="photo">{{ 'Logo Customer' }}</label>
                             <div class="@error('photo') border border-danger rounded-3 @enderror">

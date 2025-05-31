@@ -50,22 +50,31 @@ class CustomerController extends Controller
 
     public function store(Request $request)
     {
-        $attributes = request()->validate([
+        $request->validate([
             'name' => ['required', 'max:50'],
-            'address' => ['required', 'max:255'],
+            'company_address' => ['required', 'max:255'],
+            'no_telp' => ['required', 'max:20'],
+            'email' => ['required', 'email', 'max:100', Rule::unique('customers')],
             'npwp' => ['required', 'max:50', Rule::unique('customers')],
-            'delivery_address' => ['nullable', 'max:255'],
-            'pic_receiver' => ['required', 'max:50'],
             'photo' => ['nullable', 'image', 'max:10240'],
         ]);
 
-        $dataToCreate = [
-            'name' => $attributes['name'],
-            'address' => $attributes['address'],
-            'npwp' => $attributes['npwp'],
-            'delivery_address' => $attributes['delivery_address'],
-            'pic_receiver' => $attributes['pic_receiver'],
+        $data = $request->only((new \App\Models\Customer)->getFillable());
+
+        $checkboxFields = [
+            'copy_ktp',
+            'copy_npwp',
+            'copy_tdp',
+            'copy_akta',
+            'copy_domisili',
+            'copy_siup',
+            'company_profile',
+            'other_docs',
         ];
+
+        foreach ($checkboxFields as $field) {
+            $data[$field] = $request->has($field) ? true : false;
+        }
 
         $lastId = Customer::max('id');
         $lastId += 1;
@@ -74,10 +83,10 @@ class CustomerController extends Controller
             $file = $request->file('photo');
             $filename = 'customer_' . $lastId . '_' . time() . '.' . $file->getClientOriginalExtension();
             $path = $file->storeAs('public/customer', $filename);
-            $dataToCreate['photo'] = 'storage/customer/' . $filename;
+            $data['photo'] = 'storage/customer/' . $filename;
         }
 
-        $customer = Customer::create($dataToCreate);
+        $customer = Customer::create($data);
 
         return redirect()->route('customer.index')->with('success', 'Customer baru berhasil ditambahkan.');
     }
@@ -123,31 +132,40 @@ class CustomerController extends Controller
     {
         $customer = Customer::findOrFail($id);
 
-        $attributes = request()->validate([
+        $request->validate([
             'name' => ['required', 'max:50'],
-            'address' => ['required', 'max:255'],
+            'company_address' => ['required', 'max:255'],
+            'no_telp' => ['required', 'max:20'],
+            'email' => ['required', 'email', 'max:100', Rule::unique('customers')->ignore($customer->id)],
             'npwp' => ['required', 'max:50', Rule::unique('customers')->ignore($customer->id)],
-            'delivery_address' => ['nullable', 'max:255'],
-            'pic_receiver' => ['required', 'max:50'],
             'photo' => ['nullable', 'image', 'max:10240'],
         ]);
 
-        $dataToUpdate = [
-            'name' => $attributes['name'],
-            'address' => $attributes['address'],
-            'npwp' => $attributes['npwp'],
-            'delivery_address' => $attributes['delivery_address'],
-            'pic_receiver' => $attributes['pic_receiver'],
+        $data = $request->only((new \App\Models\Customer)->getFillable());
+
+        $checkboxFields = [
+            'copy_ktp',
+            'copy_npwp',
+            'copy_tdp',
+            'copy_akta',
+            'copy_domisili',
+            'copy_siup',
+            'company_profile',
+            'other_docs',
         ];
+
+        foreach ($checkboxFields as $field) {
+            $data[$field] = $request->has($field) ? true : false;
+        }
 
         if ($request->hasFile('photo')) {
             $file = $request->file('photo');
             $filename = 'customer_' . $id . '_' . time() . '.' . $file->getClientOriginalExtension();
             $path = $file->storeAs('public/customer', $filename);
-            $dataToUpdate['photo'] = 'storage/customer/' . $filename;
+            $data['photo'] = 'storage/customer/' . $filename;
         }
 
-        $customer->update($dataToUpdate);
+        $customer->update($data);
 
         return redirect()->route('customer.index')->with('success', 'Customer berhasil diperbarui.');
     }

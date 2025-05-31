@@ -26,7 +26,7 @@
                     </h6>
                     <p class="text-sm d-flex align-items-center mb-1">
                         <i class="fa fa-map-marker-alt me-2" style="width: 20px; text-align: center;"></i>
-                        {{ $customer->address }}
+                        {{ $customer->company_address }}
                     </p>
                     <p class="text-sm d-flex align-items-center mb-1">
                         <i class="fa fa-id-card me-2" style="width: 20px; text-align: center;"></i>
@@ -34,7 +34,7 @@
                     </p>
                     <p class="text-sm d-flex align-items-center mb-1">
                         <i class="fa fa-phone me-2" style="width: 20px; text-align: center;"></i>
-                        {{ $customer->pic_receiver }}
+                        {{ $customer->no_telp }}
                     </p>
                 </div>
             </div>
@@ -145,7 +145,7 @@
                                                 <option value="">-- Pilih Barang Komoditi --</option>
                                                 @foreach ($goods as $item)
                                                 <option value="{{ $item->id }}" data-unit="{{ $item->unit }}"
-                                                    data-price="{{ optional($periode->prices)->firstWhere('goods_id', $item->id)?->price }}">
+                                                    data-price="{{ optional($periode?->prices)->firstWhere('goods_id', $item->id)?->price ?? '' }}">
                                                     {{ $item->name }}
                                                 </option>
                                                 @endforeach
@@ -541,7 +541,7 @@
                 <select class="form-control select2" id="goods-select-${orderItemCount}" name="goods_id[]" onchange="updateUnitAndPrice(${orderItemCount})">
                     <option value="">-- Pilih Barang Komoditi --</option>
                     @foreach ($goods as $item)
-                    <option value="{{ $item->id }}" data-unit="{{ $item->unit }}" data-price="{{ optional($periode->prices)->firstWhere('goods_id', $item->id)?->price }}">{{ $item->name }}</option>
+                    <option value="{{ $item->id }}" data-unit="{{ $item->unit }}" data-price="{{ optional($periode?->prices)->firstWhere('goods_id', $item->id)?->price ?? '' }}">{{ $item->name }}</option>
                     @endforeach
                 </select>
             </div>
@@ -599,7 +599,7 @@
                     <option value="">-- Pilih Barang Komoditi --</option>
                     @foreach ($goods as $item)
                     <option value="{{ $item->id }}" data-unit="{{ $item->unit }}"
-                    data-price="{{ optional($periode->prices)->firstWhere('goods_id', $item->id)?->price }}">{{ $item->name }}</option>
+                    data-price="{{ optional($periode?->prices)->firstWhere('goods_id', $item->id)?->price ?? '' }}">{{ $item->name }}</option>
                     @endforeach
                 </select>
             </div>
