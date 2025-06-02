@@ -83,14 +83,26 @@
 			</li>
 
 			<li class="nav-item">
-				<a class="nav-link {{ Request::is('batalkan-order')  ? 'active' : '' }}"
-					href="{{ route('cancel.order.view') }}">
+				<a class="nav-link {{ Request::is('order-diproses')  ? 'active' : '' }}"
+					href="{{ route('order.process.view') }}">
 					<div
 						class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
 						<i style="margin-top: -5px;"
-							class="fa fa-ban {{ (Request::is('batalkan-order') ? 'text-white' : 'text-dark') }}"></i>
+							class="fa fa-sync-alt {{ (Request::is('order-diproses') ? 'text-white' : 'text-dark') }}"></i>
 					</div>
-					<span class="nav-link-text ms-1">Batal Order</span>
+					<span class="nav-link-text ms-1">Proses & Batal</span>
+				</a>
+			</li>
+
+			<li class="nav-item">
+				<a class="nav-link {{ Request::is('purchasing')  ? 'active' : '' }}"
+					href="{{ route('purchase.index') }}">
+					<div
+						class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+						<i style="margin-top: -5px;"
+							class="fa fa-shopping-bag {{ (Request::is('purchasing') ? 'text-white' : 'text-dark') }}"></i>
+					</div>
+					<span class="nav-link-text ms-1">Purchase</span>
 				</a>
 			</li>
 

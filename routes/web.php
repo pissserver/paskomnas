@@ -18,6 +18,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\GoodsController;
 use App\Http\Controllers\SpecificationController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PurchaseController;
 
 
 /*
@@ -69,10 +70,15 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 	Route::get('buat-order/{customer_id}/detail/{order_id}', [OrderController::class, 'show'])->name('order.show');
 	Route::put('buat-order/{customer_id}/detail/{order_id}', [OrderController::class, 'update'])->name('order.update');
 
-	// Cancel Order
-	Route::get('batalkan-order', [OrderController::class, 'cancelOrderView'])->name('cancel.order.view');
-	Route::get('batalkan-order/data', [OrderController::class, 'cancelOrderData'])->name('cancel.order.data');
-	Route::put('batalkan-order/{id}', [OrderController::class, 'cancelOrderAction'])->name('cancel.order.action');
+	// Process & Cancel Order
+	Route::get('order-diproses', [OrderController::class, 'orderProcessView'])->name('order.process.view');
+	Route::get('order-diproses/data', [OrderController::class, 'orderProcessData'])->name('order.process.data');
+	Route::put('order-diproses/{id}', [OrderController::class, 'orderProcessAction'])->name('order.process.action');
+	Route::get('order-dibatalkan/data', [OrderController::class, 'orderCancelData'])->name('order.cancel.data');
+	Route::put('order-dibatalkan/{id}', [OrderController::class, 'orderCancelAction'])->name('order.cancel.action');
+
+	// Purchase
+	Route::get('purchase', [PurchaseController::class, 'index'])->name('purchase.index');
 
 	// Image Archive
 	Route::get('arsip-gambar', [ImageArchiveController::class, 'index'])->name('image-archive.index');

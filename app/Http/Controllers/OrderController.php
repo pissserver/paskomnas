@@ -264,13 +264,21 @@ class OrderController extends Controller
         }
     }
 
-    // Function cancel order
-    public function cancelOrderView()
+    // Function process & cancel order
+    public function orderProcessView()
     {
-        return view('pages.order.cancel-order');
+        $query = Order::with(['customer', 'orderItems.goods'])
+            ->where('status', 'confirmed');
+        $orderProcess = $query->orderBy('order_date', 'desc')->orderBy('order_code', 'desc')->paginate(10);
+        
+        $cancelQuery = Order::with(['customer', 'orderItems.goods'])
+            ->where('status', 'cancelled');
+        $orderCancel = $cancelQuery->orderBy('order_date', 'desc')->orderBy('order_code', 'desc')->paginate(10);
+        
+        return view('pages.order.order-process', compact('orderProcess', 'orderCancel'));
     }
 
-    public function cancelOrderData(Request $request)
+    public function orderProcessData(Request $request)
     {
         DB::statement("SET lc_time_names = 'id_ID'");
 
@@ -290,10 +298,10 @@ class OrderController extends Controller
             });
         }
 
-        $cancelOrders = $query->orderBy('order_date', 'desc')->orderBy('order_code', 'desc')->paginate(10);
+        $orderProcesses = $query->orderBy('order_date', 'desc')->orderBy('order_code', 'desc')->paginate(10);
 
-        $html = view('components.tables.cancel-order-table', compact('cancelOrders', 'goods'))->render();
-        $pagination = view('components.pagination.cancel-order-pagination', compact('cancelOrders', 'goods'))->render();
+        $html = view('components.tables.order-process-table', compact('orderProcesses', 'goods'))->render();
+        $pagination = view('components.pagination.order-process-pagination', compact('orderProcesses', 'goods'))->render();
 
         return response()->json([
             'html' => $html,
@@ -301,7 +309,38 @@ class OrderController extends Controller
         ]);
     }
 
-    public function cancelOrderAction($id)
+    public function orderCancelData(Request $request)
+    {
+        DB::statement("SET lc_time_names = 'id_ID'");
+
+        $keyword = $request->input('keyword');
+        $query = Order::with(['customer', 'orderItems.goods'])
+            ->where('status', 'cancelled');
+
+        $goods = Goods::all();
+
+        if ($keyword) {
+            $query->where(function ($q) use ($keyword) {
+                $q->where('order_code', 'like', "%$keyword%")
+                ->orWhereRaw("DATE_FORMAT(order_date, '%W, %d %M %Y') LIKE ?", ["%$keyword%"])
+                ->orWhereHas('customer', function ($q2) use ($keyword) {
+                    $q2->where('name', 'like', "%$keyword%");
+                });
+            });
+        }
+
+        $orderCancelled = $query->orderBy('order_date', 'desc')->orderBy('order_code', 'desc')->paginate(10);
+
+        $html = view('components.tables.order-cancel-table', compact('orderCancelled', 'goods'))->render();
+        $pagination = view('components.pagination.order-cancel-pagination', compact('orderCancelled', 'goods'))->render();
+
+        return response()->json([
+            'html' => $html,
+            'pagination' => $pagination
+        ]);
+    }
+
+    public function orderCancelAction($id)
     {
         $cancelOrder = Order::with('customer')
             ->findOrFail($id);
@@ -311,5 +350,17 @@ class OrderController extends Controller
 
         return redirect()->back()
             ->with('success', 'Order dengan kode order <b>' . e($cancelOrder->order_code) . '</b> dari customer <b>' . e($cancelOrder->customer->name) . '</b> berhasil dibatalkan.');
+    }
+
+    public function orderProcessAction($id)
+    {
+        $processOrder = Order::with('customer')
+            ->findOrFail($id);
+
+        $processOrder->status = 'confirmed';
+        $processOrder->save();
+
+        return redirect()->back()
+            ->with('success', 'Order dengan kode order <b>' . e($processOrder->order_code) . '</b> dari customer <b>' . e($processOrder->customer->name) . '</b> berhasil diproses kembali.');
     }
 }

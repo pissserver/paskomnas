@@ -55,39 +55,64 @@
         <div class="col-md-9">
             <div class="tab-content">
                 <div class="tab-pane fade show active" id="detail" role="tabpanel" aria-labelledby="detail">
-                    <form
-                        action="{{ route('order.update', ['customer_id' => $order->customer_id, 'order_id' => $order->id]) }}"
-                        method="POST" role="form text-left" enctype="multipart/form-data">
-                        @csrf
-                        @method('PUT')
-                        <div class=" py-4">
-                            <div class="card">
-                                <div class="card-header p-4 d-flex justify-content-between">
-                                    <div class="order">
-                                        <h6 class="mb-3 btn bg-gradient-primary"><i
-                                                class="fa fa-shopping-cart me-2"></i>{{ $order->order_code }}
-                                        </h6>
-                                        <p class="text-sm d-flex align-items-center mb-2">
-                                            <i class="fa fa-calendar me-2" style="width: 20px; text-align: center;"></i>
-                                            {{ \Carbon\Carbon::parse($order->order_date)->translatedFormat('l, d F Y') }}
-                                        </p>
-                                        <p class="text-sm d-flex align-items-center mb-1">
-                                            @if ($order->status === 'confirmed')
-                                            <span class="text-white bg-primary rounded-3 py-1 px-2">
-                                                <i class="fas fa-sync-alt me-2"></i> Diproses
-                                            </span>
-                                            @elseif ($order->status === 'done')
-                                            <span class="text-white bg-success rounded-3 py-1 px-2">
-                                                <i class="fas fa-check-circle me-2"></i> Selesai
-                                            </span>
-                                            @elseif ($order->status === 'cancelled')
-                                            <span class="text-white bg-danger rounded-3 py-1 px-2">
-                                                <i class="fas fa-times-circle me-2"></i> Dibatalkan
-                                            </span>
-                                            @endif
-                                        </p>
-                                    </div>
+                    <div class=" py-4">
+                        <div class="card">
+                            <div class="card-header p-4 d-flex justify-content-between">
+                                <div class="order">
+                                    <h6 class="mb-3 btn bg-gradient-primary"><i
+                                            class="fa fa-shopping-cart me-2"></i>{{ $order->order_code }}
+                                    </h6>
+                                    <p class="text-sm d-flex align-items-center mb-2">
+                                        <i class="fa fa-calendar me-2" style="width: 20px; text-align: center;"></i>
+                                        {{ \Carbon\Carbon::parse($order->order_date)->translatedFormat('l, d F Y') }}
+                                    </p>
+                                    <p class="text-sm d-flex align-items-center mb-1">
+                                        @if ($order->status === 'confirmed')
+                                        <span class="text-white bg-primary rounded-3 py-1 px-2">
+                                            <i class="fas fa-sync-alt me-2"></i> Diproses
+                                        </span>
+                                        @elseif ($order->status === 'done')
+                                        <span class="text-white bg-success rounded-3 py-1 px-2">
+                                            <i class="fas fa-check-circle me-2"></i> Selesai
+                                        </span>
+                                        @elseif ($order->status === 'cancelled')
+                                        <span class="text-white bg-danger rounded-3 py-1 px-2">
+                                            <i class="fas fa-ban me-2"></i> Dibatalkan
+                                        </span>
+                                        @endif
+                                    </p>
                                 </div>
+                                @if ($order->status === 'confirmed')
+                                <form id="cancel-form-{{ $order->id }}"
+                                    action="{{ route('order.cancel.action', $order->id) }}" method="POST"
+                                    class="d-none">
+                                    @csrf
+                                    @method('PUT')
+                                </form>
+                                <a class="btn bg-gradient-danger align-self-start" href="javascript:;"
+                                    title="Cancel Order"
+                                    onclick="confirmCancel({{ $order->id }}, '{{ $order->order_code }}', '{{ $order->customer->name }}')">
+                                    <i class="fas fa-ban text-white me-2"></i>Batalkan Order
+                                </a>
+                                @else
+                                <form id="process-form-{{ $order->id }}"
+                                    action="{{ route('order.process.action', $order->id) }}" method="POST"
+                                    class="d-none">
+                                    @csrf
+                                    @method('PUT')
+                                </form>
+                                <a class="mb-0 btn bg-gradient-primary align-self-start" href="javascript:;"
+                                    title="Process Order"
+                                    onclick="confirmProcess({{ $order->id }}, '{{ $order->order_code }}', '{{ $order->customer->name }}')">
+                                    <i class="fas fa-sync-alt text-white me-2"></i>Proses Kembali
+                                </a>
+                                @endif
+                            </div>
+                            <form
+                                action="{{ route('order.update', ['customer_id' => $order->customer_id, 'order_id' => $order->id]) }}"
+                                method="POST" role="form text-left" enctype="multipart/form-data">
+                                @csrf
+                                @method('PUT')
                                 <div class="card-body pt-2 p-4">
                                     @if($errors->any())
                                     <div class="alert alert-primary alert-dismissible fade show" role="alert">
@@ -103,7 +128,7 @@
                                     <div class="alert alert-success alert-dismissible fade show" id="alert-success"
                                         role="alert">
                                         <span class="alert-text text-white">
-                                            {{ session('success') }}</span>
+                                            {!! session('success') !!}</span>
                                         <button type="button" class="btn-close" data-bs-dismiss="alert"
                                             aria-label="Close">
                                             <i class="fa fa-close" aria-hidden="true"></i>
@@ -221,9 +246,9 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </form>
                         </div>
-                    </form>
+                    </div>
                 </div>
 
                 <div class="tab-pane fade" id="report" role="tabpanel" aria-labelledby="report">
@@ -510,6 +535,40 @@
             }
         }
     });
+
+    function confirmCancel(orderId, orderCode, customerName) {
+        Swal.fire({
+            title: 'Yakin ingin membatalkan?',
+            html: `Order dengan kode <strong>${orderCode}</strong> dari customer <strong>${customerName}</strong>.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, Batalkan!',
+            cancelButtonText: 'Kembali'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(`cancel-form-${orderId}`).submit();
+            }
+        });
+    }
+
+    function confirmProcess(orderId, orderCode, customerName) {
+        Swal.fire({
+            title: 'Yakin ingin proses kembali?',
+            html: `Order dengan kode <strong>${orderCode}</strong> dari customer <strong>${customerName}</strong>.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, Proses kembali!',
+            cancelButtonText: 'Kembali'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(`process-form-${orderId}`).submit();
+            }
+        });
+    }
 </script>
 
 

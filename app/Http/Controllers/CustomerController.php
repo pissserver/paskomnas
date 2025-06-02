@@ -25,10 +25,8 @@ class CustomerController extends Controller
         if ($keyword) {
             $query->where(function ($q) use ($keyword) {
                 $q->where('name', 'like', "%$keyword%")
-                    ->orWhere('address', 'like', "%$keyword%")
-                    ->orWhere('npwp', 'like', "%$keyword%")
-                    ->orWhere('delivery_address', 'like', "%$keyword%")
-                    ->orWhere('pic_receiver', 'like', "%$keyword%");
+                    ->orWhere('company_address', 'like', "%$keyword%")
+                    ->orWhere('npwp', 'like', "%$keyword%");
             });
         }
 
@@ -167,7 +165,7 @@ class CustomerController extends Controller
 
         $customer->update($data);
 
-        return redirect()->route('customer.index')->with('success', 'Customer berhasil diperbarui.');
+        return redirect()->route('customer.edit', $id)->with('success', 'Customer berhasil diperbarui.');
     }
 
     public function updatePrice(Request $request, string $id)

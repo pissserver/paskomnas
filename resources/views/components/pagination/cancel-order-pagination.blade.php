@@ -1,1 +1,0 @@
-{{ $cancelOrders->withQueryString()->links('pagination::bootstrap-5') }}
