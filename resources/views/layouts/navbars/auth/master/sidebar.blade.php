@@ -95,12 +95,11 @@
 			</li>
 
 			<li class="nav-item">
-				<a class="nav-link {{ Request::is('purchasing')  ? 'active' : '' }}"
-					href="{{ route('purchase.index') }}">
+				<a class="nav-link {{ Request::is('purchase')  ? 'active' : '' }}" href="{{ route('purchase.index') }}">
 					<div
 						class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
 						<i style="margin-top: -5px;"
-							class="fa fa-shopping-bag {{ (Request::is('purchasing') ? 'text-white' : 'text-dark') }}"></i>
+							class="fa fa-shopping-bag {{ (Request::is('purchase') ? 'text-white' : 'text-dark') }}"></i>
 					</div>
 					<span class="nav-link-text ms-1">Purchase</span>
 				</a>

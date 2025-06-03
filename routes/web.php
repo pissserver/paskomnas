@@ -79,6 +79,8 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 
 	// Purchase
 	Route::get('purchase', [PurchaseController::class, 'index'])->name('purchase.index');
+	Route::get('purchase-summary', [PurchaseController::class, 'purchaseSummary'])->name('purchase.summary');
+	Route::get('purchase-customer', [PurchaseController::class, 'purchaseCustomer'])->name('purchase.customer');
 
 	// Image Archive
 	Route::get('arsip-gambar', [ImageArchiveController::class, 'index'])->name('image-archive.index');
