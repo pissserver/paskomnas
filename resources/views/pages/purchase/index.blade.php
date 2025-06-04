@@ -67,7 +67,7 @@
                                 </div>
 
                                 {{-- Tengah --}}
-                                <div class="mb-3 d-flex justify-content-center align-items-center">
+                                <div class="mt-2 d-flex justify-content-center align-items-center">
                                     <i class="fa fa-calendar fa-2x me-2"></i>
                                     <input type="date" class="form-control datepicker" id="order-date" name="order_date"
                                         required>
@@ -82,7 +82,7 @@
                             </div>
                         </div>
 
-                        <div id="purchase-data">
+                        <div id="purchase-data" style="overflow-x: auto;">
                             {{-- Render Table --}}
 
                         </div>
@@ -110,13 +110,13 @@
                                 </div>
 
                                 {{-- Tengah --}}
-                                <div class="mb-3 d-flex justify-content-center align-items-center gap-3">
+                                <div class="mt-2 d-flex justify-content-center align-items-center gap-3">
                                     <i class="fa fa-calendar fa-2x"></i>
                                     <input type="date" class="form-control datepicker" id="order-date-customer"
                                         name="order_date" required>
 
                                     <div style="min-width: 250px; flex-grow: 1;">
-                                        <select class="form-select select2 w-100" id="order-select-customer" required>
+                                        <select class="form-select select2 w-50" id="order-select-customer" required>
                                             <option value="all" selected>-- Pilih Customer --</option>
                                             @foreach ($customers as $customer)
                                             <option value="{{ $customer->id }}">{{ $customer->name }}</option>

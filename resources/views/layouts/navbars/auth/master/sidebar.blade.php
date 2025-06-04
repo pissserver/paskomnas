@@ -105,6 +105,29 @@
 				</a>
 			</li>
 
+			<li class="nav-item">
+				<a class="nav-link {{ Request::is('surat-jalan')  ? 'active' : '' }}"
+					href="{{ route('document.index') }}">
+					<div
+						class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+						<i style="margin-top: -5px;"
+							class="fa fa-clipboard-list {{ (Request::is('surat-jalan') ? 'text-white' : 'text-dark') }}"></i>
+					</div>
+					<span class="nav-link-text ms-1">Surat Jalan</span>
+				</a>
+			</li>
+
+			<li class="nav-item">
+				<a class="nav-link {{ Request::is('invoice')  ? 'active' : '' }}" href="{{ route('invoice.index') }}">
+					<div
+						class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+						<i style="margin-top: -5px;"
+							class="fa fa-file-invoice {{ (Request::is('invoice') ? 'text-white' : 'text-dark') }}"></i>
+					</div>
+					<span class="nav-link-text ms-1">Invoice</span>
+				</a>
+			</li>
+
 			<li class="nav-item mt-3">
 				<h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Master</h6>
 			</li>

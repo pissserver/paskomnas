@@ -19,6 +19,8 @@ use App\Http\Controllers\GoodsController;
 use App\Http\Controllers\SpecificationController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\InvoiceController;
 
 
 /*
@@ -81,6 +83,14 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 	Route::get('purchase', [PurchaseController::class, 'index'])->name('purchase.index');
 	Route::get('purchase-summary', [PurchaseController::class, 'purchaseSummary'])->name('purchase.summary');
 	Route::get('purchase-customer', [PurchaseController::class, 'purchaseCustomer'])->name('purchase.customer');
+
+	// Travel Document
+	Route::get('surat-jalan', [DocumentController::class, 'index'])->name('document.index');
+	Route::get('surat-jalan/data', [DocumentController::class, 'getDocumentData'])->name('document.data');
+
+	// Invoice
+	Route::get('invoice', [InvoiceController::class, 'index'])->name('invoice.index');
+	Route::get('invoice/data', [InvoiceController::class, 'getInvoiceData'])->name('invoice.data');
 
 	// Image Archive
 	Route::get('arsip-gambar', [ImageArchiveController::class, 'index'])->name('image-archive.index');
