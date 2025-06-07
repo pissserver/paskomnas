@@ -52,7 +52,7 @@
     <div class="row mt-n2 p-4">
         @foreach($customers as $customer)
         <div class="col-md-3 mt-4">
-            <div class="card ">
+            <div class="card">
                 <div class="card-header mx-4 p-3 text-center">
                     <img src="{{ $customer->photo ?? asset('assets/img/default-profile.jpg') }}"
                         alt="{{ $customer->name }}" class="avatar shadow-lg img-fluid"
@@ -76,14 +76,21 @@
                 }
                 @endphp
                 <div class="card-body pt-0 p-3 text-center">
+                    @if ($customer->customer_group_id != null)
+                    <p
+                        class="text-xs font-weight-bold mb-0 text-capitalize bg-gradient-warning text-white rounded rounded-pill px-2 py-1 m-0 d-inline-block">
+                        <i class="fa fa-users me-2"></i>{{ $customer->customerGroup->name }}
+                    </p>
+                    @endif
                     <h6 class="text-center mb-0">{{ $customer->name }}</h6>
-                    <div class="d-flex justify-content-center mb-1">
+                    <div class="d-flex justify-content-center mb-2">
                         <span class="badge {{ $badgeClass }} px-3 mt-2 py-1 rounded-pill text-uppercase small">
                             <i class="fa fa-award me-1"></i>
                             {{ $level }}
                         </span>
                     </div>
-                    <span class="text-xs">{{ $customer->company_address }}</span>
+                    <span class="text-xs d-inline-block"
+                        style="line-height: 1.5;">{{ $customer->company_address }}</span>
                     <hr class="horizontal dark mt-2 mb-3">
                     <div class="d-flex justify-content-center gap-2">
                         <a href="{{ route('order.create', $customer->id) }}" class="btn  btn-primary">

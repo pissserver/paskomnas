@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Models\CustomerGroup;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Goods;
@@ -12,6 +14,98 @@ use Illuminate\Validation\Rule;
 
 class CustomerController extends Controller
 {
+    // Group Customer
+    public function groupIndex()
+    {
+        $customerGroups = CustomerGroup::with(['customers'])
+            ->orderBy('name', 'asc')
+            ->get();
+        $totalCustomerGroups = $customerGroups->count();
+
+        return view('pages.customer-group.index', compact('customerGroups', 'totalCustomerGroups'));
+    }
+
+    public function groupCreate()
+    {
+        return view('pages.customer-group.create');
+    }
+
+    public function groupStore(Request $request)
+    {
+        $attributes = request()->validate([
+            'name' => ['required', 'max:50'],
+            'photo' => ['nullable', 'image', 'max:10240'],
+        ]);
+
+        $dataToCreate = [
+            'name' => $attributes['name'],
+        ];
+
+        $lastId = CustomerGroup::max('id');
+        $lastId += 1;
+
+        if ($request->hasFile('photo')) {
+            $file = $request->file('photo');
+            $filename = 'customer-group_' . $lastId . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('public/customer-group', $filename);
+            $dataToCreate['photo'] = 'storage/customer-group/' . $filename;
+        }
+
+        CustomerGroup::create($dataToCreate);
+
+        return redirect()->route('customer.group.index')->with('success', 'Customer group baru berhasil ditambahkan.');
+    }
+
+    public function groupEdit(string $id)
+    {
+        $customerGroup = CustomerGroup::findOrFail($id);
+        return view('pages.customer-group.edit', compact('customerGroup'));
+    }
+
+    public function groupUpdate(Request $request, string $id)
+    {
+        $customerGroup = CustomerGroup::findOrFail($id);
+
+        $attributes = request()->validate([
+            'name' => ['required', 'max:50'],
+            'photo' => ['nullable', 'image', 'max:10240'],
+        ]);
+
+        $dataToUpdate = [
+            'name' => $attributes['name'],
+        ];
+
+        if ($request->hasFile('photo')) {
+            if ($customerGroup->photo && file_exists(public_path($customerGroup->photo))) {
+                unlink(public_path($customerGroup->photo));
+            }
+            $file = $request->file('photo');
+            $filename = 'customer-group_' . $id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('public/customer-group', $filename);
+            $dataToUpdate['photo'] = 'storage/customer-group/' . $filename;
+        }
+
+        $customerGroup->update($dataToUpdate);
+
+        return redirect()->route('customer.group.index', $id)->with('success', 'Customer group berhasil diperbarui.');
+    }
+
+    public function groupDestroy(string $id)
+    {
+        $customerGroup = CustomerGroup::findOrFail($id);
+
+        if ($customerGroup->photo && file_exists(public_path($customerGroup->photo))) {
+            unlink(public_path($customerGroup->photo));
+        }
+
+        $customerGroup->delete();
+
+        Customer::where('customer_group_id', $id)->update(['customer_group_id' => null]);
+
+        return redirect()->route('customer.group.index')->with('success', 'Customer group berhasil dihapus.');
+    }
+
+    // Customer
     public function index()
     {
         return view('pages.customer.index');
@@ -43,12 +137,15 @@ class CustomerController extends Controller
 
     public function create()
     {
-        return view('pages.customer.create');
+        $customerGroups = CustomerGroup::orderBy('name', 'asc')->get();
+
+        return view('pages.customer.create', compact('customerGroups'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
+            'customer_group_id' => ['nullable', 'exists:customer_groups,id'],
             'name' => ['required', 'max:50'],
             'company_address' => ['required', 'max:255'],
             'no_telp' => ['required', 'max:20'],
@@ -91,6 +188,7 @@ class CustomerController extends Controller
 
     public function edit(string $id)
     {
+        $customerGroups = CustomerGroup::orderBy('name', 'asc')->get();
         $customer = Customer::withCount('orders')->findOrFail($id);
         $orderCount = $customer->orders_count;
 
@@ -109,21 +207,33 @@ class CustomerController extends Controller
         }
 
         $goods = Goods::orderBy('name', 'asc')->get();
-        $periode = Periode::where('customer_id', $customer->id)->first();
-        
-        if ($periode) {
-            $goods->each(function ($item) use ($periode) {
-                $item->price = Price::where('periode_id', $periode->id)
-                    ->where('goods_id', $item->id)
-                    ->value('price');
-            });
-        } else {
-            $goods->each(function ($item) {
-                $item->price = null;
-            });
+
+        $ownPeriode = Periode::where('customer_id', $customer->id)->first();
+
+        $groupPeriode = null;
+
+        if (!$ownPeriode && $customer->customer_group_id) {
+            $groupCustomerIds = Customer::where('customer_group_id', $customer->customer_group_id)
+                ->where('id', '!=', $customer->id)
+                ->pluck('id');
+
+            $groupPeriode = Periode::whereIn('customer_id', $groupCustomerIds)
+                ->orderBy('created_at', 'desc')
+                ->first();
         }
 
-        return view('pages.customer.edit', compact('customer', 'level', 'badgeClass', 'goods', 'periode'));
+        // Pilih sumber harga dari ownPeriode kalau ada, kalau tidak ambil dari groupPeriode
+        $pricePeriode = $ownPeriode ? $ownPeriode : $groupPeriode;
+
+        $goods->each(function ($item) use ($pricePeriode) {
+            $item->price = $pricePeriode
+                ? Price::where('periode_id', $pricePeriode->id)
+                    ->where('goods_id', $item->id)
+                    ->value('price')
+                : null;
+        });
+
+        return view('pages.customer.edit', compact('customerGroups', 'customer', 'level', 'badgeClass', 'goods', 'ownPeriode', 'groupPeriode'));
     }
 
     public function update(Request $request, string $id)
@@ -131,6 +241,7 @@ class CustomerController extends Controller
         $customer = Customer::findOrFail($id);
 
         $request->validate([
+            'customer_group_id' => ['nullable', 'exists:customer_groups,id'],
             'name' => ['required', 'max:50'],
             'company_address' => ['required', 'max:255'],
             'no_telp' => ['required', 'max:20'],

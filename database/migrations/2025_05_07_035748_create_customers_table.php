@@ -17,6 +17,12 @@ class CreateCustomersTable extends Migration
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
 
+            // Foreign Key
+            $table->unsignedBigInteger('customer_group_id')->nullable();
+            $table->foreign('customer_group_id')
+                ->references('id')->on('customer_groups')
+                ->onDelete('set null');
+
             // Informasi Umum
             $table->string('name');
             $table->enum('company_status', ['pusat', 'cabang'])->nullable();

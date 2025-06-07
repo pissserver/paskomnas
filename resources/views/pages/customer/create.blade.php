@@ -43,6 +43,29 @@
                                 <i class="fas fa-info-circle me-2"></i> {{ __('Informasi Umum') }}
                             </h6>
                             <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="name">Customer Group</label>
+                                        <div
+                                            class="@error('customer_group_id') border border-danger rounded-3 @enderror">
+                                            <select class="form-control select2" id="customer_group_id"
+                                                name="customer_group_id">
+                                                <option value="">Pilih Customer Group</option>
+                                                @foreach($customerGroups as $group)
+                                                <option value="{{ $group->id }}"
+                                                    {{ old('customer_group_id') == $group->id ? 'selected' : '' }}>
+                                                    {{ $group->name }}
+                                                </option>
+                                                @endforeach
+                                            </select>
+                                            @error('customer_group_id')
+                                            <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="name">Nama Perusahaan</label>
@@ -168,7 +191,8 @@
                                                 <input class="form-check-input" type="radio" name="business_type"
                                                     value="restoran" id="usaha-restoran"
                                                     {{ old('business_type') == 'restoran' ? 'checked' : '' }}>
-                                                <label class="form-check-label" for="usaha-restoran">Restoran / Rumah
+                                                <label class="form-check-label" for="usaha-restoran">Restoran /
+                                                    Rumah
                                                     Makan</label>
                                             </div>
                                             <div class="form-check me-4">
@@ -483,7 +507,8 @@
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="invoice_day_time" class="form-label">Hari & Jam Tukar Faktur</label>
+                                        <label for="invoice_day_time" class="form-label">Hari & Jam Tukar
+                                            Faktur</label>
                                         <input type="text"
                                             class="form-control @error('invoice_day_time') is-invalid @enderror"
                                             id="invoice_day_time" name="invoice_day_time"
@@ -510,7 +535,8 @@
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="invoice_pic_name" class="form-label">PIC Tukar Faktur (Nama)</label>
+                                        <label for="invoice_pic_name" class="form-label">PIC Tukar Faktur
+                                            (Nama)</label>
                                         <input type="text"
                                             class="form-control @error('invoice_pic_name') is-invalid @enderror"
                                             id="invoice_pic_name" name="invoice_pic_name"
@@ -522,7 +548,8 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="invoice_pic_phone" class="form-label">PIC Tukar Faktur (Telepon /
+                                        <label for="invoice_pic_phone" class="form-label">PIC Tukar Faktur (Telepon
+                                            /
                                             WhatsApp)</label>
                                         <input type="number"
                                             class="form-control @error('invoice_pic_phone') is-invalid @enderror"
@@ -610,7 +637,8 @@
                                 <div class="row g-3">
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label for="delivery_address_1" class="form-label">Alamat Lengkap</label>
+                                            <label for="delivery_address_1" class="form-label">Alamat
+                                                Lengkap</label>
                                             <textarea
                                                 class="form-control @error('delivery_address_1') is-invalid @enderror"
                                                 id="delivery_address_1" name="delivery_address_1" rows="3"
@@ -677,7 +705,8 @@
                                 <div class="row g-3">
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label for="delivery_address_2" class="form-label">Alamat Lengkap</label>
+                                            <label for="delivery_address_2" class="form-label">Alamat
+                                                Lengkap</label>
                                             <textarea
                                                 class="form-control @error('delivery_address_2') is-invalid @enderror"
                                                 id="delivery_address_2" name="delivery_address_2" rows="3"
@@ -790,7 +819,8 @@
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="company_profile"
                                             id="company_profile">
-                                        <label class="form-check-label" for="company_profile">Company Profile</label>
+                                        <label class="form-check-label" for="company_profile">Company
+                                            Profile</label>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
@@ -897,6 +927,15 @@
 
             cropModal.hide();
         }, 'image/jpeg');
+    });
+
+    $(document).ready(function () {
+        $('.select2').select2({
+            theme: 'bootstrap-5',
+            placeholder: "-- Pilih Customer Group --",
+            allowClear: true,
+            width: '100%'
+        });
     });
 </script>
 @endsection

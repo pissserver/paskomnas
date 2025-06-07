@@ -20,6 +20,11 @@ class Periode extends Model
         'customer_id',
     ];
 
+    public function customerGroup()
+    {
+        return $this->belongsTo(CustomerGroup::class);
+    }
+
     public function customer()
     {
         return $this->belongsTo(Customer::class);

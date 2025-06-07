@@ -10,7 +10,7 @@
             <div class="col-auto">
                 <div class="d-flex flex-column align-items-center">
                     <div class="avatar avatar-xl position-relative">
-                        <img src="{{ asset($customer->photo) ?? asset('assets/img/default-profile.jpg') }}"
+                        <img src="{{ $customer->photo ? asset($customer->photo) : asset('assets/img/default-profile.jpg') }}"
                             alt="{{ $customer->name }}" class="avatar shadow-lg img-fluid"
                             style="width: 80px; height: 80px; object-fit: cover;">
                     </div>
@@ -22,20 +22,33 @@
             </div>
             <div class="col-auto my-auto">
                 <div class="h-100">
-                    <h6 class="btn bg-gradient-primary"><i class="fa fa-briefcase me-2"></i>{{ $customer->name }}
-                    </h6>
-                    <p class="text-sm d-flex align-items-center mb-1">
-                        <i class="fa fa-map-marker-alt me-2" style="width: 20px; text-align: center;"></i>
-                        {{ $customer->company_address }}
-                    </p>
-                    <p class="text-sm d-flex align-items-center mb-1">
-                        <i class="fa fa-id-card me-2" style="width: 20px; text-align: center;"></i>
-                        {{ $customer->npwp }}
-                    </p>
-                    <p class="text-sm d-flex align-items-center mb-1">
-                        <i class="fa fa-phone me-2" style="width: 20px; text-align: center;"></i>
-                        {{ $customer->no_telp }}
-                    </p>
+                    @if ($customer->customer_group_id != null)
+                    <div class="mb-1">
+                        <p
+                            class="text-xs font-weight-bold mb-0 text-capitalize bg-gradient-warning text-white rounded-pill px-2 py-1 m-0 d-inline-block">
+                            <i class="fa fa-users me-2"></i>{{ $customer->customerGroup->name }}
+                        </p>
+                    </div>
+                    @endif
+                    <div class="mb-2">
+                        <h6 class="btn bg-gradient-primary m-0">
+                            <i class="fa fa-briefcase me-2"></i>{{ $customer->name }}
+                        </h6>
+                    </div>
+                    <div style="max-width: 350px; word-wrap: break-word;">
+                        <p class="text-sm d-flex align-items-start mb-1">
+                            <i class="fa fa-map-marker-alt me-3 mt-1" style="width: 20px; text-align: start;"></i>
+                            {{ $customer->company_address }}
+                        </p>
+                        <p class="text-sm d-flex align-items-start mb-1">
+                            <i class="fa fa-id-card me-2 mt-1" style="width: 20px; text-align: start;"></i>
+                            {{ $customer->npwp }}
+                        </p>
+                        <p class="text-sm d-flex align-items-start mb-1">
+                            <i class="fa fa-phone me-2 mt-1" style="width: 20px; text-align: start;"></i>
+                            {{ $customer->no_telp }}
+                        </p>
+                    </div>
                 </div>
             </div>
             <div class="col-lg-3 col-md-3 my-sm-auto ms-sm-auto me-sm-0 mx-auto mt-3">

@@ -9,13 +9,44 @@
         <div class="col-md-3 py-4">
             <div class="card">
                 <div class="card-header mx-4 p-3 text-center">
-                    <img src="{{ asset($order->customer->photo) ?? asset('assets/img/default-profile.jpg') }}"
+                    <img src="{{ $order->customer->photo ? asset($order->customer->photo) : asset('assets/img/default-profile.jpg') }}"
                         alt="{{ $order->customer->name }}" class="avatar shadow-lg img-fluid"
                         style="width: 80px; height: 80px; object-fit: cover;">
                 </div>
                 <div class="card-body pt-0 p-3 text-center">
+                    @php
+                    $orderCount = $order->customer->orders_count;
+
+                    if ($orderCount >= 500) {
+                    $level = 'Platinum';
+                    $badgeClass = 'bg-gradient-dark';
+                    } elseif ($orderCount >= 100) {
+                    $level = 'Gold';
+                    $badgeClass = 'bg-gradient-warning';
+                    } elseif ($orderCount >= 20) {
+                    $level = 'Silver';
+                    $badgeClass = 'bg-gradient-secondary';
+                    } else {
+                    $level = 'Basic';
+                    $badgeClass = 'bg-gradient-light text-dark';
+                    }
+                    @endphp
+
+                    @if ($order->customer->customer_group_id != null)
+                    <p
+                        class="text-xs font-weight-bold mb-0 text-capitalize bg-gradient-warning text-white rounded rounded-pill px-2 py-1 m-0 d-inline-block">
+                        <i class="fa fa-users me-2"></i>{{ $order->customer->customerGroup->name }}
+                    </p>
+                    @endif
                     <h6 class="text-center mb-0">{{ $order->customer->name }}</h6>
-                    <span class="text-xs">{{ $order->customer->company_address }}</span>
+                    <div class="d-flex justify-content-center mb-2">
+                        <span class="badge {{ $badgeClass }} px-3 mt-2 py-1 rounded-pill text-uppercase small">
+                            <i class="fa fa-award me-1"></i>
+                            {{ $level }}
+                        </span>
+                    </div>
+                    <span class="text-xs d-inline-block"
+                        style="line-height: 1.5;">{{ $order->customer->company_address }}</span>
                     <hr class="horizontal dark my-3">
                     <div class="d-flex justify-content-center gap-2">
                         <a href="{{ route('order.create', $order->customer->id) }}" class="btn  btn-primary">

@@ -21,11 +21,17 @@
             </div>
             <div class="col-auto my-auto text-center">
                 <div class="h-100 d-flex flex-column align-items-start">
-                    <p class="mb-0 font-weight-bold text-sm text-uppercase btn bg-gradient-primary btn-sm px-4">
+                    @if ($customer->customer_group_id != null)
+                    <p
+                        class="text-xs font-weight-bold mb-0 text-capitalize bg-gradient-warning text-white rounded rounded-pill px-2 py-1 m-0 d-inline-block">
+                        <i class="fa fa-users me-2"></i>{{ $customer->customerGroup->name }}
+                    </p>
+                    @endif
+                    <p class="mb-0 mt-2 font-weight-bold text-sm text-uppercase btn bg-gradient-primary btn-sm px-4">
                         {{ $customer->name }}
                     </p>
                     <span class="badge {{ $badgeClass }} mt-2 d-flex align-items-center px-3 py-1 rounded-pill">
-                        <i class="fa fa-award me-1"></i> {{-- Ganti dengan icon lain kalau mau --}}
+                        <i class="fa fa-award me-1"></i>
                         {{ strtoupper($level) }}
                     </span>
                 </div>
@@ -61,6 +67,18 @@
         </div>
     </div>
 </div>
+
+@if(!$ownPeriode && $groupPeriode || !$ownPeriode && !$groupPeriode)
+<div class="container-fluid mt-4 mb-n3">
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <i class="fa fa-info me-2 text-white"></i>
+        <span class="alert-text text-white">Data harga belum diupdate</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+            <i class="fa fa-close" aria-hidden="true"></i>
+        </button>
+    </div>
+</div>
+@endif
 
 <div class="tab-content">
     <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
@@ -102,6 +120,29 @@
                             <h6 class="mb-3 p-2 bg-gradient-dark text-white rounded d-inline-flex align-items-center">
                                 <i class="fas fa-info-circle me-2"></i> {{ __('Informasi Umum') }}
                             </h6>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="name">Customer Group</label>
+                                        <div
+                                            class="@error('customer_group_id') border border-danger rounded-3 @enderror">
+                                            <select class="form-control select2" id="customer_group_id"
+                                                name="customer_group_id">
+                                                <option value="">Pilih Customer Group</option>
+                                                @foreach($customerGroups as $group)
+                                                <option value="{{ $group->id }}"
+                                                    {{ old('customer_group_id', $customer->customer_group_id) == $group->id ? 'selected' : '' }}>
+                                                    {{ $group->name }}
+                                                </option>
+                                                @endforeach
+                                            </select>
+                                            @error('customer_group_id')
+                                            <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
@@ -993,7 +1034,7 @@
                                     <div class="@error('periode_name')border border-danger rounded-3 @enderror">
                                         <input class="form-control" type="text" id="periode-name" name="periode_name"
                                             placeholder="Nama Periode"
-                                            value="{{ old('periode_name', optional($periode)->periode_name) }}">
+                                            value="{{ old('periode_name', optional($ownPeriode)->periode_name) }}">
                                         @error('periode_name')
                                         <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                         @enderror
@@ -1006,7 +1047,7 @@
                                     <div class="@error('start_date') border border-danger rounded-3 @enderror">
                                         <input class="form-control datepicker" type="text" id="start-date"
                                             name="start_date"
-                                            value="{{ old('start_date', optional($periode)->start_date) }}"
+                                            value="{{ old('start_date', optional($ownPeriode)->start_date) }}"
                                             placeholder="Tanggal Awal" autocomplete="off">
                                         @error('start_date')
                                         <p class="text-danger text-xs mt-2">{{ $message }}</p>
@@ -1020,7 +1061,7 @@
                                     <div class="@error('start_date') border border-danger rounded-3 @enderror">
                                         <input class="form-control datepicker" type="text" id="end-date" name="end_date"
                                             placeholder="Tanggal Akhir"
-                                            value="{{ old('end_date', optional($periode)->end_date) }}"
+                                            value="{{ old('end_date', optional($ownPeriode)->end_date) }}"
                                             autocomplete="off">
                                         @error('end_date')
                                         <p class="text-danger text-xs mt-2">{{ $message }}</p>
@@ -1066,7 +1107,8 @@
                                         <div class="@error('price') border border-danger rounded-3 @enderror">
                                             <input class="form-control" type="number" step="1000" placeholder="0"
                                                 id="goods-price" name="price[]"
-                                                value="{{ old('price.' . $index, $item->price) }}">
+                                                value="{{ old('price.' . $index, $item->price) }}"
+                                                {{ !$ownPeriode && $groupPeriode ? 'style=background-color:#fff3cd;' : '' }}>
                                             @error('price')
                                             <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                             @enderror
@@ -1154,6 +1196,15 @@
                 instance.altInput.setAttribute("style", "background-color: white; cursor: text;");
             }
         }
+    });
+
+    $(document).ready(function () {
+        $('.select2').select2({
+            theme: 'bootstrap-5',
+            placeholder: "-- Pilih Customer Group --",
+            allowClear: true,
+            width: '100%'
+        });
     });
 </script>
 

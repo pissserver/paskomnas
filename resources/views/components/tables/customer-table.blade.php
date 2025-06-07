@@ -9,9 +9,15 @@
             class="avatar me-3 zoomable" style="cursor: zoom-in;">
     </td>
     <td class="text-center">
+        @if ($customer->customer_group_id != null)
+        <p
+            class="text-xs font-weight-bold mb-0 text-capitalize bg-gradient-warning text-white rounded rounded-pill px-2 py-1 m-0 d-inline-block">
+            <i class="fa fa-users me-2"></i>{{ $customer->customerGroup->name }}
+        </p>
+        @endif
         <p class="text-xs font-weight-bold mb-0 text-capitalize">{{ $customer->name }}</p>
     </td>
-    <td class="text-center">
+    <td class="text-center text-wrap" style="max-width: 250px;">
         <p class="text-xs font-weight-bold mb-0">{{ $customer->company_address }}</p>
     </td>
     <td class="text-center">

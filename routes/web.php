@@ -101,6 +101,14 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 	Route::delete('arsip-gambar/{id}', [ImageArchiveController::class, 'destroy'])->name('image-archive.destroy');
 	Route::post('arsip-gambar/delete-selected', [ImageArchiveController::class, 'deleteAllSelected'])->name('image-archive.delete-selected');
 
+	// Group Customer
+	Route::get('customer-group', [CustomerController::class, 'groupIndex'])->name('customer.group.index');
+	Route::get('customer-group/tambah', [CustomerController::class, 'groupCreate'])->name('customer.group.create');
+	Route::put('customer-group', [CustomerController::class, 'groupStore'])->name('customer.group.store');
+	Route::get('customer-group/{id}/edit', [CustomerController::class, 'groupEdit'])->name('customer.group.edit');
+	Route::put('customer-group/{id}', [CustomerController::class, 'groupUpdate'])->name('customer.group.update');
+	Route::delete('customer-group/{id}', [CustomerController::class, 'groupDestroy'])->name('customer.group.destroy');
+
 	// Customer
 	Route::get('customer', [CustomerController::class, 'index'])->name('customer.index');
 	Route::get('customer/data', [CustomerController::class, 'data'])->name('customer.data');

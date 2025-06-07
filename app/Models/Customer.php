@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\CustomerGroup;
 use App\Models\Order;
 use App\Models\Periode;
 
@@ -15,6 +16,8 @@ class Customer extends Model
     protected $table = 'customers';
 
     protected $fillable = [
+        'customer_group_id',
+        
         // Informasi Umum
         'name',
         'company_status',
@@ -97,6 +100,11 @@ class Customer extends Model
         'company_profile' => 'boolean',
         'other_docs' => 'boolean',
     ];
+
+    public function customerGroup()
+    {
+        return $this->belongsTo(CustomerGroup::class);
+    }
 
     public function orders()
     {
