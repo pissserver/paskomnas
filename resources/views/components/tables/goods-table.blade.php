@@ -10,6 +10,9 @@
         <span class="text-secondary text-xs font-weight-bold text-capitalize">{{ $good->unit }}</span>
     </td>
     <td class="text-center">
+        <p class="text-xs font-weight-bold mb-0">{{ $good->ppn != null ? $good->ppn : '0' }}%</p>
+    </td>
+    <td class="text-center">
         <a href="{{ route('goods.edit', $good->id) }}"
             class="mb-0 btn bg-gradient-secondary d-inline-flex align-items-center justify-content-center py-2 px-3"
             data-bs-toggle="tooltip" title="Edit barang komoditi">

@@ -37,7 +37,7 @@
                         </div>
                         @endif
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="goods-name"
                                         class="form-control-label">{{ __('Nama Barang Komoditi') }}</label>
@@ -50,13 +50,25 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="unit" class="form-control-label">{{ __('Satuan') }}</label>
                                     <div class="@error('unit') border border-danger rounded-3 @enderror">
                                         <input class="form-control" type="text" placeholder="Satuan" id="unit"
                                             name="unit">
                                         @error('unit')
+                                        <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="ppn" class="form-control-label">{{ __('PPN') }}</label>
+                                    <div class="@error('ppn') border border-danger rounded-3 @enderror">
+                                        <input class="form-control" type="number" placeholder="0" id="ppn" name="ppn"
+                                            step="0.01">
+                                        @error('ppn')
                                         <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                         @enderror
                                     </div>

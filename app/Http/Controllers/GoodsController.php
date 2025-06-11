@@ -21,7 +21,8 @@ class GoodsController extends Controller
         if ($keyword) {
             $query->where(function ($q) use ($keyword) {
                 $q->where('name', 'like', "%$keyword%")
-                    ->orWhere('unit', 'like', "%$keyword%");
+                    ->orWhere('unit', 'like', "%$keyword%")
+                    ->orWhere('ppn', 'like', "%$keyword%");
             });
         }
 
@@ -46,11 +47,13 @@ class GoodsController extends Controller
         $attributes = request()->validate([
             'name' => ['required', 'max:50'],
             'unit' => ['required', 'max:50'],
+            'ppn' => ['nullable', 'numeric', 'min:0', 'max:100'],
         ]);
 
         $dataToCreate = [
             'name' => $attributes['name'],
             'unit' => $attributes['unit'],
+            'ppn' => $attributes['ppn'],
         ];
 
         Goods::create($dataToCreate);
@@ -71,11 +74,13 @@ class GoodsController extends Controller
         $attributes = request()->validate([
             'name' => ['required', 'max:50'],
             'unit' => ['required', 'max:50'],
+            'ppn' => ['nullable', 'numeric', 'min:0', 'max:100'],
         ]);
 
         $dataToUpdate = [
             'name' => $attributes['name'],  
             'unit' => $attributes['unit'],
+            'ppn' => $attributes['ppn'],
         ];
 
         $goods->update($dataToUpdate);
