@@ -218,19 +218,25 @@ class CustomerController extends Controller
                 ->pluck('id');
 
             $groupPeriode = Periode::whereIn('customer_id', $groupCustomerIds)
-                ->orderBy('created_at', 'desc')
+                ->withCount('prices')
+                ->orderByDesc('prices_count')
                 ->first();
         }
 
         // Pilih sumber harga dari ownPeriode kalau ada, kalau tidak ambil dari groupPeriode
         $pricePeriode = $ownPeriode ? $ownPeriode : $groupPeriode;
 
-        $goods->each(function ($item) use ($pricePeriode) {
-            $item->price = $pricePeriode
-                ? Price::where('periode_id', $pricePeriode->id)
-                    ->where('goods_id', $item->id)
-                    ->value('price')
-                : null;
+        $pricesMap = [];
+
+        if ($pricePeriode) {
+            $prices = Price::where('periode_id', $pricePeriode->id)->get();
+            foreach ($prices as $price) {
+                $pricesMap[$price->goods_id] = $price->price;
+            }
+        }
+
+        $goods->each(function ($item) use ($pricesMap) {
+            $item->price = isset($pricesMap[$item->id]) ? $pricesMap[$item->id] : null;
         });
 
         return view('pages.customer.edit', compact('customerGroups', 'customer', 'level', 'badgeClass', 'goods', 'ownPeriode', 'groupPeriode'));

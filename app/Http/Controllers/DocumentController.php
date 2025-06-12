@@ -24,52 +24,72 @@ class DocumentController extends Controller
     {
         $customerId = $request->input('customer_id');
         $orderDate = $request->input('order_date');
+        $selectedOrderId = $request->input('order_id');
 
         if (!$customerId || !$orderDate) {
             return response()->json(['error' => 'Invalid request'], 400);
         }
 
-        $orders = Order::with(['orderItems.goods', 'orderItems.specification'])
-            ->where('customer_id', $customerId)
+        // Ambil semua PO untuk dropdown
+        $orders = Order::where('customer_id', $customerId)
             ->where('status', 'confirmed')
             ->whereDate('order_date', $orderDate)
             ->get();
 
-        $customer = Customer::find($customerId);
-        
-
-        $data = [];
-        foreach ($orders as $order) {
-            foreach ($order->orderItems as $item) {
-                $name = $item->goods->name;
-                $unit = $item->goods->unit;
-                $qty = $item->quantity;
-                $specification = $item->specification ? $item->specification->name : '-';
-
-                // Buat key unik berdasarkan nama + spesifikasi supaya beda spesifikasi tetap terpisah
-                $key = $name . '||' . $specification;
-
-                if (isset($data[$key])) {
-                    $data[$key]['qty'] += $qty;
-                } else {
-                    $data[$key] = [
-                        'name' => $name,
-                        'unit' => $unit,
-                        'qty' => $qty,
-                        'specification' => $specification,
-                    ];
-                }
-            }
+        if ($orders->isEmpty()) {
+            return response()->json(['error' => 'No orders found'], 404);
         }
 
-        $data = array_values($data);
+        // Ambil 1 PO secara eksplisit berdasarkan ID (pastikan dengan relasi!)
+        $selectedOrder = Order::with(['orderItems.goods', 'orderItems.specification'])
+            ->where('customer_id', $customerId)
+            ->where('status', 'confirmed')
+            ->whereDate('order_date', $orderDate)
+            ->when($selectedOrderId, function ($query) use ($selectedOrderId) {
+                return $query->where('id', $selectedOrderId);
+            })
+            ->first();
+
+        if (!$selectedOrder) {
+            return response()->json(['error' => 'Selected order not found'], 404);
+        }
+
+        // Ambil customer
+        $customer = Customer::find($customerId);
+
+        // Susun data item dari PO terpilih
+        $data = [];
+        foreach ($selectedOrder->orderItems as $item) {
+            $name = $item->goods->name;
+            $unit = $item->goods->unit;
+            $qty = $item->quantity;
+            $specification = $item->specification ? $item->specification->name : '-';
+            $key = $name . '||' . $specification;
+
+            if (isset($data[$key])) {
+                $data[$key]['qty'] += $qty;
+            } else {
+                $data[$key] = [
+                    'name' => $name,
+                    'unit' => $unit,
+                    'qty' => $qty,
+                    'specification' => $specification,
+                ];
+            }
+        }
 
         return response()->json([
             'customer' => $customer->name,
             'address' => $customer->company_address,
-            'order_code' => $orders->first()->order_code,
-            'data' => $data,
+            'order_code' => $selectedOrder->order_code,
+            'order_id' => $selectedOrder->id,
+            'data' => array_values($data),
+            'po_list' => $orders->map(function ($order) {
+                return [
+                    'id' => $order->id,
+                    'code' => $order->order_code,
+                ];
+            }),
         ]);
-
     }
 }

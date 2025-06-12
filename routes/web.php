@@ -19,6 +19,7 @@ use App\Http\Controllers\GoodsController;
 use App\Http\Controllers\SpecificationController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\PackingController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\InvoiceController;
 
@@ -83,6 +84,10 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 	Route::get('purchase', [PurchaseController::class, 'index'])->name('purchase.index');
 	Route::get('purchase-summary', [PurchaseController::class, 'purchaseSummary'])->name('purchase.summary');
 	Route::get('purchase-customer', [PurchaseController::class, 'purchaseCustomer'])->name('purchase.customer');
+
+	// Packing
+	Route::get('packing', [PackingController::class, 'index'])->name('packing.index');
+	Route::get('packing-summary', [PackingController::class, 'packingSummary'])->name('packing.summary');
 
 	// Travel Document
 	Route::get('surat-jalan', [DocumentController::class, 'index'])->name('document.index');

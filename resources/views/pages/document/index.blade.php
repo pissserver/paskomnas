@@ -150,32 +150,26 @@
         }
     });
 
-    function convertQty() {
-        const rows = document.querySelectorAll('#surat-jalan-print tbody tr');
+    $(document).on('change', '#po-selector', function () {
+        const selectedOrderId = $(this).val();
+        const customerId = $('#order-select-customer').val();
+        const orderDate = $('#order-date-customer').val();
 
-        rows.forEach(row => {
-            const qtyCell = row.cells[0];
-            const originalQty = parseFloat(qtyCell.dataset.originalQty);
-            const unit = qtyCell.dataset.unit;
-            const isConverted = qtyCell.dataset.converted === 'true';
+        if (!customerId || !orderDate) return;
 
-            const qtyValEl = qtyCell.querySelector('.qty-val');
-            const qtyUnitEl = qtyCell.querySelector('.qty-unit');
-
-            if (!isConverted && unit.toLowerCase() === 'kg') {
-                // konversi ke gram
-                const newQty = originalQty * 1000;
-                qtyValEl.textContent = newQty.toLocaleString('id-ID');
-                qtyUnitEl.textContent = 'Gr';
-                qtyCell.dataset.converted = 'true';
-            } else if (isConverted && unit.toLowerCase() === 'kg') {
-                // kembali ke kg
-                qtyValEl.textContent = Number(originalQty).toLocaleString('id-ID');
-                qtyUnitEl.textContent = 'Kg';
-                qtyCell.dataset.converted = 'false';
+        $.ajax({
+            url: '/surat-jalan/data',
+            method: 'GET',
+            data: {
+                customer_id: customerId,
+                order_date: orderDate,
+                order_id: selectedOrderId
+            },
+            success: function (response) {
+                $('#document-data').html(renderDocument(response)); // render ulang
             }
         });
-    }
+    });
 
     function renderDocument(data) {
         const bulan = ['JANUARI','FEBRUARI','MARET','APRIL','MEI','JUNI','JULI','AGUSTUS','SEPTEMBER','OKTOBER','NOVEMBER','DESEMBER'];
@@ -184,12 +178,17 @@
 
         const tanggal = `Surabaya, ${currentDate.getDate().toString().padStart(2, '0')} ${bulan[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
 
+        let dropdownOptions = '';
+        for (const po of data.po_list) {
+            dropdownOptions += `<option value="${po.id}" ${po.id === data.order_id ? 'selected' : ''}>${po.code}</option>`;
+        }
+
         let html = `
-        <div class="row px-4">
-            <div class="col-12 d-flex justify-content-end mb-3">
-                <button class="btn btn-info" onclick="convertQty()">
-                    <i class="fa fa-exchange-alt me-1"></i> Convert Qty
-                </button>
+        <div class="col-12 d-flex justify-content-end mb-3 pe-4">
+            <div class="d-flex align-items-center gap-1">
+                <select class="form-select form-select-sm w-auto" id="po-selector">
+                    ${dropdownOptions}
+                </select>
             </div>
         </div>
         <div id="surat-jalan-print" style="font-family: Arial, sans-serif; font-size: 14px; padding: 20px;">
@@ -269,7 +268,6 @@
 
         return html;
     }
-
 
     function printDocument() {
         const printElement = document.getElementById("surat-jalan-print");
