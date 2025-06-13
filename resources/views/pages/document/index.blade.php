@@ -56,7 +56,7 @@
 
                         {{-- Kanan (Tombol Print) --}}
                         <div class="d-flex align-items-center">
-                            <button class="btn btn btn-primary" onclick="printDocument()">
+                            <button class="btn btn btn-primary mb-0" onclick="printDocument()">
                                 <i class="fa fa-print me-1"></i> Print
                             </button>
                         </div>
@@ -150,7 +150,7 @@
         }
     });
 
-    $(document).on('change', '#po-selector', function () {
+    $('body').on('change', '#po-selector', function () {
         const selectedOrderId = $(this).val();
         const customerId = $('#order-select-customer').val();
         const orderDate = $('#order-date-customer').val();
@@ -158,7 +158,7 @@
         if (!customerId || !orderDate) return;
 
         $.ajax({
-            url: '/surat-jalan/data',
+            url: "{{ route('document.data') }}",
             method: 'GET',
             data: {
                 customer_id: customerId,
@@ -184,11 +184,18 @@
         }
 
         let html = `
-        <div class="col-12 d-flex justify-content-end mb-3 pe-4">
+        <div class="col-12 d-flex justify-content-center mb-3 pe-4">
             <div class="d-flex align-items-center gap-1">
-                <select class="form-select form-select-sm w-auto" id="po-selector">
-                    ${dropdownOptions}
-                </select>
+                <div class="position-relative d-inline-block" style="min-width: 150px;">
+                    <label class="btn bg-gradient-dark text-white w-100 d-flex align-items-center justify-content-center rounded-pill shadow-sm" style="height: 38px;">
+                        <i class="fa fa-file-alt me-2"></i> Pilih Order <i class="fa fa-caret-down ms-2"></i>
+                    </label>
+                    <select id="po-selector"
+                        class="form-select form-select-sm position-absolute top-0 start-3 w-100 h-100 bg-dark text-white"
+                        style="opacity: 0; cursor: pointer; border-radius: 50px;">
+                        ${dropdownOptions}
+                    </select>
+                </div>
             </div>
         </div>
         <div id="surat-jalan-print" style="font-family: Arial, sans-serif; font-size: 14px; padding: 20px;">
@@ -202,8 +209,9 @@
                     <div style="font-size: 14px; line-height: 1.4;">
                         <div><strong>SURAT JALAN</strong></div><br>   
                         <div><span style="display: inline-block; min-width: 65px;">Nota No</span>: ${data.order_code}</div>
+                        <div><span style="display: inline-block; min-width: 65px;">No. PO</span>: ${data.reference_customer ? data.reference_customer : '-'}</div>
                         <div><span style="display: inline-block; min-width: 65px;">Sales</span>: Mikael Candra ES</div>
-                        <div><span style="display: inline-block; min-width: 65px;">PO</span>: NON PPN</div>
+                        <div> <span style="display: inline-block; min-width: 65px;">PO</span>: ${data.ppn_status}</div>
                     </div>
                 </div>
                 <div style="float: right; width: 40%; text-align: left;">

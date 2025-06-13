@@ -167,11 +167,20 @@
                                     </div>
                                     @endif
                                     <div class="row">
-                                        <div class="col-md-12">
+                                        <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="order-date">Tanggal Order</label>
                                                 <input type="date" class="form-control datepicker" id="order-date"
                                                     name="order_date" value="{{ $order->order_date }}" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="reference-customer">PO Referensi Customer</label>
+                                                <input type="text" class="form-control" id="reference-customer"
+                                                    name="reference_customer"
+                                                    placeholder="PO Referensi Customer (Jika ada)"
+                                                    value="{{ $order->reference_customer }}">
                                             </div>
                                         </div>
                                     </div>

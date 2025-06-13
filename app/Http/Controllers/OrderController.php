@@ -87,6 +87,7 @@ class OrderController extends Controller
         // Validasi input
         $request->validate([
             'order_date' => 'required|date',
+            'reference_customer' => 'nullable|string|max:255',
             'goods_id' => 'required|array',
             'specification_id' => 'nullable|array',
             'specification_id.*' => 'nullable|exists:specifications,id',
@@ -103,6 +104,7 @@ class OrderController extends Controller
             $order = new Order();
             $order->customer_id = $customerId;
             $order->order_date = $request->order_date;
+            $order->reference_customer = $request->reference_customer;
         
             // Generate order_code
             $order->order_code = $this->generateOrderCode($customerId);
@@ -195,6 +197,7 @@ class OrderController extends Controller
 
         $request->validate([
             'order_date' => 'required|date',
+            'reference_customer' => 'nullable|string|max:255',
             'goods_id' => 'required|array',
             'specification_id' => 'nullable|array',
             'specification_id.*' => 'nullable|exists:specifications,id',
@@ -207,8 +210,9 @@ class OrderController extends Controller
         try {
             DB::beginTransaction();
 
-            // Update tanggal order
+            // Update order
             $order->order_date = $request->order_date;
+            $order->reference_customer = $request->reference_customer;
             $order->save();
 
             $existingItemIds = []; // Untuk menampung ID item yang tetap ada

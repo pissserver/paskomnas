@@ -59,12 +59,19 @@ class DocumentController extends Controller
 
         // Susun data item dari PO terpilih
         $data = [];
+        $hasPpn = false;
         foreach ($selectedOrder->orderItems as $item) {
             $name = $item->goods->name;
             $unit = $item->goods->unit;
+            $ppn = $item->goods->ppn;
             $qty = $item->quantity;
             $specification = $item->specification ? $item->specification->name : '-';
             $key = $name . '||' . $specification;
+
+            // Cek jika PPN lebih dari 0
+            if (!$hasPpn && floatval($ppn) > 0) {
+                $hasPpn = true;
+            }
 
             if (isset($data[$key])) {
                 $data[$key]['qty'] += $qty;
@@ -72,6 +79,7 @@ class DocumentController extends Controller
                 $data[$key] = [
                     'name' => $name,
                     'unit' => $unit,
+                    'ppn' => $ppn,
                     'qty' => $qty,
                     'specification' => $specification,
                 ];
@@ -82,7 +90,9 @@ class DocumentController extends Controller
             'customer' => $customer->name,
             'address' => $customer->company_address,
             'order_code' => $selectedOrder->order_code,
+            'reference_customer' => $selectedOrder->reference_customer,
             'order_id' => $selectedOrder->id,
+            'ppn_status' => $hasPpn ? 'Dengan PPN' : 'NON PPN',
             'data' => array_values($data),
             'po_list' => $orders->map(function ($order) {
                 return [
