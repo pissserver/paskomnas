@@ -18,23 +18,38 @@ class PurchaseController extends Controller
         return view('pages.purchase.index', compact('customers'));
     }
 
-    public function purchaseSummary(Request $request)
+    public function groupCustomer(Request $request)
     {
         $orderDate = $request->input('order_date', Carbon::today()->toDateString());
 
-        $orders = Order::with(['orderItems.goods', 'orderItems.specification', 'customer'])
+        $orders = Order::with(['orderItems.goods', 'orderItems.specification', 'customer.customerGroup'])
             ->where('status', 'confirmed')
             ->whereDate('order_date', $orderDate)
             ->get();
 
-        $customers = [];
-        $dataTable = [];
+        $groupedData = [];
 
         foreach ($orders as $order) {
+            if (!$order->customer->customer_group_id || !$order->customer->customerGroup) {
+                continue;
+            }
+
+            $group = $order->customer->customerGroup->name;
             $customerId = $order->customer_id;
             $customerName = $order->customer->name;
-            $customers[$customerId] = $customerName;
 
+            // Inisialisasi grup
+            if (!isset($groupedData[$group])) {
+                $groupedData[$group] = [
+                    'customers' => [],
+                    'dataTable' => [],
+                ];
+            }
+
+            // Tambah customer ke grup
+            $groupedData[$group]['customers'][$customerId] = $customerName;
+
+            // Loop item
             foreach ($order->orderItems as $item) {
                 $goodsName = $item->goods->name;
                 $unit = $item->goods->unit;
@@ -42,30 +57,26 @@ class PurchaseController extends Controller
 
                 $key = $spec ? "$goodsName ($spec)" : $goodsName;
 
-                if (!isset($dataTable[$key])) {
-                    $dataTable[$key] = [
+                // Init dataTable row
+                if (!isset($groupedData[$group]['dataTable'][$key])) {
+                    $groupedData[$group]['dataTable'][$key] = [
                         'unit' => $unit,
                         'quantities' => [],
                         'total' => 0,
                     ];
                 }
 
-                if (!isset($dataTable[$key]['quantities'][$customerId])) {
-                    $dataTable[$key]['quantities'][$customerId] = 0;
+                if (!isset($groupedData[$group]['dataTable'][$key]['quantities'][$customerId])) {
+                    $groupedData[$group]['dataTable'][$key]['quantities'][$customerId] = 0;
                 }
 
-                $dataTable[$key]['quantities'][$customerId] += $item->quantity;
-                $dataTable[$key]['total'] += $item->quantity;
+                $groupedData[$group]['dataTable'][$key]['quantities'][$customerId] += $item->quantity;
+                $groupedData[$group]['dataTable'][$key]['total'] += $item->quantity;
             }
         }
 
-        ksort($dataTable);
-
         if ($request->ajax()) {
-            return response()->json([
-                'customers' => $customers,
-                'dataTable' => $dataTable,
-            ]);
+            return response()->json($groupedData);
         }
 
         return view('pages.purchase.index', [
@@ -80,7 +91,10 @@ class PurchaseController extends Controller
 
         $query = Order::with(['orderItems.goods', 'orderItems.specification', 'customer'])
             ->where('status', 'confirmed')
-            ->whereDate('order_date', $orderDate);
+            ->whereDate('order_date', $orderDate)
+            ->whereHas('customer', function ($q) {
+                $q->whereNull('customer_group_id'); // Hanya customer tanpa grup
+            });
 
         if ($customerId && $customerId !== 'all') {
             $query->where('customer_id', $customerId);
@@ -88,18 +102,13 @@ class PurchaseController extends Controller
 
         $orders = $query->get();
 
-        $dataPerCustomer = [];
+        $items = [];
+        $customerNames = [];
 
         foreach ($orders as $order) {
-            $cId = $order->customer_id;
             $customerName = $order->customer->name;
-
-            if (!isset($dataPerCustomer[$cId])) {
-                $dataPerCustomer[$cId] = [
-                    'customer_name' => $customerName,
-                    'total_quantity' => 0,
-                    'items' => [],
-                ];
+            if (!in_array($customerName, $customerNames)) {
+                $customerNames[] = $customerName;
             }
 
             foreach ($order->orderItems as $item) {
@@ -107,28 +116,37 @@ class PurchaseController extends Controller
                 $spec = $item->specification ? $item->specification->name : null;
                 $key = $spec ? "$goodsName ($spec)" : $goodsName;
 
-                if (!isset($dataPerCustomer[$cId]['items'][$key])) {
-                    $dataPerCustomer[$cId]['items'][$key] = 0;
+                if (!isset($items[$key])) {
+                    $items[$key] = 0;
                 }
-                $dataPerCustomer[$cId]['items'][$key] += $item->quantity;
-                $dataPerCustomer[$cId]['total_quantity'] += $item->quantity;
+
+                $items[$key] += $item->quantity;
             }
         }
 
-        ksort($dataPerCustomer);
+        // Urutkan nama komoditi
+        ksort($items);
 
         if ($request->ajax()) {
+            $customerList = $orders->pluck('customer')->unique('id')->map(function ($customer) {
+                return [
+                    'id' => $customer->id,
+                    'name' => $customer->name
+                ];
+            })->values();
+
             return response()->json([
-                'data' => $dataPerCustomer,
+                'items' => $items,
+                'customer_names' => $customerNames,
+                'customer_list' => $customerList,
             ]);
         }
 
-        $customers = \App\Models\Customer::orderBy('name')->get();
+        $customers = Customer::whereNull('customer_group_id')->orderBy('name')->get();
 
         return view('pages.purchase.index', [
             'selectedDate' => $orderDate,
             'customers' => $customers,
         ]);
     }
-
 }

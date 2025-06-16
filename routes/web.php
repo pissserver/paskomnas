@@ -82,7 +82,7 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 
 	// Purchase
 	Route::get('purchase', [PurchaseController::class, 'index'])->name('purchase.index');
-	Route::get('purchase-summary', [PurchaseController::class, 'purchaseSummary'])->name('purchase.summary');
+	Route::get('purchase-group', [PurchaseController::class, 'groupCustomer'])->name('purchase.group');
 	Route::get('purchase-customer', [PurchaseController::class, 'purchaseCustomer'])->name('purchase.customer');
 
 	// Packing

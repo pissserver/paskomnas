@@ -29,11 +29,11 @@
             <div class="card py-3">
                 <div class="nav-wrapper position-relative d-flex justify-content-center pt-1">
                     <ul class="nav nav-pills bg-transparent" role="tablist">
-                        <!-- Tab: purchase All -->
+                        <!-- Tab: Per Group Customer -->
                         <li class="nav-item" role="presentation">
-                            <a class="nav-link active mb-2 me-2" id="purchase-all-tab" data-bs-toggle="tab"
-                                href="#purchase-all" role="tab" aria-controls="purchase-all" aria-selected="true">
-                                <i class="fas fa-shopping-bag me-1 text-primary"></i> Purchase All
+                            <a class="nav-link active mb-2 me-2" id="group-customer-tab" data-bs-toggle="tab"
+                                href="#group-customer" role="tab" aria-controls="group-customer" aria-selected="true">
+                                <i class="fas fa-users me-1 text-primary"></i> Purchase per Group
                             </a>
                         </li>
 
@@ -52,8 +52,8 @@
     </div>
 
     <div class="tab-content">
-        <!-- Tab: purchase All -->
-        <div class="tab-pane fade show active" id="purchase-all" role="tabpanel" aria-labelledby="purchase-all-tab">
+        <!-- Tab: Per Group Customer -->
+        <div class="tab-pane fade show active" id="group-customer" role="tabpanel" aria-labelledby="group-customer-tab">
             <div class="row mt-5">
                 <div class="col-12">
                     <div class="card mb-4 mx-4">
@@ -62,15 +62,18 @@
                                 {{-- Kiri --}}
                                 <div
                                     class="d-flex align-items-center bg-gradient-secondary ps-3 pe-3 py-2 rounded-2 text-white">
-                                    <i class="fa fa-shopping-bag me-2"></i>
-                                    <h6 class="mb-0 text-white">Purchase All</h6>
+                                    <i class="fa fa-users me-2"></i>
+                                    <h6 class="mb-0 text-white">Purchase per Group</h6>
                                 </div>
 
                                 {{-- Tengah --}}
                                 <div class="mt-2 d-flex justify-content-center align-items-center">
                                     <i class="fa fa-calendar fa-2x me-2"></i>
-                                    <input type="date" class="form-control datepicker" id="order-date" name="order_date"
-                                        required>
+                                    <input type="date" class="form-control datepicker me-3" id="order-date"
+                                        name="order_date" required>
+                                    <select class="form-select" id="group-select" style="min-width: 200px;"
+                                        disabled></select>
+                                    <i class="fa fa-users fa-2x ms-2"></i>
                                 </div>
 
                                 {{-- Kanan (Tombol Print) --}}
@@ -113,13 +116,16 @@
                                 <div class="mt-2 d-flex justify-content-center align-items-center gap-3">
                                     <i class="fa fa-calendar fa-2x"></i>
                                     <input type="date" class="form-control datepicker" id="order-date-customer"
-                                        name="order_date" required>
+                                        name="order_date" onchange="fetchDataCustomer()" required>
 
                                     <div style="min-width: 250px; flex-grow: 1;">
-                                        <select class="form-select select2 w-50" id="order-select-customer" required>
+                                        <select class="form-select select2 w-100" id="order-select-customer"
+                                            onchange="fetchDataCustomer()" required disabled>
                                             <option value="all" selected>-- Pilih Customer --</option>
                                             @foreach ($customers as $customer)
+                                            @if (is_null($customer->customer_group_id))
                                             <option value="{{ $customer->id }}">{{ $customer->name }}</option>
+                                            @endif
                                             @endforeach
                                         </select>
                                     </div>
@@ -157,15 +163,6 @@
 </div>
 
 <script>
-    $(document).ready(function () {
-        $('.select2').select2({
-            theme: 'bootstrap-5',
-            placeholder: "-- Pilih Customer --",
-            allowClear: true,
-            width: '100%'
-        });
-    });
-
     function printTable() {
         const hari = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
         const bulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
@@ -188,6 +185,9 @@
                     body {
                         padding: 20px;
                         font-size: 12px;
+                    }
+                    .title-group{
+                        font-size: 14px;
                     }
                     table {
                         width: 100%;
@@ -248,6 +248,9 @@
                         padding: 20px;
                         font-size: 12px;
                     }
+                    .title-customer{
+                        font-size: 14px;
+                    }
                     table {
                         width: 100%;
                         border-collapse: collapse;
@@ -293,79 +296,80 @@
         }
     });
 
-    function renderTable(customers, dataTable) {
-        let html = `<table class="table table-striped table-responsive">
+    function renderGroupTable(groupName, groupData) {
+        const customers = groupData.customers;
+        const dataTable = groupData.dataTable;
+
+        let html = `
+            <div class="text-center">
+                <h6 class="text-white d-inline-block bg-gradient-primary mb-5 py-2 px-3 rounded-pill title-group">
+                    Group : ${groupName}
+                </h6>
+            </div>
+        `;
+        html += `<table class="table table-striped">`;
+        html += `
             <thead>
                 <tr>
                     <th class="text-center">No</th>
                     <th class="text-center">Nama Komoditi</th>
                     <th class="text-center">Unit</th>
-                    <th class="text-center text-success">Total</th>`;
+                    <th class="text-center text-success">
+                        Total
+                    </th>`;
 
-        // Header customer
-        Object.values(customers).forEach(customerName => {
-            html += `<th class="text-center text-primary">${customerName}</th>`;
+        Object.values(customers).forEach(name => {
+            html += `<th class="text-center text-primary">${name}</th>`;
         });
 
         html += `</tr></thead><tbody>`;
 
         let i = 1;
-        for (const goodsKey in dataTable) {
-            const row = dataTable[goodsKey];
+        Object.entries(dataTable).forEach(([goodsKey, row]) => {
             html += `<tr>`;
             html += `<td class="text-center">${i++}</td>`;
-            html += `<td class="text-center">${goodsKey}</td>`;
+            html += `<td>${goodsKey}</td>`;
             html += `<td class="text-center">${row.unit}</td>`;
             html += `<td class="text-center">${row.total}</td>`;
 
-            // Untuk setiap customer, tampilkan jumlah atau 0
-            Object.keys(customers).forEach(customerId => {
-                const qty = row.quantities[customerId] ?? 0;
-                html += `<td class="text-center">${qty}</td>`;
+            Object.keys(customers).forEach(custId => {
+                html += `<td class="text-center">${row.quantities[custId] ?? 0}</td>`;
             });
 
             html += `</tr>`;
-        }
+        });
 
         html += `</tbody></table>`;
-
-        return html;
+        $('#purchase-data').html(html);
     }
 
-    function renderCustomerTable(dataPerCustomer) {
-        let html = `<table class="table table-bordered table-striped table-responsive">
-            <thead>
-                <tr>
-                    <th class="text-center">No</th>
-                    <th class="text-center">Nama Komoditi</th>
-                    <th class="text-center">Qty</th>
-                    <th class="text-center">Customer</th>
-                </tr>
-            </thead>
-            <tbody>`;
+    function renderCustomerTable(items, customerNames) {
+        let html = `
+            <div class="text-center mb-4">
+                <h6 class="text-white d-inline-block bg-gradient-primary py-2 px-4 rounded-pill title-customer">
+                    Customer : ${customerNames.join(', ')}
+                </h6>
+            </div>
+            <table class="table table-striped table-responsive">
+                <thead>
+                    <tr>
+                        <th class="text-center">No</th>
+                        <th class="text-center">Nama Komoditi</th>
+                        <th class="text-center">Qty</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
 
         let no = 1;
-        for (const customerId in dataPerCustomer) {
-            const customerData = dataPerCustomer[customerId];
-            const items = customerData.items;
-
-            const itemKeys = Object.keys(items);
-            itemKeys.forEach((itemName, index) => {
-                html += `<tr>`;
-                html += `<td class="text-center">${no++}</td>`;
-                html += `<td class="text-center">${itemName}</td>`;
-                html += `<td class="text-center">${items[itemName]}</td>`;
-                if (index === 0) {
-                    html += `<td class="text-center text-bold text-primary align-middle" rowspan="${itemKeys.length}">${customerData.customer_name}</td>`;
-                }
-                html += `</tr>`;
-            });
-
-            // Tambahkan total
-            // html += `<tr class="bg-light fw-bold">
-            //     <td colspan="2" class="text-end">Total ${customerData.customer_name}</td>
-            //     <td colspan="2" class="text-start">${customerData.total_quantity}</td>
-            // </tr>`;
+        for (const key in items) {
+            html += `
+                <tr>
+                    <td class="text-center">${no++}</td>
+                    <td class="text-center">${key}</td>
+                    <td class="text-center">${items[key]}</td>
+                </tr>
+            `;
         }
 
         html += `</tbody></table>`;
@@ -373,35 +377,56 @@
     }
 
     function fetchData(date) {
-        $('#purchase-data').html(`
-            <div style="display:flex; justify-content:center; align-items:center; height:150px; font-size:1.2rem; color:#555;">
-                <i class="fa fa-spinner fa-spin me-2"></i> Loading data...
-            </div>
-        `);
+        $('#purchase-data').html('<div class="text-center my-4"><i class="fa fa-spinner fa-spin me-2"></i> Loading...</div>');
 
         $.ajax({
-            url: "{{ route('purchase.summary') }}",
+            url: "{{ route('purchase.group') }}",
             method: 'GET',
             data: { order_date: date },
             success: function(response) {
-                // Cek apakah dataTable kosong
-                if (Object.keys(response.dataTable).length === 0) {
-                    // Tampilkan empty data block
+                const groupSelect = $('#group-select');
+
+                // CASE: Tidak ada data group sama sekali
+                if (Object.keys(response).length === 0) {
                     $('#purchase-data').html(`
                         <div class="empty-data">
                             <div class="text-center">
                                 <img src="{{ asset('assets/img/empty-data2.png') }}" alt="No Data" class="img-fluid" width="450">
-                                <h4 class="text-secondary">Maaf, Tidak ada data order</h4>
+                                <h4 class="text-secondary">Tidak ada data order di tanggal ini</h4>
                             </div>
                         </div>
                     `);
-                } else {
-                    const html = renderTable(response.customers, response.dataTable);
-                    $('#purchase-data').html(html);
+                    groupSelect.html('<option value="">-- Tidak ada Group --</option>').prop('disabled', true);
+                    return;
                 }
+
+                // CASE: Ada group di tanggal itu
+                let groupOptions = '<option value="">-- Daftar Group --</option>';
+                Object.keys(response).forEach(group => {
+                    groupOptions += `<option value="${group}">${group}</option>`;
+                });
+                groupSelect.html(groupOptions).prop('disabled', false);
+
+                // Tampilkan placeholder sampai grup dipilih
+                $('#purchase-data').html(`
+                    <div class="empty-data">
+                        <div class="text-center">
+                            <img src="{{ asset('assets/img/select.png') }}" alt="No Data" class="img-fluid" width="450">
+                            <h4 class="text-secondary">Pilih Group Customer</h4>
+                        </div>
+                    </div>
+                `);
+
+                // Handler ketika user memilih grup
+                groupSelect.off('change').on('change', function () {
+                    const selectedGroup = $(this).val();
+                    if (selectedGroup && response[selectedGroup]) {
+                        renderGroupTable(selectedGroup, response[selectedGroup]);
+                    }
+                });
             },
             error: function() {
-                $('#purchase-data').html('<div class="text-center text-danger">Gagal memuat data.</div>');
+                $('#purchase-data').html('<div class="text-danger text-center">Gagal memuat data</div>');
             }
         });
     }
@@ -426,7 +451,10 @@
                 customer_id: customerId
             },
             success: function (response) {
-                if (Object.keys(response.data).length === 0) {
+                const items = response.items;
+                const names = response.customer_names;
+
+                if (Object.keys(items).length === 0) {
                     $('#purchase-data-customer').html(`
                         <div class="empty-data">
                             <div class="text-center">
@@ -435,8 +463,19 @@
                             </div>
                         </div>
                     `);
+                    $('#order-select-customer').html(`<option value="all" selected>-- Tidak ada customer --</option>`);
+                    $('#order-select-customer').prop('disabled', true);
                 } else {
-                    const html = renderCustomerTable(response.data);
+                    // Isi select jika belum memilih customer
+                    if (customerId === 'all' || customerId === null) {
+                        let options = `<option value="all">-- Semua Customer --</option>`;
+                        response.customer_list.forEach(c => {
+                            options += `<option value="${c.id}">${c.name}</option>`;
+                        });
+                        $('#order-select-customer').html(options).prop('disabled', false);
+                    }
+
+                    const html = renderCustomerTable(items, names);
                     $('#purchase-data-customer').html(html);
                 }
             },
@@ -446,27 +485,30 @@
         });
     }
 
-    $(document).ready(function() {
+    $(document).ready(function () {
+        // Untuk Summary Group
         const defaultDate = $('#order-date').val();
+        if (defaultDate) {
+            fetchData(defaultDate);
+        }
 
-        fetchData(defaultDate);
-
-        $('#form-date').on('submit', function() {
+        $('#form-date').on('submit', function (e) {
+            e.preventDefault();
             const selectedDate = $('#order-date').val();
             if (selectedDate) {
                 fetchData(selectedDate);
             }
         });
 
-        $('#order-date-customer, #order-select-customer').on('change', function () {
-            const selectedDate = $('#order-date-customer').val();
-            const selectedCustomer = $('#order-select-customer').val();
+        // Untuk Purchase per Customer
+        const today = new Date().toISOString().split('T')[0];
+        $('#order-date-customer').val(today);
 
-            // Cek apakah tanggal diisi
-            if (selectedDate) {
-                fetchDataCustomer();
-            }
-        });
+        // Set select ke "all" agar ambil semua customer tanpa grup
+        $('#order-select-customer').val('all');
+
+        // Fetch semua customer tanpa grup yang order hari ini
+        fetchDataCustomer();
     });
 </script>
 
