@@ -22,6 +22,7 @@ use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\PackingController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\PrintLogController;
 
 
 /*
@@ -84,6 +85,8 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 	Route::get('purchase', [PurchaseController::class, 'index'])->name('purchase.index');
 	Route::get('purchase-group', [PurchaseController::class, 'groupCustomer'])->name('purchase.group');
 	Route::get('purchase-customer', [PurchaseController::class, 'purchaseCustomer'])->name('purchase.customer');
+	Route::get('purchase/data-log-print', [PrintLogController::class, 'dataPurchaseLogPrint'])->name('purchase.data.log-print');
+	Route::post('purchase/log-print', [PrintLogController::class, 'purchaseLogPrint'])->name('purchase.log-print');
 
 	// Packing
 	Route::get('packing', [PackingController::class, 'index'])->name('packing.index');

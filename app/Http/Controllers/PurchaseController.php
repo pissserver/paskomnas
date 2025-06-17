@@ -43,7 +43,13 @@ class PurchaseController extends Controller
                 $groupedData[$group] = [
                     'customers' => [],
                     'dataTable' => [],
+                    'orderIds' => [],
                 ];
+            }
+
+            // Tambahkan order_id ke daftar orderIds grup
+            if (!in_array($order->id, $groupedData[$group]['orderIds'])) {
+                $groupedData[$group]['orderIds'][] = $order->id;
             }
 
             // Tambah customer ke grup

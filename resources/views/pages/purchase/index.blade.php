@@ -42,7 +42,15 @@
                             <a class="nav-link mb-2" id="purchase-customer-tab" data-bs-toggle="tab"
                                 href="#purchase-customer" role="tab" aria-controls="purchase-customer"
                                 aria-selected="false">
-                                <i class="fas fa-users me-1 text-primary"></i> Purchase per Customer
+                                <i class="fas fa-briefcase me-1 text-primary"></i> Purchase per Customer
+                            </a>
+                        </li>
+
+                        <!-- Tab: Log Print -->
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link mb-2" id="log-print-tab" data-bs-toggle="tab" href="#log-print"
+                                role="tab" aria-controls="log-print" aria-selected="false">
+                                <i class="fas fa-history me-1 text-primary"></i> Log Print
                             </a>
                         </li>
                     </ul>
@@ -52,7 +60,7 @@
     </div>
 
     <div class="tab-content">
-        <!-- Tab: Per Group Customer -->
+        <!-- Tab: Purchase per Group -->
         <div class="tab-pane fade show active" id="group-customer" role="tabpanel" aria-labelledby="group-customer-tab">
             <div class="row mt-5">
                 <div class="col-12">
@@ -87,18 +95,13 @@
 
                         <div id="purchase-data" style="overflow-x: auto;">
                             {{-- Render Table --}}
-
-                        </div>
-
-                        <div class="d-flex justify-content-center mt-3 mb-2" id="pagination">
-
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Tab: purchase per Customer -->
+        <!-- Tab: Purchase per Customer -->
         <div class="tab-pane fade" id="purchase-customer" role="tabpanel" aria-labelledby="purchase-customer-tab">
             <div class="row mt-5">
                 <div class="col-12">
@@ -108,7 +111,7 @@
                                 {{-- Kiri --}}
                                 <div
                                     class="d-flex align-items-center bg-gradient-secondary ps-3 pe-3 py-2 rounded-2 text-white">
-                                    <i class="fa fa-users me-2"></i>
+                                    <i class="fa fa-briefcase me-2"></i>
                                     <h6 class="mb-0 text-white">Purchase per Customer</h6>
                                 </div>
 
@@ -143,12 +146,57 @@
 
                         <div id="purchase-data-customer">
                             {{-- Render Table --}}
-                            <div class="empty-data">
-                                <div class="text-center">
-                                    <img src="{{ asset('assets/img/select.png') }}" alt="No Data" class="img-fluid"
-                                        width="450">
-                                    <h4 class="text-secondary">Pilih Tanggal dan Customer</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Log Print -->
+        <div class="tab-pane fade" id="log-print" role="tabpanel" aria-labelledby="log-print-tab">
+            <div class="row mt-5">
+                <div class="col-12">
+                    <div class="card mb-4 mx-4">
+                        <div class="card-header pb-5">
+                            <div class="d-flex flex-row justify-content-between align-items-center">
+                                <div
+                                    class="d-flex align-items-center bg-gradient-secondary ps-3 pe-3 py-2 rounded-2 text-white">
+                                    <i class="fa fa-briefcase me-2"></i>
+                                    <h6 class="mb-0 text-white">Log per Customer</h6>
                                 </div>
+                                <div class="d-flex align-items-center">
+                                    <input type="text" class="form-control form-control-sm me-1" id="searchLogPrint"
+                                        placeholder="Cari log print..." name="search" style="max-width: 200px;">
+                                    <span class="input-group-text">
+                                        <i class="fa fa-search" aria-hidden="true"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="purchase-log-print mt-3">
+                            <div class="table-responsive p-0">
+                                <table class="table align-items-center mb-0 table-hover table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th
+                                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                No
+                                            </th>
+                                            <th
+                                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                                Tanggal Print
+                                            </th>
+                                            <th
+                                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                Aksi
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="purchaseLogPrintTableBody">
+
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
 
@@ -163,6 +211,8 @@
 </div>
 
 <script>
+    const logPrintUrl = "{{ route('purchase.log-print') }}";
+
     function printTable() {
         const hari = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
         const bulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
@@ -175,6 +225,12 @@
         let tableElement = document.querySelector('#purchase-data');
         let tableHTML = tableElement.outerHTML;
 
+        // Ambil semua order ID
+        const orderIdEls = document.querySelectorAll('.printed-order-id');
+        const orderIds = Array.from(orderIdEls).map(el => el.value);
+        console.log('Order IDs:', orderIds); // Debug dulu
+
+        // Buka window cetak
         let printWindow = window.open('', '', 'width=1000,height=800'); 
         printWindow.document.write(`
             <html>
@@ -182,26 +238,11 @@
                 <title>Print Purchasing</title>
                 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
                 <style>
-                    body {
-                        padding: 20px;
-                        font-size: 12px;
-                    }
-                    .title-group{
-                        font-size: 14px;
-                    }
-                    table {
-                        width: 100%;
-                        border-collapse: collapse;
-                    }
-                    table th, table td {
-                        border: 1px solid #000;
-                        padding: 6px;
-                        text-align: center;
-                    }
-                    h4 {
-                        margin-bottom: 20px;
-                        text-align: center;
-                    }
+                    body { padding: 20px; font-size: 12px; }
+                    .title-group { font-size: 14px; }
+                    table { width: 100%; border-collapse: collapse; }
+                    table th, table td { border: 1px solid #000; padding: 6px; text-align: center; }
+                    h4 { margin-bottom: 20px; text-align: center; }
                 </style>
             </head>
             <body>
@@ -212,6 +253,24 @@
         `);
         printWindow.document.close();
         printWindow.focus();
+
+        // Kirim ke backend hanya kalau ada order
+        if (orderIds.length > 0) {
+            fetch("{{ route('purchase.log-print') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ order_ids: orderIds })
+            })
+            .then(res => res.json())
+            .then(data => console.log('Log print saved:', data))
+            .catch(err => console.error('Log error:', err));
+        } else {
+            console.warn("Tidak ada order_id ditemukan, tidak dikirim ke server");
+        }
+
         printWindow.print();
         printWindow.close();
     }
@@ -328,7 +387,7 @@
         Object.entries(dataTable).forEach(([goodsKey, row]) => {
             html += `<tr>`;
             html += `<td class="text-center">${i++}</td>`;
-            html += `<td>${goodsKey}</td>`;
+            html += `<td class="text-center">${goodsKey}</td>`;
             html += `<td class="text-center">${row.unit}</td>`;
             html += `<td class="text-center">${row.total}</td>`;
 
@@ -340,6 +399,13 @@
         });
 
         html += `</tbody></table>`;
+
+        if (groupData.orderIds && groupData.orderIds.length > 0) {
+            groupData.orderIds.forEach(id => {
+                html += `<input type="hidden" class="printed-order-id" value="${id}">`;
+            });
+        }
+
         $('#purchase-data').html(html);
     }
 
@@ -389,7 +455,7 @@
                 // CASE: Tidak ada data group sama sekali
                 if (Object.keys(response).length === 0) {
                     $('#purchase-data').html(`
-                        <div class="empty-data">
+                        <div class="empty-data mb-5">
                             <div class="text-center">
                                 <img src="{{ asset('assets/img/empty-data2.png') }}" alt="No Data" class="img-fluid" width="450">
                                 <h4 class="text-secondary">Tidak ada data order di tanggal ini</h4>
@@ -456,10 +522,10 @@
 
                 if (Object.keys(items).length === 0) {
                     $('#purchase-data-customer').html(`
-                        <div class="empty-data">
+                        <div class="empty-data mb-5">
                             <div class="text-center">
                                 <img src="{{ asset('assets/img/empty-data2.png') }}" alt="No Data" class="img-fluid" width="450">
-                                <h4 class="text-secondary">Maaf, Tidak ada data order</h4>
+                                <h4 class="text-secondary">Tidak ada data order ditanggal ini</h4>
                             </div>
                         </div>
                     `);
@@ -509,6 +575,33 @@
 
         // Fetch semua customer tanpa grup yang order hari ini
         fetchDataCustomer();
+    });
+
+    // Untuk Log Print
+    function loadLogPrint(keyword = '', page = 1) {
+        fetch(`{{ route('purchase.data.log-print') }}?keyword=${encodeURIComponent(keyword)}&page=${page}`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('purchaseLogPrintTableBody').innerHTML = data.html;
+                document.getElementById('pagination').innerHTML = data.pagination;
+
+                // Re-bind pagination click
+                document.querySelectorAll('#pagination a').forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const url = new URL(this.href);
+                        const page = url.searchParams.get('page');
+                        const keyword = document.getElementById('searchLogPrint').value;
+                        loadLogPrint(keyword, page);
+                    });
+                });
+            });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => loadLogPrint());
+
+    document.getElementById('searchLogPrint').addEventListener('keyup', function () {
+        loadLogPrint(this.value);
     });
 </script>
 
