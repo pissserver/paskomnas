@@ -123,14 +123,17 @@ class PurchaseController extends Controller
                 $key = $spec ? "$goodsName ($spec)" : $goodsName;
 
                 if (!isset($items[$key])) {
-                    $items[$key] = 0;
+                    $items[$key] = [
+                        'quantity' => 0,
+                        'unit' => $item->goods->unit,
+                    ];
                 }
 
-                $items[$key] += $item->quantity;
+                $items[$key]['quantity'] += $item->quantity;
             }
         }
 
-        // Urutkan nama komoditi
+        sort($customerNames);
         ksort($items);
 
         if ($request->ajax()) {
@@ -141,14 +144,17 @@ class PurchaseController extends Controller
                 ];
             })->values();
 
+            $orderIds = $orders->pluck('id')->toArray();
+
             return response()->json([
                 'items' => $items,
                 'customer_names' => $customerNames,
                 'customer_list' => $customerList,
+                'orderIds' => $orderIds,
             ]);
         }
 
-        $customers = Customer::whereNull('customer_group_id')->orderBy('name')->get();
+        $customers = Customer::whereNull('customer_group_id')->orderBy('name', 'asc')->get();
 
         return view('pages.purchase.index', [
             'selectedDate' => $orderDate,

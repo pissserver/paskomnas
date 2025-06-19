@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Specification;
+use App\Models\Order;
 use App\Models\LogPrint;
 use App\Models\LogPrintDetail;
 use Illuminate\Http\Request;
@@ -36,7 +38,6 @@ class PrintLogController extends Controller
         ]);
     }
 
-
     public function purchaseLogPrint(Request $request)
     {
         $request->validate([
@@ -47,12 +48,37 @@ class PrintLogController extends Controller
         try {
             DB::beginTransaction();
 
+            // Ambil order_id yang belum pernah masuk ke log print
+            $existingOrderIds = LogPrintDetail::whereIn('order_id', $request->order_ids)
+                ->pluck('order_id')
+                ->toArray();
+
+            $newOrderIds = array_diff($request->order_ids, $existingOrderIds);
+
+            // Kalau semua sudah pernah diprint, tidak usah insert apa-apa
+            if (empty($newOrderIds)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Semua order sudah pernah dicetak.',
+                ]);
+            }
+
+            // Ambil customer group dari salah satu order baru
+            $firstOrder = Order::with('customer')->find($newOrderIds[0]);
+            $customerGroupId = null;
+
+            if ($firstOrder && $firstOrder->customer) {
+                $customerGroupId = $firstOrder->customer->customer_group_id;
+            }
+
+            // Simpan log
             $log = LogPrint::create([
-                'print_date' => Carbon::now(),
-                'purchase' => 'done', // ← Tandai bahwa halaman purchase sudah diprint
+                'print_date' => now(),
+                'purchase' => 'done',
+                'customer_group_id' => $customerGroupId,
             ]);
 
-            foreach ($request->order_ids as $orderId) {
+            foreach ($newOrderIds as $orderId) {
                 LogPrintDetail::create([
                     'log_print_id' => $log->id,
                     'order_id' => $orderId,
@@ -63,16 +89,109 @@ class PrintLogController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Print log saved.',
+                'message' => 'Log print berhasil disimpan.',
                 'log_id' => $log->id,
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
             return response()->json([
                 'success' => false,
-                'message' => 'Error saving log print.',
+                'message' => 'Gagal menyimpan log print.',
                 'error' => $e->getMessage()
             ], 500);
         }
     }
+
+    public function printLogView($id)
+    {
+        $log = LogPrint::with([
+            'details.order.orderItems.goods',
+            'details.order.customer',
+            'customerGroup'
+        ])->findOrFail($id);
+
+        $isGroup = $log->customer_group_id !== null;
+
+        $groupName = null;
+        $customerName = null;
+
+        if ($isGroup) {
+            $groupName = $log->customerGroup ? $log->customerGroup->name : 'Unknown Group';
+            $grouped = [];
+            $customers = [];
+
+            foreach ($log->details as $detail) {
+                $order = $detail->order;
+                $custId = $order->customer->id;
+                $custName = $order->customer->name;
+                $customers[$custId] = $custName;
+
+                foreach ($order->orderItems as $item) {
+                    $goodsName = $item->goods->name;
+                    $unit = $item->goods->unit;
+                    $spec = $item->specification ? $item->specification->name : null;
+                    $key = $spec ? "$goodsName ($spec)" : $goodsName;
+
+                    if (!isset($grouped[$key])) {
+                        $grouped[$key] = [
+                            'unit' => $unit,
+                            'total' => 0,
+                            'quantities' => []
+                        ];
+                    }
+
+                    $grouped[$key]['total'] += $item->quantity;
+                    if (!isset($grouped[$key]['quantities'][$custId])) {
+                        $grouped[$key]['quantities'][$custId] = 0;
+                    }
+                    $grouped[$key]['quantities'][$custId] += $item->quantity;
+
+                }
+            }
+
+            ksort($grouped); // Supaya tampilannya rapi
+            return response()->json([
+                'success' => true,
+                'group_name' => $groupName,
+                'grouped' => $grouped,
+                'customers' => $customers,
+            ]);
+        } else {
+            // Individual customer
+            $items = [];
+            $customerNames = [];
+
+            foreach ($log->details as $detail) {
+                $customer = $detail->order->customer;
+                if ($customer) {
+                    $customerNames[] = $customer->name;
+                }
+
+                foreach ($detail->order->orderItems as $item) {
+                    $goodsName = $item->goods->name;
+                    $spec = $item->specification ? $item->specification->name : null;
+                    $key = $spec ? "$goodsName ($spec)" : $goodsName;
+
+                    if (!isset($items[$key])) {
+                        $items[$key] = [
+                            'quantity' => 0,
+                            'unit' => $item->goods->unit,
+                        ];
+                    }
+                    $items[$key]['quantity'] += $item->quantity;
+                }
+            }
+
+            $customerNames = array_unique($customerNames);
+            ksort($items);
+            sort($customerNames);
+
+            return response()->json([
+                'success' => true,
+                'items' => $items,
+                'customer_name' => implode(', ', $customerNames),
+            ]);
+        }
+    }
+
 }

@@ -87,6 +87,7 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 	Route::get('purchase-customer', [PurchaseController::class, 'purchaseCustomer'])->name('purchase.customer');
 	Route::get('purchase/data-log-print', [PrintLogController::class, 'dataPurchaseLogPrint'])->name('purchase.data.log-print');
 	Route::post('purchase/log-print', [PrintLogController::class, 'purchaseLogPrint'])->name('purchase.log-print');
+	Route::get('purchase/log-print/{id}', [PrintLogController::class, 'printLogView'])->name('purchase.reprint');
 
 	// Packing
 	Route::get('packing', [PackingController::class, 'index'])->name('packing.index');

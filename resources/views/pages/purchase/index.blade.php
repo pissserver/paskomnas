@@ -126,9 +126,7 @@
                                             onchange="fetchDataCustomer()" required disabled>
                                             <option value="all" selected>-- Pilih Customer --</option>
                                             @foreach ($customers as $customer)
-                                            @if (is_null($customer->customer_group_id))
                                             <option value="{{ $customer->id }}">{{ $customer->name }}</option>
-                                            @endif
                                             @endforeach
                                         </select>
                                     </div>
@@ -161,8 +159,8 @@
                             <div class="d-flex flex-row justify-content-between align-items-center">
                                 <div
                                     class="d-flex align-items-center bg-gradient-secondary ps-3 pe-3 py-2 rounded-2 text-white">
-                                    <i class="fa fa-briefcase me-2"></i>
-                                    <h6 class="mb-0 text-white">Log per Customer</h6>
+                                    <i class="fa fa-history me-2"></i>
+                                    <h6 class="mb-0 text-white">Log Print</h6>
                                 </div>
                                 <div class="d-flex align-items-center">
                                     <input type="text" class="form-control form-control-sm me-1" id="searchLogPrint"
@@ -188,6 +186,10 @@
                                                 Tanggal Print
                                             </th>
                                             <th
+                                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                                Group / Trading
+                                            </th>
+                                            <th
                                                 class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                                 Aksi
                                             </th>
@@ -211,8 +213,24 @@
 </div>
 
 <script>
-    const logPrintUrl = "{{ route('purchase.log-print') }}";
-
+    flatpickr(".datepicker", {
+        locale: "id",
+        altInput: true,
+        altFormat: "l, d F Y",
+        dateFormat: "Y-m-d",
+        defaultDate: "{{ $selectedDate ?? \Carbon\Carbon::today()->toDateString() }}",
+        onReady: function (selectedDates, dateStr, instance) {
+            if (instance.altInput) {
+                instance.altInput.setAttribute("style", "background-color: white; cursor: text;");
+            }
+        },
+        onChange: function(selectedDates, dateStr, instance) {
+            if (dateStr) {
+                fetchData(dateStr);
+            }
+        }
+    });
+    
     function printTable() {
         const hari = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
         const bulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
@@ -333,27 +351,30 @@
         `);
         printWindow.document.close();
         printWindow.focus();
+
+        const orderIdEls = document.querySelectorAll('.printed-order-id');
+        const orderIds = Array.from(orderIdEls).map(el => el.value);
+        console.log('Order IDs:', orderIds);
+
+        if (orderIds.length > 0) {
+            fetch("{{ route('purchase.log-print') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ order_ids: orderIds })
+            })
+            .then(res => res.json())
+            .then(data => console.log('Log print saved:', data))
+            .catch(err => console.error('Log error:', err));
+        } else {
+            console.warn("Tidak ada order_id ditemukan, tidak dikirim ke server");
+        }
+
         printWindow.print();
         printWindow.close();
     }
-
-    flatpickr(".datepicker", {
-        locale: "id",
-        altInput: true,
-        altFormat: "l, d F Y",
-        dateFormat: "Y-m-d",
-        defaultDate: "{{ $selectedDate ?? \Carbon\Carbon::today()->toDateString() }}",
-        onReady: function (selectedDates, dateStr, instance) {
-            if (instance.altInput) {
-                instance.altInput.setAttribute("style", "background-color: white; cursor: text;");
-            }
-        },
-        onChange: function(selectedDates, dateStr, instance) {
-            if (dateStr) {
-                fetchData(dateStr);
-            }
-        }
-    });
 
     function renderGroupTable(groupName, groupData) {
         const customers = groupData.customers;
@@ -372,7 +393,7 @@
                 <tr>
                     <th class="text-center">No</th>
                     <th class="text-center">Nama Komoditi</th>
-                    <th class="text-center">Unit</th>
+                    <th class="text-center">Satuan</th>
                     <th class="text-center text-success">
                         Total
                     </th>`;
@@ -409,22 +430,31 @@
         $('#purchase-data').html(html);
     }
 
-    function renderCustomerTable(items, customerNames) {
+    function renderCustomerTable(items, customerNames, orderIds = []) {
+        let hiddenInputs = '';
+        if (orderIds.length > 0) {
+            orderIds.forEach(id => {
+                hiddenInputs += `<input type="hidden" class="printed-order-id" value="${id}">`;
+            });
+        }
+
         let html = `
-            <div class="text-center mb-4">
-                <h6 class="text-white d-inline-block bg-gradient-primary py-2 px-4 rounded-pill title-customer">
-                    Customer : ${customerNames.join(', ')}
-                </h6>
-            </div>
-            <table class="table table-striped table-responsive">
-                <thead>
-                    <tr>
-                        <th class="text-center">No</th>
-                        <th class="text-center">Nama Komoditi</th>
-                        <th class="text-center">Qty</th>
-                    </tr>
-                </thead>
-                <tbody>
+            <div>
+                <div class="text-center mb-4">
+                    <h6 class="text-white d-inline-block bg-gradient-primary py-2 px-4 rounded-pill title-customer">
+                        Customer : ${customerNames.join(', ')}
+                    </h6>
+                </div>
+                <table class="table table-striped table-responsive">
+                    <thead>
+                        <tr>
+                            <th class="text-center">No</th>
+                            <th class="text-center">Nama Komoditi</th>
+                            <th class="text-center">Satuan</th>
+                            <th class="text-center text-success">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
         `;
 
         let no = 1;
@@ -433,12 +463,15 @@
                 <tr>
                     <td class="text-center">${no++}</td>
                     <td class="text-center">${key}</td>
-                    <td class="text-center">${items[key]}</td>
+                    <td class="text-center">${items[key].unit}</td>
+                    <td class="text-center">${items[key].quantity}</td>
                 </tr>
             `;
         }
 
         html += `</tbody></table>`;
+        html += hiddenInputs;
+        html += `</div>`; // penutup wrapper utama
         return html;
     }
 
@@ -468,9 +501,11 @@
 
                 // CASE: Ada group di tanggal itu
                 let groupOptions = '<option value="">-- Daftar Group --</option>';
-                Object.keys(response).forEach(group => {
-                    groupOptions += `<option value="${group}">${group}</option>`;
-                });
+                Object.keys(response)
+                    .sort((a, b) => a.localeCompare(b))
+                    .forEach(group => {
+                        groupOptions += `<option value="${group}">${group}</option>`;
+                    });
                 groupSelect.html(groupOptions).prop('disabled', false);
 
                 // Tampilkan placeholder sampai grup dipilih
@@ -535,13 +570,15 @@
                     // Isi select jika belum memilih customer
                     if (customerId === 'all' || customerId === null) {
                         let options = `<option value="all">-- Semua Customer --</option>`;
-                        response.customer_list.forEach(c => {
-                            options += `<option value="${c.id}">${c.name}</option>`;
-                        });
+                        response.customer_list
+                            .sort((a, b) => a.name.localeCompare(b.name))
+                            .forEach(c => {
+                                options += `<option value="${c.id}">${c.name}</option>`;
+                            });
                         $('#order-select-customer').html(options).prop('disabled', false);
                     }
 
-                    const html = renderCustomerTable(items, names);
+                    const html = renderCustomerTable(items, names, response.orderIds);
                     $('#purchase-data-customer').html(html);
                 }
             },
@@ -595,6 +632,128 @@
                         loadLogPrint(keyword, page);
                     });
                 });
+            });
+    }
+
+    // Untuk Print Ulang di Log Print
+    $(document).on('click', '.btn-print-ulang', function() {
+        const logId = $(this).data('log-id');
+        reprintLog(logId);
+    });
+
+    function reprintLog(logId) {
+        fetch(`purchase/log-print/${logId}`)
+            .then(res => res.json())
+            .then(data => {
+                const hari = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+                const bulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+
+                let besok = new Date();
+                besok.setDate(besok.getDate() + 1);
+                let formattedDate = hari[besok.getDay()] + ', ' + besok.getDate() + ' ' + bulan[besok.getMonth()] + ' ' + besok.getFullYear();
+
+                const title = data.group_name
+                    ? `Purchasing Kirim (${formattedDate})`
+                    : `Purchasing Kirim (${formattedDate})`;
+
+                let html = '';
+                if (data.group_name) {
+                    // GROUP MODE
+                    html += `
+                        <div class="text-center">
+                            <h5 class="text-white d-inline-block bg-gradient-primary mb-4 py-2 px-3 rounded-pill">
+                                Group : ${data.group_name}
+                            </h5>
+                        </div>
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">No</th>
+                                    <th class="text-center">Nama Komoditi</th>
+                                    <th class="text-center">Satuan</th>
+                                    <th class="text-center">Total</th>`;
+
+                    Object.values(data.customers).forEach(cust => {
+                        html += `<th class="text-center">${cust}</th>`;
+                    });
+
+                    html += `</tr></thead><tbody>`;
+
+                    Object.entries(data.grouped).forEach(([komoditi, row], index) => {
+                        html += `
+                            <tr>
+                                <td class="text-center">${index + 1}</td>
+                                <td class="text-center">${komoditi}</td>
+                                <td class="text-center">${row.unit}</td>
+                                <td class="text-center">${row.total}</td>`;
+                        Object.keys(data.customers).forEach(custId => {
+                            html += `<td class="text-center">${row.quantities[custId] ?? 0}</td>`;
+                        });
+                        html += `</tr>`;
+                    });
+
+                    html += `</tbody></table>`;
+                } else {
+                    // CUSTOMER MODE
+                    html += `
+                        <div class="text-center mb-4">
+                            <h5 class="text-white d-inline-block bg-gradient-primary py-2 px-4 rounded-pill">
+                                Customer : ${data.customer_name}
+                            </h5>
+                        </div>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">No</th>
+                                    <th class="text-center">Nama Komoditi</th>
+                                    <th class="text-center">Satuan</th>
+                                    <th class="text-center">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+
+                    Object.entries(data.items).forEach(([name, item], index) => {
+                        html += `
+                            <tr>
+                                <td class="text-center">${index + 1}</td>
+                                <td class="text-center">${name}</td>
+                                <td class="text-center">${item.unit}</td>
+                                <td class="text-center">${item.quantity}</td>
+                            </tr>`;
+                    });
+
+                    html += `</tbody></table>`;
+                }
+
+                // PRINT WINDOW
+                let printWindow = window.open('', '', 'width=1000,height=800');
+                printWindow.document.write(`
+                    <html>
+                    <head>
+                        <title>Print Purchasing</title>
+                        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+                        <style>
+                            body { padding: 20px; font-size: 12px; }
+                            h5 { font-size: 14px; }
+                            table { width: 100%; border-collapse: collapse; }
+                            table th, table td { border: 1px solid #000; padding: 6px; text-align: center; }
+                            h4 { margin-bottom: 20px; text-align: center; }
+                        </style>
+                    </head>
+                    <body>
+                        <h4>${title}</h4>
+                        ${html}
+                    </body>
+                    </html>
+                `);
+                printWindow.document.close();
+                printWindow.focus();
+                printWindow.print();
+                printWindow.close();
+            })
+            .catch(err => {
+                console.error('Gagal print ulang:', err);
+                alert('Gagal memuat data print ulang.');
             });
     }
 

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\CustomerGroup;
 use App\Models\LogPrintDetail;
 
 class LogPrint extends Model
@@ -12,6 +13,7 @@ class LogPrint extends Model
 
     protected $fillable = [
         'print_date', 
+        'customer_group_id',
         'purchase', 
         'purchase_recap', 
         'packing'
@@ -20,6 +22,11 @@ class LogPrint extends Model
     protected $casts = [
         'print_date' => 'datetime',
     ];
+
+    public function customerGroup()
+    {
+        return $this->belongsTo(CustomerGroup::class);
+    }
 
     public function details()
     {

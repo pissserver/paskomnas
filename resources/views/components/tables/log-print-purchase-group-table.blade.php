@@ -7,17 +7,18 @@
         <span class="text-secondary text-xs font-weight-bold">{{ $log->print_date->format('d F Y') }}</span>
     </td>
     <td class="text-center">
-        <a href=""
-            class="mb-0 btn bg-gradient-secondary d-inline-flex align-items-center justify-content-center py-2 px-3"
-            data-bs-toggle="tooltip" title="Edit barang komoditi">
-            <i class="fas fa-edit text-white me-1"></i>Edit
-        </a>
-        <form id="delete-form-{{ $log->id }}" action="" method="POST" class="d-none">
-            @csrf @method('DELETE')
-        </form>
-        <a class="mb-0 btn bg-gradient-danger d-inline-flex align-items-center justify-content-center py-2 px-3"
-            href="javascript:;" title="Delete barang komoditi" onclick="confirmDelete({{ $log->id }})">
-            <i class="fas fa-trash-alt text-white me-1"></i>Hapus
+        @if ($log->customer_group_id != null)
+        <span class="badge bg-info text-white">Group</span>
+        @else
+        <span class="badge bg-success text-white">Trading</span>
+        @endif
+    </td>
+
+    <td class="text-center">
+        <a href="javascript:void(0)"
+            class="btn-print-ulang mb-0 btn bg-gradient-primary d-inline-flex align-items-center justify-content-center py-2 px-3"
+            data-log-id="{{ $log->id }}">
+            <i class="fas fa-print me-2"></i>Print Ulang
         </a>
     </td>
 </tr>
