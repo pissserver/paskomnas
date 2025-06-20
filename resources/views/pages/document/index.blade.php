@@ -85,53 +85,6 @@
     const userName = @json(auth()->user()->name);
     const selectImageUrl = "{{ asset('assets/img/empty-data2.png') }}";
 
-    $(document).ready(function () {
-        $('.select2').select2({
-            theme: 'bootstrap-5',
-            placeholder: "-- Pilih Customer --",
-            allowClear: true,
-            width: '100%'
-        });
-
-        $('#order-date-customer, #order-select-customer').on('change', function () {
-            let orderDate = $('#order-date-customer').val();
-            let customerId = $('#order-select-customer').val();
-
-            if (orderDate && customerId && customerId !== 'all') {
-                $.ajax({
-                    url: "{{ route('document.data') }}",
-                    method: 'GET',
-                    data: {
-                        order_date: orderDate,
-                        customer_id: customerId
-                    },
-                    success: function (response) {
-                        $('#document-data').html(renderDocument(response));
-                    },
-                    error: function () {
-                        $('#document-data').html(`
-                            <div class="empty-data">
-                                <div class="text-center">
-                                    <img src="${selectImageUrl}" alt="No Data" class="img-fluid" width="450">
-                                    <h4 class="text-secondary">Maaf, customer ini tidak memiliki order</h4>
-                                </div>
-                            </div>
-                        `);
-                    }
-                });
-            } else {
-                $('#document-data').html(`
-                    <div class="empty-data">
-                        <div class="text-center">
-                            <img src="{{ asset('assets/img/select.png') }}" alt="No Data" class="img-fluid" width="450">
-                            <h4 class="text-secondary">Pilih Tanggal dan Customer</h4>
-                        </div>
-                    </div>
-                `);
-            }
-        });
-    });
-
     flatpickr(".datepicker", {
         locale: "id",
         altInput: true,
@@ -150,24 +103,78 @@
         }
     });
 
-    $('body').on('change', '#po-selector', function () {
-        const selectedOrderId = $(this).val();
-        const customerId = $('#order-select-customer').val();
-        const orderDate = $('#order-date-customer').val();
+    $(document).ready(function () {
+        $('.select2').select2({ theme: 'bootstrap-5', allowClear: true, width: '100%' });
 
-        if (!customerId || !orderDate) return;
+        let initialDate = $('#order-date-customer').val();
 
-        $.ajax({
-            url: "{{ route('document.data') }}",
-            method: 'GET',
-            data: {
-                customer_id: customerId,
+        // Trigger AJAX pertama saat halaman pertama kali dibuka
+        if (initialDate) {
+            $.ajax({
+                url: "{{ route('document.index') }}",
+                method: 'GET',
+                data: { order_date: initialDate },
+                success: function (response) {
+                    let options = '<option value="all">-- Pilih Customer --</option>';
+
+                    if (response.customers && Array.isArray(response.customers) && response.customers.length > 0) {
+                        response.customers
+                            .sort((a, b) => a.name.localeCompare(b.name))
+                            .forEach(c => {
+                                options += `<option value="${c.id}">${c.name}</option>`;
+                            });
+
+                        $('#order-select-customer').html(options).prop('disabled', false);
+                    } 
+                }
+            });
+        }
+
+        $('#order-date-customer').on('change', function () {
+            const orderDate = $(this).val();
+            if (!orderDate) return;
+
+            $.get("{{ route('document.index') }}", { order_date: orderDate }, function (response) {
+                if (response.customers?.length > 0) {
+                    let options = '<option value="">-- Pilih Customer --</option>';
+                    response.customers.forEach(c => options += `<option value="${c.id}">${c.name}</option>`);
+                    $('#order-select-customer').html(options).prop('disabled', false);
+                } else {
+                    $('#order-select-customer').html('<option>-- Tidak ada Customer --</option>').prop('disabled', true);
+                    $('#document-data').html(`
+                        <div class="empty-data text-center">
+                            <img src="{{ asset('assets/img/empty-data2.png') }}" width="450">
+                            <h4 class="text-secondary">Tidak ada order di tanggal ini</h4>
+                        </div>`);
+                }
+            });
+        });
+
+        $('#order-select-customer').on('change', function () {
+            const orderDate = $('#order-date-customer').val();
+            const customerId = $(this).val();
+            if (!orderDate || !customerId) return;
+
+            $.get("{{ route('document.index') }}", {
                 order_date: orderDate,
-                order_id: selectedOrderId
-            },
-            success: function (response) {
-                $('#document-data').html(renderDocument(response)); // render ulang
-            }
+                customer_id: customerId
+            }, function (response) {
+                $('#document-data').html(renderDocument(response));
+            });
+        });
+
+        $('body').on('change', '#po-selector', function () {
+            const orderDate = $('#order-date-customer').val();
+            const customerId = $('#order-select-customer').val();
+            const orderId = $(this).val();
+
+            $.get("{{ route('document.index') }}", {
+                order_date: orderDate,
+                customer_id: customerId,
+                order_id: orderId
+            }, function (response) {
+                $('#document-data').html(renderDocument(response));
+            });
         });
     });
 
@@ -280,7 +287,7 @@
     function printDocument() {
         const printElement = document.getElementById("surat-jalan-print");
 
-        const printWindow = window.open('', '', 'width=1000,height=800');
+        let printWindow = window.open('', '', `left=0,top=0,width=${screen.width},height=${screen.height}`);
         printWindow.document.write(`
             <html>
             <head>

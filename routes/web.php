@@ -95,7 +95,6 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 
 	// Travel Document
 	Route::get('surat-jalan', [DocumentController::class, 'index'])->name('document.index');
-	Route::get('surat-jalan/data', [DocumentController::class, 'getDocumentData'])->name('document.data');
 
 	// Invoice
 	Route::get('invoice', [InvoiceController::class, 'index'])->name('invoice.index');

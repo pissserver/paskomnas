@@ -149,7 +149,8 @@ class PrintLogController extends Controller
                 }
             }
 
-            ksort($grouped); // Supaya tampilannya rapi
+            ksort($grouped);
+            sort($customers);
             return response()->json([
                 'success' => true,
                 'group_name' => $groupName,

@@ -249,7 +249,7 @@
         console.log('Order IDs:', orderIds); // Debug dulu
 
         // Buka window cetak
-        let printWindow = window.open('', '', 'width=1000,height=800'); 
+        let printWindow = window.open('', '', `left=0,top=0,width=${screen.width},height=${screen.height}`);
         printWindow.document.write(`
             <html>
             <head>
@@ -314,7 +314,7 @@
         let tableElement = document.querySelector('#purchase-data-customer');
         let tableHTML = tableElement.outerHTML;
 
-        let printWindow = window.open('', '', 'width=1000,height=800'); 
+        let printWindow = window.open('', '', `left=0,top=0,width=${screen.width},height=${screen.height}`);
         printWindow.document.write(`
             <html>
             <head>
@@ -726,7 +726,7 @@
                 }
 
                 // PRINT WINDOW
-                let printWindow = window.open('', '', 'width=1000,height=800');
+                let printWindow = window.open('', '', `left=0,top=0,width=${screen.width},height=${screen.height}`);
                 printWindow.document.write(`
                     <html>
                     <head>

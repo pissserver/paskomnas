@@ -9,6 +9,7 @@ use App\Models\Goods;
 use App\Models\Specification;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\LogPrintDetail;
 
 class PurchaseController extends Controller
 {
@@ -22,9 +23,12 @@ class PurchaseController extends Controller
     {
         $orderDate = $request->input('order_date', Carbon::today()->toDateString());
 
+        $printedOrderIds = LogPrintDetail::pluck('order_id')->toArray();
+
         $orders = Order::with(['orderItems.goods', 'orderItems.specification', 'customer.customerGroup'])
             ->where('status', 'confirmed')
             ->whereDate('order_date', $orderDate)
+            ->whereNotIn('id', $printedOrderIds)
             ->get();
 
         $groupedData = [];
@@ -81,6 +85,11 @@ class PurchaseController extends Controller
             }
         }
 
+        foreach ($groupedData as &$group) {
+            sort($group['customers']);
+        }
+        unset($group);
+
         if ($request->ajax()) {
             return response()->json($groupedData);
         }
@@ -95,12 +104,15 @@ class PurchaseController extends Controller
         $orderDate = $request->input('order_date', Carbon::today()->toDateString());
         $customerId = $request->input('customer_id');
 
+        $printedOrderIds = LogPrintDetail::pluck('order_id')->toArray();
+
         $query = Order::with(['orderItems.goods', 'orderItems.specification', 'customer'])
             ->where('status', 'confirmed')
             ->whereDate('order_date', $orderDate)
             ->whereHas('customer', function ($q) {
                 $q->whereNull('customer_group_id'); // Hanya customer tanpa grup
-            });
+            })
+            ->whereNotIn('id', $printedOrderIds);
 
         if ($customerId && $customerId !== 'all') {
             $query->where('customer_id', $customerId);
