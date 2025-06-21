@@ -91,10 +91,11 @@ class OrderController extends Controller
             'goods_id' => 'required|array',
             'specification_id' => 'nullable|array',
             'specification_id.*' => 'nullable|exists:specifications,id',
+            'price' => 'required|array',
+            'price.*' => 'nullable|numeric|min:0',
             'quantity' => 'required|array',
-            'price' => 'array',
+            'quantity.*' => 'required|numeric|min:0.01', // Validasi jumlah barang
             'goods_id.*' => 'exists:goods,id', // Memastikan goods_id valid
-            'quantity.*' => 'required|integer|min:1', // Validasi jumlah barang
         ]);
 
         DB::beginTransaction(); // Mulai transaksi
@@ -115,7 +116,10 @@ class OrderController extends Controller
             foreach ($request->goods_id as $index => $goodsId) {
                 $specificationId = isset($request->specification_id[$index]) ? $request->specification_id[$index] : null;
                 $quantity = $request->quantity[$index];
-                $price = $request->price[$index];
+                $price = isset($request->price[$index]) && $request->price[$index] !== ''
+                        ? (float) $request->price[$index]
+                        : 0;
+
 
                 // Hitung total harga
                 $total = $price * $quantity;
@@ -203,8 +207,9 @@ class OrderController extends Controller
             'specification_id.*' => 'nullable|exists:specifications,id',
             'quantity' => 'required|array',
             'price' => 'required|array',
+            'price.*' => 'nullable|numeric|min:0',
             'goods_id.*' => 'required|exists:goods,id',
-            'quantity.*' => 'required|integer|min:1',
+            'quantity.*' => 'required|numeric|min:0.01',
         ]);
 
         try {
@@ -220,7 +225,9 @@ class OrderController extends Controller
             foreach ($request->goods_id as $index => $goodsId) {
                 $quantity = $request->quantity[$index];
                 $specificationId = isset($request->specification_id[$index]) ? $request->specification_id[$index] : null;
-                $price = $request->price[$index];
+                $price = isset($request->price[$index]) && $request->price[$index] !== ''
+                        ? (float) $request->price[$index]
+                        : 0;
                 $orderItemId = $request->order_item_id[$index];
                 $total = $price * $quantity;
 

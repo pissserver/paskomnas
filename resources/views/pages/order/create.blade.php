@@ -195,7 +195,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-2">
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="unit" class="form-control-label">{{ __('Satuan') }}</label>
                                         <div class="@error('unit') border border-danger rounded-3 @enderror">
@@ -204,47 +204,50 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-3">
+
+                                {{--* Dikomentar karena agar tidak tampil --}}
+                                {{-- <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="price" class="form-control-label">{{ __('Harga Satuan') }}</label>
-                                        <div class="@error('price') border border-danger rounded-3 @enderror">
-                                            <input class="form-control" type="number" step="1000"
-                                                placeholder="Harga Satuan" id="price-0" name="price[]" readonly>
+                                <div class="@error('price') border border-danger rounded-3 @enderror"> --}}
+                                    <input class="form-control" type="hidden" step="1000" placeholder="Harga Satuan"
+                                        id="price-0" name="price[]" value="0" readonly>
+                                    {{-- </div>
+                                    </div>
+                                </div> --}}
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="unit" class="form-control-label">{{ __('Jumlah') }}</label>
+                                            <div class="@error('quantity') border border-danger rounded-3 @enderror">
+                                                <input class="form-control" type="number" placeholder="0" id="unit"
+                                                    step="any" name="quantity[]">
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-md-1">
-                                    <div class="form-group">
-                                        <label for="unit" class="form-control-label">{{ __('Jumlah') }}</label>
-                                        <div class="@error('quantity') border border-danger rounded-3 @enderror">
-                                            <input class="form-control" type="number" placeholder="0" id="unit"
-                                                name="quantity[]">
-                                        </div>
+
+                                    <div id="order-items-container"></div>
+
+                                    <div class="d-flex justify-content-end mb-4">
+                                        <button type="button" class="btn btn-outline-primary btn-sm me-2"
+                                            onclick="addOrderItem()">
+                                            <i class="fa fa-plus me-2"></i> Tambah Barang
+                                        </button>
                                     </div>
-                                </div>
 
-                                <div id="order-items-container"></div>
-
-                                <div class="d-flex justify-content-end mb-4">
-                                    <button type="button" class="btn btn-outline-primary btn-sm me-2"
-                                        onclick="addOrderItem()">
-                                        <i class="fa fa-plus me-2"></i> Tambah Barang
-                                    </button>
-                                </div>
-
-                                <div class="d-flex justify-content-end gap-2">
-                                    <button type="submit" class="btn bg-gradient-dark">
-                                        Simpan<i class="fa fa-save ms-2"></i>
-                                    </button>
-                                    <a href="{{ route('order.index') }}" class="btn bg-gradient-danger">
-                                        Kembali<i class="fa fa-arrow-right ms-2"></i>
-                                    </a>
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <button type="submit" class="btn bg-gradient-dark">
+                                            Simpan<i class="fa fa-save ms-2"></i>
+                                        </button>
+                                        <a href="{{ route('order.index') }}" class="btn bg-gradient-danger">
+                                            Kembali<i class="fa fa-arrow-right ms-2"></i>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
         </form>
     </div>
 
@@ -345,22 +348,23 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-md-2">
+                                        <div class="col-md-3">
                                             <label>Satuan</label>
                                             <input type="text" class="form-control" id="template-unit-{{ $index }}"
                                                 value="{{ $orderItem->goods->unit }}" disabled>
                                         </div>
 
-                                        <div class="col-md-2">
-                                            <label>Harga Satuan</label>
-                                            <input type="number" step="1000" class="form-control"
-                                                id="template-price-{{ $index }}" name="price[]"
-                                                value="{{ $orderItem->price }}" readonly>
-                                        </div>
+                                        {{-- * Dikomentar agar tidak ditampilkan --}}
+                                        {{-- <div class="col-md-2">
+                                            <label>Harga Satuan</label> --}}
+                                        <input type="hidden" step="1000" class="form-control"
+                                            id="template-price-{{ $index }}" name="price[]"
+                                            value="{{ $orderItem->price }}" value="0" readonly>
+                                        {{-- </div> --}}
 
-                                        <div class="col-md-1">
+                                        <div class="col-md-2">
                                             <label>Jumlah</label>
-                                            <input type="number" class="form-control" name="quantity[]"
+                                            <input type="number" class="form-control" name="quantity[]" step="any"
                                                 value="{{ $orderItem->quantity }}">
                                         </div>
 
@@ -591,17 +595,20 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <label>Satuan</label>
                 <input type="text" class="form-control" placeholder="Satuan" id="unit-${orderItemCount}" name="unit[]" disabled>
             </div>
+
+            {{-- Dikomentar agar tidak ditampilkan --}}
+            {{-- <div class="col-md-2"> --}}
+                {{-- <label>Harga Satuan</label> --}}
+                <input type="hidden" step="1000" class="form-control" placeholder="Harga Satuan" id="price-${orderItemCount}" name="price[]" value="0" readonly>
+            {{-- </div> --}}
+
             <div class="col-md-2">
-                <label>Harga Satuan</label>
-                <input type="number" step="1000" class="form-control" placeholder="Harga Satuan" id="price-${orderItemCount}" name="price[]" readonly>
-            </div>
-            <div class="col-md-1">
                 <label>Jumlah</label>
-                <input type="number" class="form-control" name="quantity[]" placeholder="0">
+                <input type="number" class="form-control" name="quantity[]" placeholder="0" step="any">
             </div>
             <div class="col-md-1" style="padding-top: 32px;">
                 <button type="button" class="btn btn-danger" onclick="removeOrderItem(${orderItemCount})">
@@ -649,17 +656,20 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <label>Satuan</label>
                 <input type="text" class="form-control" placeholder="Satuan" id="template-unit-${orderTemplateItemCount}" name="unit[]" disabled>
             </div>
+
+            {{-- Dikomentar agar tidak ditampilkan --}}
+            {{-- <div class="col-md-2"> --}}
+                {{-- <label>Harga Satuan</label> --}}
+                <input type="hidden" step="1000" class="form-control" placeholder="Harga Satuan" id="template-price-${orderTemplateItemCount}" name="price[]" value="0" readonly>
+            {{-- </div> --}}
+
             <div class="col-md-2">
-                <label>Harga Satuan</label>
-                <input type="number" step="1000" class="form-control" placeholder="Harga Satuan" id="template-price-${orderTemplateItemCount}" name="price[]" readonly>
-            </div>
-            <div class="col-md-1">
                 <label>Jumlah</label>
-                <input type="number" class="form-control" name="quantity[]" placeholder="0">
+                <input type="number" class="form-control" name="quantity[]" placeholder="0" step="any">
             </div>
             <div class="col-md-1" style="padding-top: 32px;">
                 <button type="button" class="btn btn-danger" onclick="removeTemplateOrderItem(${orderTemplateItemCount})">

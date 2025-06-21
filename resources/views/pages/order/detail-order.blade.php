@@ -234,25 +234,25 @@
                                                     </div>
                                                 </div>
 
-                                                <div class="col-md-2">
+                                                <div class="col-md-3">
                                                     <label>Satuan</label>
                                                     <input type="text" class="form-control" id="unit-{{ $index }}"
                                                         placeholder="Satuan" value="{{ $orderItem->goods->unit }}"
                                                         disabled>
                                                 </div>
 
-                                                <div class="col-md-2">
-                                                    <label>Harga Satuan</label>
-                                                    <input type="number" step="1000" class="form-control"
-                                                        id="price-{{ $index }}" name="price[]"
-                                                        placeholder="Harga Satuan" value="{{ $orderItem->price }}"
-                                                        readonly>
-                                                </div>
+                                                {{-- * Dikomentar agar tidak ditampilkan --}}
+                                                {{-- <div class="col-md-2">
+                                                    <label>Harga Satuan</label> --}}
+                                                <input type="hidden" step="1000" class="form-control"
+                                                    id="price-{{ $index }}" name="price[]" placeholder="Harga Satuan"
+                                                    value="{{ $orderItem->price }}" value="0" readonly>
+                                                {{-- </div> --}}
 
-                                                <div class="col-md-1">
+                                                <div class="col-md-2">
                                                     <label>Jumlah</label>
                                                     <input type="number" class="form-control" name="quantity[]"
-                                                        value="{{ $orderItem->quantity }}">
+                                                        step="any" value="{{ $orderItem->quantity }}">
                                                 </div>
 
                                                 <div class="col-md-1" style="padding-top: 32px;">
@@ -528,19 +528,20 @@
                 </div>
             </div>
 
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <label>Satuan</label>
                 <input type="text" class="form-control" placeholder="Satuan" id="unit-${orderItemCount}" disabled>
             </div>
 
-            <div class="col-md-2">
-                <label>Harga Satuan</label>
-                <input type="number" step="1000" name="price[]" class="form-control" id="price-${orderItemCount}" placeholder="Harga Satuan" readonly>
-            </div>
+            {{-- Dikomentar agar tidak ditampilkan --}}
+            {{-- <div class="col-md-2"> --}}
+                {{-- <label>Harga Satuan</label> --}}
+                <input type="hidden" step="1000" name="price[]" class="form-control" id="price-${orderItemCount}" value="0" placeholder="Harga Satuan" readonly>
+            {{-- </div> --}}
 
-            <div class="col-md-1">
+            <div class="col-md-2">
                 <label>Jumlah</label>
-                <input type="number" class="form-control" name="quantity[]" placeholder="0">
+                <input type="number" class="form-control" name="quantity[]" placeholder="0" step="any">
             </div>
 
             <div class="col-md-1" style="padding-top: 32px;">

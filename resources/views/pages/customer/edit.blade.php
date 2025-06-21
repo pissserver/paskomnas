@@ -1105,9 +1105,8 @@
                                     <div class="form-group">
                                         <label for="goods-price" class="form-control-label">{{ __('Harga') }}</label>
                                         <div class="@error('price') border border-danger rounded-3 @enderror">
-                                            <input class="form-control" type="number" step="1000" placeholder="0"
-                                                id="goods-price" name="price[]"
-                                                value="{{ old('price.' . $index, $item->price) }}"
+                                            <input class="form-control" type="number" placeholder="0" id="goods-price"
+                                                name="price[]" value="{{ old('price.' . $index, $item->price) }}"
                                                 {{ !$ownPeriode && $groupPeriode ? 'style=background-color:#fff3cd;' : '' }}>
                                             @error('price')
                                             <p class="text-danger text-xs mt-2">{{ $message }}</p>
