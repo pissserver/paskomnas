@@ -35,6 +35,15 @@ class OrderController extends Controller
             ->where('customer_id', $customerId)
             ->first();
 
+        $unpricedGoods = collect();
+        if ($periode) {
+            $pricedGoodsIds = $periode->prices->pluck('goods_id')->toArray();
+
+            $unpricedGoods = Goods::whereNotIn('id', $pricedGoodsIds)->pluck('id');
+        } else {
+            $unpricedGoods = Goods::pluck('id');
+        }
+
         $specifications = Specification::orderBy('name', 'asc')->get();
 
         $allOrders = Order::where('customer_id', $customerId)->get();
@@ -50,7 +59,8 @@ class OrderController extends Controller
             'specifications',
             'allOrders',
             'orders',
-            'periode'
+            'periode',
+            'unpricedGoods'
         ));
     }
 

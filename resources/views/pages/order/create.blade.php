@@ -160,6 +160,10 @@
                                     <div class="form-group">
                                         <label for="goods-name" class="form-control-label">Nama Barang
                                             Komoditi</label>
+                                        <span id="warning-text" class="ms-2 text-danger"
+                                            style="font-size: 12px; display: none;">
+                                            *Barang yang dipilih belum diupdate harga!
+                                        </span>
                                         <div class="@error('goods_id') border border-danger rounded-3 @enderror">
                                             <select class="form-control select2" id="goods-select" name="goods_id[]">
                                                 <option value="">-- Pilih Barang Komoditi --</option>
@@ -309,6 +313,10 @@
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label>Nama Barang Komoditi</label>
+                                                <span id="template-warning-text-{{ $index }}" class="ms-2 text-danger"
+                                                    style="font-size: 12px; display: none;">
+                                                    *Barang yang dipilih belum diupdate harga!
+                                                </span>
                                                 <select class="form-control select2"
                                                     id="template-goods-select-{{ $index }}" name="goods_id[]"
                                                     onchange="updateTemplateUnitAndPrice({{ $index }})">
@@ -491,6 +499,8 @@
     let orderItemCount = 0;
     let orderTemplateItemCount = {{ $orders ? ($orders->orderItems->keys()->last() ?? -1) : -1 }};
 
+    const unpricedGoods = @json($unpricedGoods);
+
     // Inisialisasi Select2 saat dokumen siap
     $(document).ready(function () {
         $('.select2').select2({
@@ -523,6 +533,37 @@
             $('#template-unit-0').val(unit);
             $('#template-price-0').val(price);
         });
+
+        //  Event untuk deteksi pilihan harga belum diupdate
+        $('#goods-select').on('select2:select', function (e) {
+            const selectedValue = parseInt(e.params.data.id);
+            if (unpricedGoods.includes(selectedValue)) {
+                $('#warning-text').show();
+            } else {
+                $('#warning-text').hide();
+            }
+        });
+
+        $('#goods-select').on('select2:clear', function () {
+            $('#warning-text').hide();
+        });
+
+        @if ($orders)
+            @foreach ($orders->orderItems as $index => $orderItem)
+                $('#template-goods-select-{{ $index }}').on('select2:select', function (e) {
+                    const selectedValue = parseInt(e.params.data.id);
+                    if (unpricedGoods.includes(selectedValue)) {
+                        $('#template-warning-text-{{ $index }}').show();
+                    } else {
+                        $('#template-warning-text-{{ $index }}').hide();
+                    }
+                });
+
+                $('#template-goods-select-{{ $index }}').on('select2:clear', function () {
+                    $('#template-warning-text-{{ $index }}').hide();
+                });
+            @endforeach
+        @endif
     });
 
     // Fungsi inisialisasi Select2 untuk elemen baru
@@ -532,6 +573,24 @@
             placeholder: "-- Pilih Barang Komoditi --",
             allowClear: true,
             width: '100%'
+        });
+
+        //  Event untuk deteksi pilihan harga belum diupdate
+        const idAttr = selector.replace('#', '');
+        const index = idAttr.split('-').pop();
+        const warningId = `#warning-text-${index}`;
+
+        $(selector).on('select2:select', function (e) {
+            const selectedValue = parseInt(e.params.data.id);
+            if (unpricedGoods.includes(selectedValue)) {
+                $(warningId).show();
+            } else {
+                $(warningId).hide();
+            }
+        });
+
+        $(selector).on('select2:clear', function () {
+            $(warningId).hide();
         });
     }
 
@@ -551,6 +610,24 @@
             allowClear: true,
             width: '100%'
         });
+
+        //  Event untuk deteksi pilihan harga belum diupdate
+        const idAttr = selector.replace('#', '');
+        const index = idAttr.split('-').pop();
+        const warningId = `#template-warning-text-${index}`;
+
+        $(selector).on('select2:select', function (e) {
+            const selectedValue = parseInt(e.params.data.id);
+            if (unpricedGoods.includes(selectedValue)) {
+                $(warningId).show();
+            } else {
+                $(warningId).hide();
+            }
+        });
+
+        $(selector).on('select2:clear', function () {
+            $(warningId).hide();
+        });
     }
 
     function initTemplateSelect2Specification(selector) {
@@ -569,6 +646,10 @@
         <div class="order-item row mb-2" id="order-item-${orderItemCount}">
             <div class="col-md-4">
                 <label>Nama Barang Komoditi</label>
+                <span id="warning-text-${orderItemCount}" class="ms-2 text-danger"
+                    style="font-size: 12px; display: none;">
+                    *Barang yang dipilih belum diupdate harga!
+                </span>
                 <select class="form-control select2" id="goods-select-${orderItemCount}" name="goods_id[]" onchange="updateUnitAndPrice(${orderItemCount})">
                     <option value="">-- Pilih Barang Komoditi --</option>
                     @foreach ($goods as $item)
@@ -629,6 +710,10 @@
         <div class="template-order-item row mb-2" id="template-order-item-${orderTemplateItemCount}">
             <div class="col-md-4">
                 <label>Nama Barang Komoditi</label>
+                <span id="template-warning-text-${orderTemplateItemCount}" class="ms-2 text-danger"
+                    style="font-size: 12px; display: none;">
+                    *Barang yang dipilih belum diupdate harga!
+                </span>
                 <select class="form-control select2" id="template-goods-select-${orderTemplateItemCount}" name="goods_id[]" onchange="updateTemplateUnitAndPrice(${orderTemplateItemCount})">
                     <option value="">-- Pilih Barang Komoditi --</option>
                     @foreach ($goods as $item)
