@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\DB;
 use App\Models\Customer;
 use App\Models\Goods;
 use App\Models\Specification;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\OrderConvert;
 
 class DocumentController extends Controller
 {
@@ -68,21 +70,45 @@ class DocumentController extends Controller
                 $unit = $item->goods->unit;
                 $ppn = $item->goods->ppn;
                 $qty = $item->quantity;
-                $specification = $item->specification ? $item->specification->name : '-';
+                $specification = $item->specification ? $item->specification->name : '';
                 $key = $name . '||' . $specification;
 
                 if (!$hasPpn && floatval($ppn) > 0) {
                     $hasPpn = true;
                 }
 
+                // Cek apakah data order item sudah ada di OrderConvert
+                $goodsId = $item->goods_id;
+                $specificationId = $item->specification_id;
+
+                $converted = OrderConvert::where('order_id', $selectedOrder->id)
+                    ->where('goods_id', $goodsId)
+                    ->when(!is_null($specificationId), function ($q) use ($specificationId) {
+                        return $q->where('specification_id', $specificationId);
+                    }, function ($q) {
+                        return $q->whereNull('specification_id');
+                    })
+                    ->first();
+
+                $usedQty = $converted ? $converted->quantity : $qty;
+                $usedUnit = $converted ? $converted->unit : $unit;
+                $displayQty = $converted ? $converted->quantity : '';
+                $displayUnit = $converted ? $converted->unit : '';
+
                 if (isset($data[$key])) {
-                    $data[$key]['qty'] += $qty;
+                    $data[$key]['qty'] += $usedQty;
                 } else {
                     $data[$key] = [
+                        'goods_id' => $item->goods_id,
+                        'specification_id' => $item->specification_id,
                         'name' => $name,
-                        'unit' => $unit,
+                        'original_unit' => $unit,
+                        'unit' => $usedUnit,
+                        'display_unit' => $displayUnit,
                         'ppn' => $ppn,
-                        'qty' => $qty,
+                        'original_qty' => $qty,
+                        'qty' => $usedQty,
+                        'display_qty' => $displayQty,
                         'specification' => $specification,
                     ];
                 }
@@ -110,4 +136,39 @@ class DocumentController extends Controller
 
         return view('pages.document.index', compact('customers'));
     }
+
+    public function storeConversion(Request $request)
+    {
+        $count = count($request->order_id);
+
+        for ($i = 0; $i < $count; $i++) {
+            $orderId         = $request->order_id[$i];
+            $goodsId         = $request->goods_id[$i];
+            $specificationId = $request->specification_id[$i];
+            $originalQty     = $request->original_quantity[$i];
+            $originalUnit    = $request->original_unit[$i];
+
+            $newQty  = $request->new_quantity[$i];
+            $newUnit = $request->new_unit[$i];
+
+            $finalQty  = $newQty !== null && $newQty !== '' ? $newQty : $originalQty;
+            $finalUnit = $newUnit !== null && $newUnit !== '' ? $newUnit : $originalUnit;
+
+            // Optional: hapus data sebelumnya jika ingin replace
+            OrderConvert::updateOrCreate(
+                [
+                    'order_id'         => $orderId,
+                    'goods_id'         => $goodsId,
+                    'specification_id' => $specificationId ? $specificationId : null,
+                ],
+                [
+                    'quantity' => $finalQty,
+                    'unit'     => $finalUnit,
+                ]
+            );
+        }
+
+        return response()->json(['message' => 'Semua konversi berhasil disimpan.']);
+    }
+
 }

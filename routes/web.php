@@ -95,6 +95,7 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 
 	// Travel Document
 	Route::get('surat-jalan', [DocumentController::class, 'index'])->name('document.index');
+	Route::post('surat-jalan/convert', [DocumentController::class, 'storeConversion'])->name('document.convert');
 
 	// Invoice
 	Route::get('invoice', [InvoiceController::class, 'index'])->name('invoice.index');

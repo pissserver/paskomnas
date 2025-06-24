@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class PrintLogController extends Controller
 {
+    // index log print
     public function dataPurchaseLogPrint(Request $request)
     {
         $keyword = $request->input('keyword');
@@ -38,6 +39,7 @@ class PrintLogController extends Controller
         ]);
     }
 
+    // Store log print if clicked print button on purchase
     public function purchaseLogPrint(Request $request)
     {
         $request->validate([
@@ -102,6 +104,7 @@ class PrintLogController extends Controller
         }
     }
 
+    // Show print preview
     public function printLogView($id)
     {
         $log = LogPrint::with([

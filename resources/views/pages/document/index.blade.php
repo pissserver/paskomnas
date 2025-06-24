@@ -81,9 +81,47 @@
     </div>
 </div>
 
+<!-- Modal Ubah Order -->
+<div class="modal fade" id="ubahOrderModal" tabindex="-1" aria-labelledby="ubahOrderModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-gradient-primary">
+                <i class="fa fa-edit me-2 text-white"></i>
+                <h5 class="modal-title text-white" id="ubahOrderModalLabel">Ubah Quantity Order</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-secondary alert-dismissible fade show mb-3" id="alert-success" role="alert">
+                    <i class="fa fa-info me-2 text-white"></i><span class="alert-text text-white">
+                        Perubahan ini tidak akan merubah data asli PO, hanya untuk surat jalan & invoice</span>
+                </div>
+                <form id="ubah-order-form">
+                    <div class="container">
+                        <div class="row fw-bold mb-2">
+                            <div class="col-md-4">Nama Barang</div>
+                            <div class="col-md-2">Qty Awal</div>
+                            <div class="col-md-2">Satuan Awal</div>
+                            <div class="col-md-2">Qty Baru</div>
+                            <div class="col-md-2">Satuan Baru</div>
+                        </div>
+                        <div id="ubah-order-items"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" form="ubah-order-form" class="btn btn-primary"><i
+                        class="fa fa-save me-2"></i>Simpan</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <script>
     const userName = @json(auth()->user()->name);
     const selectImageUrl = "{{ asset('assets/img/empty-data2.png') }}";
+    let currentOrderData = null;
 
     flatpickr(".datepicker", {
         locale: "id",
@@ -159,6 +197,7 @@
                 order_date: orderDate,
                 customer_id: customerId
             }, function (response) {
+                currentOrderData = response;
                 $('#document-data').html(renderDocument(response));
             });
         });
@@ -173,8 +212,15 @@
                 customer_id: customerId,
                 order_id: orderId
             }, function (response) {
+                currentOrderData = response;
                 $('#document-data').html(renderDocument(response));
             });
+        });
+
+        $('body').on('click', '[data-bs-target="#ubahOrderModal"]', function () {
+            if (currentOrderData) {
+                openUbahOrderModal(currentOrderData);
+            }
         });
     });
 
@@ -192,7 +238,7 @@
 
         let html = `
         <div class="col-12 d-flex justify-content-center mb-3 pe-4">
-            <div class="d-flex align-items-center gap-1">
+            <div class="d-flex align-items-center gap-2">
                 <div class="position-relative d-inline-block" style="min-width: 150px;">
                     <label class="btn bg-gradient-dark text-white w-100 d-flex align-items-center justify-content-center rounded-pill shadow-sm" style="height: 38px;">
                         <i class="fa fa-file-alt me-2"></i> Pilih Order <i class="fa fa-caret-down ms-2"></i>
@@ -203,6 +249,10 @@
                         ${dropdownOptions}
                     </select>
                 </div>
+
+                <button type="button" class="ms-2 btn btn-primary d-flex align-items-center gap-2 rounded-pill" data-bs-toggle="modal" data-bs-target="#ubahOrderModal">
+                    <i class="fa fa-edit"></i> Ubah Order
+                </button>
             </div>
         </div>
         <div id="surat-jalan-print" style="font-family: Arial, sans-serif; font-size: 14px; padding: 20px;">
@@ -283,6 +333,69 @@
 
         return html;
     }
+
+    function openUbahOrderModal(data) {
+        const container = document.getElementById('ubah-order-items');
+        container.innerHTML = '';
+
+        // Simpan semua row dalam string terlebih dahulu
+        let rows = '';
+        data.data.forEach((item, index) => {
+            rows += `
+                    <div class="row mb-2">
+                        <input type="hidden" name="order_id[]" value="${data.order_id}">
+                        <input type="hidden" name="goods_id[]" value="${item.goods_id}">
+                        <input type="hidden" name="specification_id[]" value="${item.specification_id ? item.specification_id : ''}">
+                        <input type="hidden" name="original_quantity[]" value="${item.qty}">
+                        <input type="hidden" name="original_unit[]" value="${item.unit}">
+
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" value="${item.name}${item.specification ? ' (' + item.specification + ')' : ''}" readonly>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" class="form-control" value="${item.original_qty}" readonly>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" class="form-control" value="${item.original_unit}" readonly>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="number" class="form-control" placeholder="0" name="new_quantity[]" step="any" value="${item.display_qty}">
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" class="form-control" placeholder="Satuan" name="new_unit[]" value="${item.display_unit}">
+                        </div>
+                    </div>`;
+
+        });
+
+        // Tampilkan modal terlebih dahulu
+        const modalElement = document.getElementById('ubahOrderModal');
+
+        // Setelah animasi selesai, baru isi konten
+        modalElement.addEventListener('shown.bs.modal', function handler() {
+            container.innerHTML = rows;
+            modalElement.removeEventListener('shown.bs.modal', handler); // hindari duplikat listener
+        });
+    }
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    $('#ubah-order-form').on('submit', function (e) {
+        e.preventDefault();
+        const formData = $(this).serialize();
+
+        $.post("{{ route('document.convert') }}", formData)
+            .done(function (res) {
+                alert(res.message);
+            })
+            .fail(function (xhr) {
+                alert('Gagal menyimpan: ' + xhr.responseJSON?.message || 'Error');
+            });
+    });
 
     function printDocument() {
         const printElement = document.getElementById("surat-jalan-print");
