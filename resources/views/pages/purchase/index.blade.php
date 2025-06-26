@@ -79,8 +79,12 @@
                                     <i class="fa fa-calendar fa-2x me-2"></i>
                                     <input type="date" class="form-control datepicker me-3" id="order-date"
                                         name="order_date" required>
-                                    <select class="form-select" id="group-select" style="min-width: 200px;"
-                                        disabled></select>
+
+                                    <div style="min-width: 250px; flex-grow: 1;">
+                                        <select class="form-select select2-group w-100" id="group-select" disabled>
+                                            <option value="" selected>-- Pilih Group --</option>
+                                        </select>
+                                    </div>
                                     <i class="fa fa-users fa-2x ms-2"></i>
                                 </div>
 
@@ -213,6 +217,37 @@
 </div>
 
 <script>
+    $(document).ready(function () {
+        $('.select2, .select2-group').each(function () {
+            $(this).select2({
+                theme: 'bootstrap-5',
+                placeholder: $(this).find('option:first').text(), // ambil placeholder dari option pertama
+                allowClear: true,
+                width: '100%'
+            });
+        });
+
+        // Untuk Summary Group
+        const defaultDate = $('#order-date').val();
+        if (defaultDate) {
+            fetchData(defaultDate);
+        }
+
+        // Untuk Purchase per Customer
+        const today = new Date().toISOString().split('T')[0];
+        $('#order-date-customer').val(today);
+        // Set select ke "all" agar ambil semua customer tanpa grup
+        $('#order-select-customer').val('all');
+        $('#order-select-customer').on('change', function () {
+            fetchDataCustomer(false); // ← tidak tampilkan loading
+        });
+        $('#order-date-customer').on('change', function () {
+            fetchDataCustomer(true); // ← tampilkan loading
+        });
+        // Fetch semua customer tanpa grup yang order hari ini
+        fetchDataCustomer();
+    });
+
     flatpickr(".datepicker", {
         locale: "id",
         altInput: true,
@@ -476,7 +511,11 @@
     }
 
     function fetchData(date) {
-        $('#purchase-data').html('<div class="text-center my-4"><i class="fa fa-spinner fa-spin me-2"></i> Loading...</div>');
+        $('#purchase-data').html(`
+            <div style="display:flex; justify-content:center; align-items:center; height:150px; font-size:1.2rem; color:#555;">
+                <i class="fa fa-spinner fa-spin me-2"></i> Memuat data...
+            </div>
+        `);
 
         $.ajax({
             url: "{{ route('purchase.group') }}",
@@ -495,36 +534,38 @@
                             </div>
                         </div>
                     `);
-                    groupSelect.html('<option value="">-- Tidak ada Group --</option>').prop('disabled', true);
+                    groupSelect.html('<option value="none" selected>-- Tidak ada Group --</option>').prop('disabled', true);
                     return;
-                }
+                } else {
+                    // Ada group di tanggal itu
+                    let groupOptions = '<option value="">-- Pilih Group --</option>';
+                    Object.keys(response)
+                        .sort((a, b) => a.localeCompare(b))
+                        .forEach(group => {
+                            groupOptions += `<option value="${group}">${group}</option>`;
+                        });
 
-                // CASE: Ada group di tanggal itu
-                let groupOptions = '<option value="">-- Daftar Group --</option>';
-                Object.keys(response)
-                    .sort((a, b) => a.localeCompare(b))
-                    .forEach(group => {
-                        groupOptions += `<option value="${group}">${group}</option>`;
-                    });
-                groupSelect.html(groupOptions).prop('disabled', false);
+                    groupSelect.html(groupOptions).prop('disabled', false);
 
-                // Tampilkan placeholder sampai grup dipilih
-                $('#purchase-data').html(`
-                    <div class="empty-data">
-                        <div class="text-center">
-                            <img src="{{ asset('assets/img/select.png') }}" alt="No Data" class="img-fluid" width="450">
-                            <h4 class="text-secondary">Pilih Group Customer</h4>
+                    // Tampilkan placeholder sampai grup dipilih
+                    $('#purchase-data').html(`
+                        <div class="empty-data">
+                            <div class="text-center">
+                                <img src="{{ asset('assets/img/select.png') }}" alt="No Data" class="img-fluid" width="450">
+                                <h4 class="text-secondary mb-4">Pilih Group</h4>
+                            </div>
                         </div>
-                    </div>
-                `);
+                    `);
 
-                // Handler ketika user memilih grup
-                groupSelect.off('change').on('change', function () {
-                    const selectedGroup = $(this).val();
-                    if (selectedGroup && response[selectedGroup]) {
-                        renderGroupTable(selectedGroup, response[selectedGroup]);
-                    }
-                });
+                    // Handler ketika user memilih grup
+                    groupSelect.on('change', function () {
+                        const selectedGroup = $(this).val();
+
+                        if (selectedGroup && response[selectedGroup]) {
+                            renderGroupTable(selectedGroup, response[selectedGroup]);
+                        }
+                    });
+                }
             },
             error: function() {
                 $('#purchase-data').html('<div class="text-danger text-center">Gagal memuat data</div>');
@@ -532,17 +573,19 @@
         });
     }
 
-    function fetchDataCustomer() {
+    function fetchDataCustomer(triggeredByDate = false) {
         const date = $('#order-date-customer').val();
         const customerId = $('#order-select-customer').val();
 
         if (!date) return;
 
-        $('#purchase-data-customer').html(`
-            <div style="display:flex; justify-content:center; align-items:center; height:150px; font-size:1.2rem; color:#555;">
-                <i class="fa fa-spinner fa-spin me-2"></i> Loading data...
-            </div>
-        `);
+        if (triggeredByDate) {
+            $('#purchase-data-customer').html(`
+                <div style="display:flex; justify-content:center; align-items:center; height:150px; font-size:1.2rem; color:#555;">
+                    <i class="fa fa-spinner fa-spin me-2"></i> Memuat data...
+                </div>
+            `);
+        }
 
         $.ajax({
             url: "{{ route('purchase.customer') }}",
@@ -564,7 +607,7 @@
                             </div>
                         </div>
                     `);
-                    $('#order-select-customer').html(`<option value="all" selected>-- Tidak ada customer --</option>`);
+                    $('#order-select-customer').html(`<option value="all" selected>-- Tidak ada Customer --</option>`);
                     $('#order-select-customer').prop('disabled', true);
                 } else {
                     // Isi select jika belum memilih customer
@@ -587,32 +630,6 @@
             }
         });
     }
-
-    $(document).ready(function () {
-        // Untuk Summary Group
-        const defaultDate = $('#order-date').val();
-        if (defaultDate) {
-            fetchData(defaultDate);
-        }
-
-        $('#form-date').on('submit', function (e) {
-            e.preventDefault();
-            const selectedDate = $('#order-date').val();
-            if (selectedDate) {
-                fetchData(selectedDate);
-            }
-        });
-
-        // Untuk Purchase per Customer
-        const today = new Date().toISOString().split('T')[0];
-        $('#order-date-customer').val(today);
-
-        // Set select ke "all" agar ambil semua customer tanpa grup
-        $('#order-select-customer').val('all');
-
-        // Fetch semua customer tanpa grup yang order hari ini
-        fetchDataCustomer();
-    });
 
     // Untuk Log Print
     function loadLogPrint(keyword = '', page = 1) {

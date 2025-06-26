@@ -140,6 +140,7 @@ class DocumentController extends Controller
     public function storeConversion(Request $request)
     {
         $count = count($request->order_id);
+        $convertedItems = [];
 
         for ($i = 0; $i < $count; $i++) {
             $orderId         = $request->order_id[$i];
@@ -155,7 +156,7 @@ class DocumentController extends Controller
             $finalUnit = $newUnit !== null && $newUnit !== '' ? $newUnit : $originalUnit;
 
             // Optional: hapus data sebelumnya jika ingin replace
-            OrderConvert::updateOrCreate(
+            $converted = OrderConvert::updateOrCreate(
                 [
                     'order_id'         => $orderId,
                     'goods_id'         => $goodsId,
@@ -166,9 +167,20 @@ class DocumentController extends Controller
                     'unit'     => $finalUnit,
                 ]
             );
+
+            $convertedItems[] = [
+                'order_id' => $orderId,
+                'goods_id' => $goodsId,
+                'specification_id' => $specificationId,
+                'quantity' => $converted->quantity,
+                'unit' => $converted->unit,
+            ];
         }
 
-        return response()->json(['message' => 'Semua konversi berhasil disimpan.']);
+        return response()->json([
+            'message' => 'Berhasil melakukan konversi.',
+            'converted' => $convertedItems,
+        ]);
     }
 
 }

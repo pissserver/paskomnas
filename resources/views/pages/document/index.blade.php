@@ -65,12 +65,6 @@
 
                 <div id="document-data">
                     {{-- Render Table --}}
-                    <div class="empty-data">
-                        <div class="text-center">
-                            <img src="{{ asset('assets/img/select.png') }}" alt="No Data" class="img-fluid" width="450">
-                            <h4 class="text-secondary">Pilih Tanggal dan Customer</h4>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="d-flex justify-content-center mt-3 mb-2" id="pagination">
@@ -122,6 +116,7 @@
     const userName = @json(auth()->user()->name);
     const selectImageUrl = "{{ asset('assets/img/empty-data2.png') }}";
     let currentOrderData = null;
+    let modalConverted = []; 
 
     flatpickr(".datepicker", {
         locale: "id",
@@ -142,7 +137,12 @@
     });
 
     $(document).ready(function () {
-        $('.select2').select2({ theme: 'bootstrap-5', allowClear: true, width: '100%' });
+        $('.select2').select2({ 
+            theme: 'bootstrap-5',
+            placeholder: '-- Pilih Customer --', 
+            allowClear: true, 
+            width: '100%' 
+        });
 
         let initialDate = $('#order-date-customer').val();
 
@@ -169,6 +169,12 @@
         }
 
         $('#order-date-customer').on('change', function () {
+            $('#document-data').html(`
+                <div style="display:flex; justify-content:center; align-items:center; height:150px; font-size:1.2rem; color:#555;">
+                    <i class="fa fa-spinner fa-spin me-2"></i> Memuat data...
+                </div>
+            `);
+
             const orderDate = $(this).val();
             if (!orderDate) return;
 
@@ -177,6 +183,12 @@
                     let options = '<option value="">-- Pilih Customer --</option>';
                     response.customers.forEach(c => options += `<option value="${c.id}">${c.name}</option>`);
                     $('#order-select-customer').html(options).prop('disabled', false);
+                    $('#document-data').html(`
+                        <div class="empty-data text-center">
+                            <img src="{{ asset('assets/img/select.png') }}" width="450">
+                            <h4 class="text-secondary">Pilih Customer</h4>
+                        </div>
+                    `);
                 } else {
                     $('#order-select-customer').html('<option>-- Tidak ada Customer --</option>').prop('disabled', true);
                     $('#document-data').html(`
@@ -222,6 +234,17 @@
                 openUbahOrderModal(currentOrderData);
             }
         });
+
+        if (initialDate) {
+            // Tampilkan indikator sementara sebelum customer muncul
+            $('#document-data').html(`
+                <div style="display:flex; justify-content:center; align-items:center; height:150px; font-size:1.2rem; color:#555;">
+                    <i class="fa fa-spinner fa-spin me-2"></i> Memuat data..
+                </div>
+            `);
+                        
+            $('#order-date-customer').trigger('change');
+        }
     });
 
     function renderDocument(data) {
@@ -232,8 +255,10 @@
         const tanggal = `Surabaya, ${currentDate.getDate().toString().padStart(2, '0')} ${bulan[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
 
         let dropdownOptions = '';
-        for (const po of data.po_list) {
-            dropdownOptions += `<option value="${po.id}" ${po.id === data.order_id ? 'selected' : ''}>${po.code}</option>`;
+        if (Array.isArray(data.po_list)) {
+            for (const po of data.po_list) {
+                dropdownOptions += `<option value="${po.id}" ${po.id === data.order_id ? 'selected' : ''}>${po.code}</option>`;
+            }
         }
 
         let html = `
@@ -298,7 +323,9 @@
                     <td style="padding: 6px; text-align: center; font-size: 14px;"
                         data-original-qty="${item.qty}"
                         data-unit="${item.unit}"
-                        data-converted="false">
+                        data-converted="false"
+                        data-goods-id="${item.goods_id}"
+                        data-specification-id="${item.specification_id !== null ? item.specification_id : ''}">
                         <span class="qty-val" style="display: inline-block; min-width: 40px; text-align: right;">
                             ${Number(item.qty).toLocaleString('id-ID')}
                         </span>
@@ -365,17 +392,33 @@
                             <input type="text" class="form-control" placeholder="Satuan" name="new_unit[]" value="${item.display_unit}">
                         </div>
                     </div>`;
-
         });
 
-        // Tampilkan modal terlebih dahulu
+        // Langsung render konten
+        container.innerHTML = rows;
+
+        // Tampilkan modal
         const modalElement = document.getElementById('ubahOrderModal');
+        const modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+        modalInstance.show();
 
-        // Setelah animasi selesai, baru isi konten
-        modalElement.addEventListener('shown.bs.modal', function handler() {
-            container.innerHTML = rows;
-            modalElement.removeEventListener('shown.bs.modal', handler); // hindari duplikat listener
-        });
+        // Timpa input qty/unit pakai yang terbaru
+        setTimeout(() => {
+            modalConverted.forEach(function (item) {
+                const goodsId = item.goods_id;
+                const specId = item.specification_id ?? '';
+
+                const inputRow = $(`input[name="goods_id[]"][value="${goodsId}"]`)
+                    .filter(function () {
+                        return $(this).closest('.row').find(`input[name="specification_id[]"]`).val() === specId;
+                    }).closest('.row');
+
+                if (inputRow.length > 0) {
+                    inputRow.find('input[name="new_quantity[]"]').val(item.quantity);
+                    inputRow.find('input[name="new_unit[]"]').val(item.unit);
+                }
+            });
+        }, 100);
     }
 
     $.ajaxSetup({
@@ -390,11 +433,71 @@
 
         $.post("{{ route('document.convert') }}", formData)
             .done(function (res) {
-                alert(res.message);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: res.message,
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+
+                // Tutup modal
+                const modalElement = document.getElementById('ubahOrderModal');
+                const modalInstance = bootstrap.Modal.getInstance(modalElement);
+
+                // Blur elemen yang sedang aktif sebel
+                document.activeElement?.blur();
+
+                // Update dilakukan setelah modal benar-benar tertutup
+                let renderDocumentConverted = res.converted || [];
+                modalConverted = res.converted || [];
+
+                modalElement.addEventListener('hidden.bs.modal', function handleModalHidden() {
+                    modalElement.removeEventListener('hidden.bs.modal', handleModalHidden);
+                    $('.modal-backdrop').remove();
+                    $('body').removeClass('modal-open').css('padding-right', '');
+
+                    // Ambil ulang data dan render ulang tampilan
+                    const customerId = $('#customer-selector').val();
+                    const orderDate = $('#order-date').val();
+
+                    // 🚀 Lakukan update tampilan DI SINI
+                    renderDocumentConverted.forEach(function (item) {
+                        const goodsId = item.goods_id;
+                        const specId = item.specification_id ?? '';
+
+                        let cell = $(`td[data-goods-id="${item.goods_id}"][data-specification-id="${specId}"]`);
+
+                        if (cell.length > 0) {
+                            cell.find('.qty-val').text(Number(item.quantity).toLocaleString('id-ID'));
+                            cell.find('.qty-unit').text(item.unit);
+                            cell.attr('data-converted', 'true');
+                        } else {
+                            console.warn('Cell tidak ditemukan untuk', item.goods_id, item.specification_id);
+                        }
+                    });
+
+                    // Kosongkan variabel sementara
+                    renderDocumentConverted = [];
+                });
+                
+                modalInstance.hide();
+
             })
             .fail(function (xhr) {
-                alert('Gagal menyimpan: ' + xhr.responseJSON?.message || 'Error');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal menyimpan!',
+                    text: xhr.responseJSON?.message || 'Terjadi kesalahan.',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true
+                });
             });
+    });
+
+    $('#btn-ubah-order').on('click', function () {
+        openUbahOrderModal(currentDocumentData);
     });
 
     function printDocument() {
