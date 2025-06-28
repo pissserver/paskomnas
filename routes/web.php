@@ -99,7 +99,6 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 
 	// Invoice
 	Route::get('invoice', [InvoiceController::class, 'index'])->name('invoice.index');
-	Route::get('invoice/data', [InvoiceController::class, 'getInvoiceData'])->name('invoice.data');
 
 	// Image Archive
 	Route::get('arsip-gambar', [ImageArchiveController::class, 'index'])->name('image-archive.index');

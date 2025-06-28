@@ -2,4 +2,5 @@
 
 -   Sediakan tabel sama seperti di purchasing untuk input harga manual lalu diinput disistem agar bisa diprint dan dicompare laba rugi
 -   Packing & Delivery sama (per customer + Per PO)
--   Surat Jalan buat convert satuan terutama dari bijian ke kg / pengurangan jumlah Qty (Tidak merubah PO asli)
+-   Total price + ppn atau price per item + ppn
+-   Jika ada convert 5 kg tapi yang tersedia hanya 3 kg, itu price sesuai awal atau sesuai convert?

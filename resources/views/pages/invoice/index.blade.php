@@ -65,12 +65,6 @@
 
                 <div id="invoice-data">
                     {{-- Render Table --}}
-                    <div class="empty-data">
-                        <div class="text-center">
-                            <img src="{{ asset('assets/img/select.png') }}" alt="No Data" class="img-fluid" width="450">
-                            <h4 class="text-secondary">Pilih Tanggal dan Customer</h4>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="d-flex justify-content-center mt-3 mb-2" id="pagination">
@@ -84,53 +78,6 @@
 <script>
     const userName = @json(auth()->user()->name);
     const selectImageUrl = "{{ asset('assets/img/empty-data2.png') }}";
-
-    $(document).ready(function () {
-        $('.select2').select2({
-            theme: 'bootstrap-5',
-            placeholder: "-- Pilih Customer --",
-            allowClear: true,
-            width: '100%'
-        });
-
-        $('#order-date-customer, #order-select-customer').on('change', function () {
-            let orderDate = $('#order-date-customer').val();
-            let customerId = $('#order-select-customer').val();
-
-            if (orderDate && customerId && customerId !== 'all') {
-                $.ajax({
-                    url: "{{ route('document.data') }}",
-                    method: 'GET',
-                    data: {
-                        order_date: orderDate,
-                        customer_id: customerId
-                    },
-                    success: function (response) {
-                        $('#invoice-data').html(renderInvoice(response));
-                    },
-                    error: function () {
-                        $('#invoice-data').html(`
-                            <div class="empty-data">
-                                <div class="text-center">
-                                    <img src="${selectImageUrl}" alt="No Data" class="img-fluid" width="450">
-                                    <h4 class="text-secondary">Maaf, customer ini tidak memiliki order</h4>
-                                </div>
-                            </div>
-                        `);
-                    }
-                });
-            } else {
-                $('#invoice-data').html(`
-                    <div class="empty-data">
-                        <div class="text-center">
-                            <img src="{{ asset('assets/img/select.png') }}" alt="No Data" class="img-fluid" width="450">
-                            <h4 class="text-secondary">Pilih Tanggal dan Customer</h4>
-                        </div>
-                    </div>
-                `);
-            }
-        });
-    });
 
     flatpickr(".datepicker", {
         locale: "id",
@@ -150,46 +97,144 @@
         }
     });
 
-    function convertQty() {
-        const rows = document.querySelectorAll('#invoice-print tbody tr');
+    $(document).ready(function () {
+        $('.select2').select2({ 
+            theme: 'bootstrap-5',
+            placeholder: '-- Pilih Customer --', 
+            allowClear: true, 
+            width: '100%' 
+        });
 
-        rows.forEach(row => {
-            const qtyCell = row.cells[0];
-            const originalQty = parseFloat(qtyCell.dataset.originalQty);
-            const unit = qtyCell.dataset.unit;
-            const isConverted = qtyCell.dataset.converted === 'true';
+        let initialDate = $('#order-date-customer').val();
 
-            const qtyValEl = qtyCell.querySelector('.qty-val');
-            const qtyUnitEl = qtyCell.querySelector('.qty-unit');
+        // Trigger AJAX pertama saat halaman pertama kali dibuka
+        if (initialDate) {
+            $.ajax({
+                url: "{{ route('invoice.index') }}",
+                method: 'GET',
+                data: { order_date: initialDate },
+                success: function (response) {
+                    let options = '<option value="all">-- Pilih Customer --</option>';
 
-            if (!isConverted && unit.toLowerCase() === 'kg') {
-                // konversi ke gram
-                const newQty = originalQty * 1000;
-                qtyValEl.textContent = newQty.toLocaleString('id-ID');
-                qtyUnitEl.textContent = 'Gr';
-                qtyCell.dataset.converted = 'true';
-            } else if (isConverted && unit.toLowerCase() === 'kg') {
-                // kembali ke kg
-                qtyValEl.textContent = Number(originalQty).toLocaleString('id-ID');
-                qtyUnitEl.textContent = 'Kg';
-                qtyCell.dataset.converted = 'false';
+                    if (response.customers && Array.isArray(response.customers) && response.customers.length > 0) {
+                        response.customers
+                            .sort((a, b) => a.name.localeCompare(b.name))
+                            .forEach(c => {
+                                options += `<option value="${c.id}">${c.name}</option>`;
+                            });
+
+                        $('#order-select-customer').html(options).prop('disabled', false);
+                    } 
+                }
+            });
+        }
+
+        $('#order-date-customer').on('change', function () {
+            $('#invoice-data').html(`
+                <div style="display:flex; justify-content:center; align-items:center; height:150px; font-size:1.2rem; color:#555;">
+                    <i class="fa fa-spinner fa-spin me-2"></i> Memuat data...
+                </div>
+            `);
+
+            const orderDate = $(this).val();
+            if (!orderDate) return;
+
+            $.get("{{ route('invoice.index') }}", { order_date: orderDate }, function (response) {
+                if (response.customers?.length > 0) {
+                    let options = '<option value="">-- Pilih Customer --</option>';
+                    response.customers.forEach(c => options += `<option value="${c.id}">${c.name}</option>`);
+                    $('#order-select-customer').html(options).prop('disabled', false);
+                    $('#invoice-data').html(`
+                        <div class="empty-data text-center">
+                            <img src="{{ asset('assets/img/select.png') }}" width="450">
+                            <h4 class="text-secondary">Pilih Customer</h4>
+                        </div>
+                    `);
+                } else {
+                    $('#order-select-customer').html('<option>-- Tidak ada Customer --</option>').prop('disabled', true);
+                    $('#invoice-data').html(`
+                        <div class="empty-data text-center">
+                            <img src="{{ asset('assets/img/empty-data2.png') }}" width="450">
+                            <h4 class="text-secondary">Tidak ada order di tanggal ini</h4>
+                        </div>`);
+                }
+            });
+        });
+
+        $('#order-select-customer').on('change', function () {
+            const orderDate = $('#order-date-customer').val();
+            const customerId = $(this).val();
+            if (!orderDate || !customerId) return;
+
+            $.get("{{ route('invoice.index') }}", {
+                order_date: orderDate,
+                customer_id: customerId
+            }, function (response) {
+                currentOrderData = response;
+                $('#invoice-data').html(renderDocument(response));
+            });
+        });
+
+        $('body').on('change', '#po-selector', function () {
+            const orderDate = $('#order-date-customer').val();
+            const customerId = $('#order-select-customer').val();
+            const orderId = $(this).val();
+
+            $.get("{{ route('invoice.index') }}", {
+                order_date: orderDate,
+                customer_id: customerId,
+                order_id: orderId
+            }, function (response) {
+                currentOrderData = response;
+                $('#invoice-data').html(renderDocument(response));
+            });
+        });
+
+        $('body').on('click', '[data-bs-target="#ubahOrderModal"]', function () {
+            if (currentOrderData) {
+                openUbahOrderModal(currentOrderData);
             }
         });
-    }
 
-    function renderInvoice(data) {
+        if (initialDate) {
+            // Tampilkan indikator sementara sebelum customer muncul
+            $('#invoice-data').html(`
+                <div style="display:flex; justify-content:center; align-items:center; height:150px; font-size:1.2rem; color:#555;">
+                    <i class="fa fa-spinner fa-spin me-2"></i> Memuat data..
+                </div>
+            `);
+                        
+            $('#order-date-customer').trigger('change');
+        }
+    });
+
+    function renderDocument(data) {
         const bulan = ['JANUARI','FEBRUARI','MARET','APRIL','MEI','JUNI','JULI','AGUSTUS','SEPTEMBER','OKTOBER','NOVEMBER','DESEMBER'];
         let currentDate = new Date();
         currentDate.setDate(currentDate.getDate() + 1); // besok
 
         const tanggal = `Surabaya, ${currentDate.getDate().toString().padStart(2, '0')} ${bulan[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
 
+        let dropdownOptions = '';
+        if (Array.isArray(data.po_list)) {
+            for (const po of data.po_list) {
+                dropdownOptions += `<option value="${po.id}" ${po.id === data.order_id ? 'selected' : ''}>${po.code}</option>`;
+            }
+        }
+
         let html = `
-        <div class="row px-4">
-            <div class="col-12 d-flex justify-content-end mb-3">
-                <button class="btn btn-info" onclick="convertQty()">
-                    <i class="fa fa-exchange-alt me-1"></i> Convert Qty
-                </button>
+        <div class="col-12 d-flex justify-content-center mb-3 pe-4">
+            <div class="d-flex align-items-center gap-2">
+                <div class="position-relative d-inline-block" style="min-width: 150px;">
+                    <label class="btn bg-gradient-dark text-white w-100 d-flex align-items-center justify-content-center rounded-pill shadow-sm" style="height: 38px;">
+                        <i class="fa fa-file-alt me-2"></i> Pilih Order <i class="fa fa-caret-down ms-2"></i>
+                    </label>
+                    <select id="po-selector"
+                        class="form-select form-select-sm position-absolute top-0 start-3 w-100 h-100 bg-dark text-white"
+                        style="opacity: 0; cursor: pointer; border-radius: 50px;">
+                        ${dropdownOptions}
+                    </select>
+                </div>
             </div>
         </div>
         <div id="invoice-print" style="font-family: Arial, sans-serif; font-size: 14px; padding: 20px;">
@@ -201,10 +246,11 @@
             <div style="margin-top: 10px;">
                 <div style="float: left; width: 60%;">
                     <div style="font-size: 14px; line-height: 1.4;">
-                        <div><strong>SURAT JALAN</strong></div><br>   
+                        <div><strong>INVOICE</strong></div><br>   
                         <div><span style="display: inline-block; min-width: 65px;">Nota No</span>: ${data.order_code}</div>
+                        <div><span style="display: inline-block; min-width: 65px;">No. PO</span>: ${data.reference_customer ? data.reference_customer : '-'}</div>
                         <div><span style="display: inline-block; min-width: 65px;">Sales</span>: Mikael Candra ES</div>
-                        <div><span style="display: inline-block; min-width: 65px;">PO</span>: NON PPN</div>
+                        <div> <span style="display: inline-block; min-width: 65px;">PO</span>: ${data.ppn_status}</div>
                     </div>
                 </div>
                 <div style="float: right; width: 40%; text-align: left;">
@@ -213,6 +259,7 @@
                         <div>Kepada Yth:</div>
                         <div><strong>${data.customer}</strong></div>
                         <div>${data.address}</div>
+                        <div>NPWP : ${data.npwp ? data.npwp : ''}</div>
                     </div>
                 </div>
                 <div style="clear: both;"></div>
@@ -222,8 +269,10 @@
                 <thead>
                     <tr>
                         <th style="padding: 6px; text-align: center; width: 20%;">BANYAKNYA</th>
-                        <th style="padding: 6px; text-align: center; width: 50%;">NAMA BARANG</th>
-                        <th style="padding: 6px; text-align: center; width: 30%;">SPESIFIKASI</th>
+                        <th style="padding: 6px; text-align: center; width: 40%;">NAMA BARANG</th>
+                        <th style="padding: 6px; text-align: center; width: 10%;">SPESIFIKASI</th>
+                        <th style="padding: 6px; text-align: center; width: 15%;">HARGA</th>
+                        <th style="padding: 6px; text-align: center; width: 15%;">JUMLAH</th>
                     </tr>
                 </thead>
                 <tbody>`;
@@ -234,7 +283,8 @@
                     <td style="padding: 6px; text-align: center; font-size: 14px;"
                         data-original-qty="${item.qty}"
                         data-unit="${item.unit}"
-                        data-converted="false">
+                        data-converted="false"
+                        ">
                         <span class="qty-val" style="display: inline-block; min-width: 40px; text-align: right;">
                             ${Number(item.qty).toLocaleString('id-ID')}
                         </span>
@@ -244,10 +294,36 @@
                     </td>
                     <td class="td-name" style="padding: 6px; text-align: center; font-size: 14px;">${item.name}</td>
                     <td style="padding: 6px; text-align: center; font-size: 14px;">${item.specification}</td>
+                    <td class="td-price" style="padding: 6px; text-align: center; font-size: 14px;">${item.price_formatted}</td>
+                    <td class="td-price" style="padding: 6px; text-align: center; font-size: 14px;">${item.total_price_formatted}</td>
                 </tr>`;
         }
 
         html += `
+                    <tr>
+                        <td class="noborder" colspan="4" style="padding: 6px; text-align: center; font-size: 14px;">
+                                Jumlah Rp
+                        </td>
+                        <td class="td-price" style="padding: 6px; text-align: center; font-size: 14px;">
+                                ${data.grand_total}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="noborder" colspan="4" style="padding: 6px; text-align: center; font-size: 14px;">
+                                PPN
+                        </td>
+                        <td class="td-price" style="padding: 6px; text-align: center; font-size: 14px;">
+                                ${data.ppn_status === 'Dengan PPN' ? '11%' : '-'}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="noborder" colspan="4" style="padding: 6px; text-align: center; font-size: 14px;">
+                                Total Rp
+                        </td>
+                        <td class="td-price" style="padding: 6px; text-align: center; font-size: 14px;">
+                                ${data.grand_total_with_ppn}
+                        </td>
+                    </tr>
                 </tbody>
             </table>
 
@@ -265,20 +341,24 @@
                     <div style="height: 150px;">( ${userName} )</div>
                 </div>
             </div>
+            <div style="font-size: 14px; color: #555;">
+                <div>Pembayaran Harap Transfer ke Rek :</div>
+                <div><strong>MANDIRI NO.Rek 140-002-302-0531</strong></div>
+                <div><strong>PT. Selaras Makmur Pangan Jaya</strong></div>
+            </div>
         </div>`;
 
         return html;
     }
 
-
     function printInvoice() {
         const printElement = document.getElementById("invoice-print");
 
-        const printWindow = window.open('', '', 'width=1000,height=800');
+        let printWindow = window.open('', '', `left=0,top=0,width=${screen.width},height=${screen.height}`);
         printWindow.document.write(`
             <html>
             <head>
-                <title>Print Surat Jalan</title>
+                <title>Print Invoice</title>
                 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
                 <style>
                     html, body {
@@ -313,6 +393,15 @@
                     }
                     table td.td-name {
                         text-align: left !important;
+                    }
+                    table td.td-price {
+                        text-align: right !important;
+                    }
+                    table td.noborder {
+                        border-left: none !important;
+                        border-top: none !important;
+                        border-bottom: none !important;
+                        text-align: right !important;
                     }
                     hr {
                         border: 1px solid black;
