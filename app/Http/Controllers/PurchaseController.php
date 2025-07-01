@@ -23,7 +23,9 @@ class PurchaseController extends Controller
     {
         $orderDate = $request->input('order_date', Carbon::today()->toDateString());
 
-        $printedOrderIds = LogPrintDetail::pluck('order_id')->toArray();
+        $printedOrderIds = LogPrintDetail::whereHas('logPrint', function ($q) {
+            $q->where('purchase', 'done');
+        })->pluck('order_id')->toArray();
 
         $orders = Order::with(['orderItems.goods', 'orderItems.specification', 'customer.customerGroup'])
             ->where('status', 'confirmed')
@@ -86,7 +88,7 @@ class PurchaseController extends Controller
         }
 
         foreach ($groupedData as &$group) {
-            sort($group['customers']);
+            asort($group['customers']);
         }
         unset($group);
 
@@ -104,7 +106,9 @@ class PurchaseController extends Controller
         $orderDate = $request->input('order_date', Carbon::today()->toDateString());
         $customerId = $request->input('customer_id');
 
-        $printedOrderIds = LogPrintDetail::pluck('order_id')->toArray();
+        $printedOrderIds = LogPrintDetail::whereHas('logPrint', function ($q) {
+            $q->where('purchase', 'done');
+        })->pluck('order_id')->toArray();
 
         $query = Order::with(['orderItems.goods', 'orderItems.specification', 'customer'])
             ->where('status', 'confirmed')

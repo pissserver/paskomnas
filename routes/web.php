@@ -85,13 +85,17 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 	Route::get('purchase', [PurchaseController::class, 'index'])->name('purchase.index');
 	Route::get('purchase-group', [PurchaseController::class, 'groupCustomer'])->name('purchase.group');
 	Route::get('purchase-customer', [PurchaseController::class, 'purchaseCustomer'])->name('purchase.customer');
-	Route::get('purchase/data-log-print', [PrintLogController::class, 'dataPurchaseLogPrint'])->name('purchase.data.log-print');
-	Route::post('purchase/log-print', [PrintLogController::class, 'purchaseLogPrint'])->name('purchase.log-print');
-	Route::get('purchase/log-print/{id}', [PrintLogController::class, 'printLogView'])->name('purchase.reprint');
+	Route::get('purchase/data-log-print', [PrintLogController::class, 'purchaseDataLogPrint'])->name('purchase.data.log-print');
+	Route::post('purchase/log-print', [PrintLogController::class, 'purchaseStoreLogPrint'])->name('purchase.log-print');
+	Route::get('purchase/log-print/{id}', [PrintLogController::class, 'purchaseViewLogPrint'])->name('purchase.reprint');
 
 	// Packing
 	Route::get('packing', [PackingController::class, 'index'])->name('packing.index');
-	Route::get('packing-summary', [PackingController::class, 'packingSummary'])->name('packing.summary');
+	Route::get('packing-group', [PackingController::class, 'groupCustomer'])->name('packing.group');
+	Route::get('packing-customer', [PackingController::class, 'packingCustomer'])->name('packing.customer');
+	Route::get('packing/data-log-print', [PrintLogController::class, 'packingDataLogPrint'])->name('packing.data.log-print');
+	Route::post('packing/log-print', [PrintLogController::class, 'packingStoreLogPrint'])->name('packing.log-print');
+	Route::get('packing/log-print/{id}', [PrintLogController::class, 'packingViewLogPrint'])->name('packing.reprint');
 
 	// Travel Document
 	Route::get('surat-jalan', [DocumentController::class, 'index'])->name('document.index');
