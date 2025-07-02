@@ -89,6 +89,7 @@ class PurchaseController extends Controller
 
         foreach ($groupedData as &$group) {
             asort($group['customers']);
+            ksort($group['dataTable']);
         }
         unset($group);
 

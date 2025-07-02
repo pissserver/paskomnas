@@ -81,7 +81,7 @@
                                         name="order_date" required>
 
                                     <div style="min-width: 250px; flex-grow: 1;">
-                                        <select class="form-select select2-group w-100" id="group-select" disabled>
+                                        <select class="form-select select2-group" id="group-select" disabled>
                                             <option value="" selected>-- Pilih Group --</option>
                                         </select>
                                     </div>
@@ -126,7 +126,7 @@
                                         name="order_date" onchange="fetchDataCustomer()" required>
 
                                     <div style="min-width: 250px; flex-grow: 1;">
-                                        <select class="form-select select2 w-100" id="order-select-customer"
+                                        <select class="form-select select2" id="order-select-customer"
                                             onchange="fetchDataCustomer()" required disabled>
                                             <option value="all" selected>-- Pilih Customer --</option>
                                             @foreach ($customers as $customer)
@@ -279,7 +279,7 @@
         let tableHTML = tableElement.outerHTML;
 
         // Ambil semua order ID
-        const orderIdEls = document.querySelectorAll('.printed-order-id');
+        const orderIdEls = document.querySelectorAll('#packing-data .group-order-id');
         const orderIds = Array.from(orderIdEls).map(el => el.value);
         console.log('Order IDs:', orderIds); // Debug dulu
 
@@ -387,7 +387,7 @@
         printWindow.document.close();
         printWindow.focus();
 
-        const orderIdEls = document.querySelectorAll('.printed-order-id');
+        const orderIdEls = document.querySelectorAll('#packing-data-customer .customer-order-id');
         const orderIds = Array.from(orderIdEls).map(el => el.value);
         console.log('Order IDs:', orderIds);
 
@@ -442,13 +442,19 @@
         let i = 1;
         Object.entries(dataTable).forEach(([goodsKey, row]) => {
             html += `<tr>`;
-            html += `<td class="text-center">${i++}</td>`;
-            html += `<td class="text-center">${goodsKey}</td>`;
-            html += `<td class="text-center">${row.unit}</td>`;
-            html += `<td class="text-center">${row.total}</td>`;
+            html += `<td class="text-center" style="vertical-align: middle">${i++}</td>`;
+            html += `<td class="text-center" style="vertical-align: middle">${goodsKey}</td>`;
+            html += `<td class="text-center" style="vertical-align: middle">${row.unit}</td>`;
+            html += `<td class="text-center" style="vertical-align: middle">${row.total}</td>`;
 
             Object.keys(customers).forEach(custId => {
-                html += `<td class="text-center">${row.quantities[custId] ?? 0}</td>`;
+                const entries = row.quantities[custId] ?? [];
+                if (entries.length === 0) {
+                    html += `<td class="text-center" style="vertical-align: middle">0</td>`;
+                } else {
+                    const list = entries.map(e => `${e.qty} <small class="text-muted">(${e.order_code})</small>`);
+                    html += `<td class="text-center" style="vertical-align: middle">${list.join('<br>')}</td>`;
+                }
             });
 
             html += `</tr>`;
@@ -458,7 +464,7 @@
 
         if (groupData.orderIds && groupData.orderIds.length > 0) {
             groupData.orderIds.forEach(id => {
-                html += `<input type="hidden" class="printed-order-id" value="${id}">`;
+                html += `<input type="hidden" class="group-order-id" value="${id}">`;
             });
         }
 
@@ -469,7 +475,7 @@
         let hiddenInputs = '';
         if (orderIds.length > 0) {
             orderIds.forEach(id => {
-                hiddenInputs += `<input type="hidden" class="printed-order-id" value="${id}">`;
+                hiddenInputs += `<input type="hidden" class="customer-order-id" value="${id}">`;
             });
         }
 

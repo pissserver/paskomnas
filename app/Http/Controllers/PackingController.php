@@ -79,16 +79,20 @@ class PackingController extends Controller
                 }
 
                 if (!isset($groupedData[$group]['dataTable'][$key]['quantities'][$customerId])) {
-                    $groupedData[$group]['dataTable'][$key]['quantities'][$customerId] = 0;
+                    $groupedData[$group]['dataTable'][$key]['quantities'][$customerId] = [];
                 }
 
-                $groupedData[$group]['dataTable'][$key]['quantities'][$customerId] += $item->quantity;
+                $groupedData[$group]['dataTable'][$key]['quantities'][$customerId][] = [
+                    'qty' => $item->quantity,
+                    'order_code' => $order->order_code,
+                ];
                 $groupedData[$group]['dataTable'][$key]['total'] += $item->quantity;
             }
         }
 
         foreach ($groupedData as &$group) {
             asort($group['customers']);
+            ksort($group['dataTable']);
         }
         unset($group);
 
