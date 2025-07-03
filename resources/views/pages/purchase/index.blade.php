@@ -291,11 +291,11 @@
                 <title>Print Purchasing</title>
                 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
                 <style>
-                    body { padding: 20px; font-size: 12px; }
+                    body { padding: 20px; font-size: 11px; }
                     .title-group { font-size: 14px; }
                     table { width: 100%; border-collapse: collapse; }
                     table th, table td { border: 1px solid #000; padding: 6px; text-align: center; }
-                    h4 { margin-bottom: 20px; text-align: center; }
+                    h4 { margin-bottom: 20px; text-align: center; font-size: 14px; }
                 </style>
             </head>
             <body>
@@ -415,6 +415,9 @@
         const customers = groupData.customers;
         const dataTable = groupData.dataTable;
 
+        const sortedCustomers = Object.entries(customers)
+        .sort((a, b) => a[1].localeCompare(b[1]));
+
         let html = `
             <div class="text-center">
                 <h6 class="text-white d-inline-block bg-gradient-primary mb-5 py-2 px-3 rounded-pill title-group">
@@ -429,11 +432,9 @@
                     <th class="text-center">No</th>
                     <th class="text-center">Nama Komoditi</th>
                     <th class="text-center">Satuan</th>
-                    <th class="text-center text-success">
-                        Total
-                    </th>`;
+                    <th class="text-center text-success">Total</th>`;
 
-        Object.values(customers).forEach(name => {
+        sortedCustomers.forEach(([_, name]) => {
             html += `<th class="text-center text-primary">${name}</th>`;
         });
 
@@ -447,7 +448,7 @@
             html += `<td class="text-center">${row.unit}</td>`;
             html += `<td class="text-center">${row.total}</td>`;
 
-            Object.keys(customers).forEach(custId => {
+            sortedCustomers.forEach(([custId, _]) => {
                 html += `<td class="text-center">${row.quantities[custId] ?? 0}</td>`;
             });
 
@@ -676,6 +677,9 @@
                 let html = '';
                 if (data.group_name) {
                     // GROUP MODE
+                    const sortedCustomerEntries = Object.entries(data.customers)
+                    .sort((a, b) => a[1].localeCompare(b[1]));
+
                     html += `
                         <div class="text-center">
                             <h5 class="text-white d-inline-block bg-gradient-primary mb-4 py-2 px-3 rounded-pill">
@@ -690,8 +694,8 @@
                                     <th class="text-center">Satuan</th>
                                     <th class="text-center">Total</th>`;
 
-                    Object.values(data.customers).forEach(cust => {
-                        html += `<th class="text-center">${cust}</th>`;
+                    sortedCustomerEntries.forEach(([_, custName]) => {
+                        html += `<th class="text-center">${custName}</th>`;
                     });
 
                     html += `</tr></thead><tbody>`;
@@ -703,9 +707,10 @@
                                 <td class="text-center">${komoditi}</td>
                                 <td class="text-center">${row.unit}</td>
                                 <td class="text-center">${row.total}</td>`;
-                        Object.keys(data.customers).forEach(custId => {
+                        sortedCustomerEntries.forEach(([custId, _]) => {
                             html += `<td class="text-center">${row.quantities[custId] ?? 0}</td>`;
                         });
+
                         html += `</tr>`;
                     });
 
@@ -750,11 +755,11 @@
                         <title>Print Purchasing</title>
                         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
                         <style>
-                            body { padding: 20px; font-size: 12px; }
+                            body { padding: 20px; font-size: 11px; }
                             h5 { font-size: 14px; }
                             table { width: 100%; border-collapse: collapse; }
                             table th, table td { border: 1px solid #000; padding: 6px; text-align: center; }
-                            h4 { margin-bottom: 20px; text-align: center; }
+                            h4 { margin-bottom: 20px; text-align: center; font-size: 14px; }
                         </style>
                     </head>
                     <body>

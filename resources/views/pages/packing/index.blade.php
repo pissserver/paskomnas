@@ -291,11 +291,11 @@
                 <title>Print Packing</title>
                 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
                 <style>
-                    body { padding: 20px; font-size: 12px; }
+                    body { padding: 20px; font-size: 11px; }
                     .title-group { font-size: 14px; }
                     table { width: 100%; border-collapse: collapse; }
                     table th, table td { border: 1px solid #000; padding: 6px; text-align: center; }
-                    h4 { margin-bottom: 20px; text-align: center; }
+                    h4 { margin-bottom: 20px; text-align: center; font-size: 14px; }
                 </style>
             </head>
             <body>
@@ -358,7 +358,7 @@
                 <style>
                     body {
                         padding: 20px;
-                        font-size: 12px;
+                        font-size: 11px;
                     }
                     .title-customer{
                         font-size: 14px;
@@ -375,6 +375,7 @@
                     h4 {
                         margin-bottom: 20px;
                         text-align: center;
+                        font-size: 14px;
                     }
                 </style>
             </head>
@@ -415,6 +416,9 @@
         const customers = groupData.customers;
         const dataTable = groupData.dataTable;
 
+        const sortedCustomers = Object.entries(customers)
+        .sort((a, b) => a[1].localeCompare(b[1]));
+
         let html = `
             <div class="text-center">
                 <h6 class="text-white d-inline-block bg-gradient-primary mb-5 py-2 px-3 rounded-pill title-group">
@@ -433,7 +437,7 @@
                         Total
                     </th>`;
 
-        Object.values(customers).forEach(name => {
+        sortedCustomers.forEach(([_, name]) => {
             html += `<th class="text-center text-primary">${name}</th>`;
         });
 
@@ -447,7 +451,7 @@
             html += `<td class="text-center" style="vertical-align: middle">${row.unit}</td>`;
             html += `<td class="text-center" style="vertical-align: middle">${row.total}</td>`;
 
-            Object.keys(customers).forEach(custId => {
+            sortedCustomers.forEach(([custId]) => {
                 const entries = row.quantities[custId] ?? [];
                 if (entries.length === 0) {
                     html += `<td class="text-center" style="vertical-align: middle">0</td>`;
@@ -471,13 +475,17 @@
         $('#packing-data').html(html);
     }
 
-    function renderCustomerTable(items, customerNames, orderIds = []) {
+    function renderCustomerTable(items, customerNames, orderIds = [], customerMap = {}) {
         let hiddenInputs = '';
         if (orderIds.length > 0) {
             orderIds.forEach(id => {
                 hiddenInputs += `<input type="hidden" class="customer-order-id" value="${id}">`;
             });
         }
+
+        // Sort customerMap by name (alphabetical)
+        const sortedCustomerEntries = Object.entries(customerMap)
+            .sort((a, b) => a[1].localeCompare(b[1]));
 
         let html = `
             <div>
@@ -493,6 +501,7 @@
                             <th class="text-center">Nama Komoditi</th>
                             <th class="text-center">Satuan</th>
                             <th class="text-center text-success">Total</th>
+                            ${sortedCustomerEntries.map(([_, name]) => `<th class="text-center text-primary">${name}</th>`).join('')}
                         </tr>
                     </thead>
                     <tbody>
@@ -500,19 +509,33 @@
 
         let no = 1;
         for (const key in items) {
+            const row = items[key];
             html += `
                 <tr>
                     <td class="text-center">${no++}</td>
                     <td class="text-center">${key}</td>
-                    <td class="text-center">${items[key].unit}</td>
-                    <td class="text-center">${items[key].quantity}</td>
-                </tr>
+                    <td class="text-center">${row.unit}</td>
+                    <td class="text-center">${row.quantity}</td>
             `;
+
+            // Data untuk masing-masing customer (urut)
+            sortedCustomerEntries.forEach(([custId]) => {
+                const entries = row.quantities?.[custId] ?? [];
+                if (entries.length === 0) {
+                    html += `<td class="text-center">0</td>`;
+                } else {
+                    const list = entries.map(e => `${e.qty} <small class="text-muted">(${e.order_code})</small>`);
+                    html += `<td class="text-center">${list.join('<br>')}</td>`;
+                }
+            });
+
+            html += `</tr>`;
         }
 
         html += `</tbody></table>`;
         html += hiddenInputs;
-        html += `</div>`; // penutup wrapper utama
+        html += `</div>`;
+
         return html;
     }
 
@@ -603,6 +626,8 @@
             success: function (response) {
                 const items = response.items;
                 const names = response.customer_names;
+                const orderIds = response.orderIds || [];
+                const customerMap = response.customerMap || {};
 
                 if (Object.keys(items).length === 0) {
                     $('#packing-data-customer').html(`
@@ -627,7 +652,7 @@
                         $('#order-select-customer').html(options).prop('disabled', false);
                     }
 
-                    const html = renderCustomerTable(items, names, response.orderIds);
+                    const html = renderCustomerTable(items, names, response.orderIds, response.customerMap);
                     $('#packing-data-customer').html(html);
                 }
             },
@@ -682,6 +707,9 @@
                 let html = '';
                 if (data.group_name) {
                     // GROUP MODE
+                    const sortedCustomerEntries = Object.entries(data.customers)
+                    .sort((a, b) => a[1].localeCompare(b[1]));
+
                     html += `
                         <div class="text-center">
                             <h5 class="text-white d-inline-block bg-gradient-primary mb-4 py-2 px-3 rounded-pill">
@@ -696,8 +724,8 @@
                                     <th class="text-center">Satuan</th>
                                     <th class="text-center">Total</th>`;
 
-                    Object.values(data.customers).forEach(cust => {
-                        html += `<th class="text-center">${cust}</th>`;
+                    sortedCustomerEntries.forEach(([_, custName]) => {
+                        html += `<th class="text-center">${custName}</th>`;
                     });
 
                     html += `</tr></thead><tbody>`;
@@ -709,19 +737,30 @@
                                 <td class="text-center">${komoditi}</td>
                                 <td class="text-center">${row.unit}</td>
                                 <td class="text-center">${row.total}</td>`;
-                        Object.keys(data.customers).forEach(custId => {
-                            html += `<td class="text-center">${row.quantities[custId] ?? 0}</td>`;
+                        sortedCustomerEntries.forEach(([custId, _]) => {
+                            const entries = row.quantities[custId] ?? [];
+                            if (entries.length === 0) {
+                                html += `<td class="text-center">0</td>`;
+                            } else {
+                                const list = entries.map(e => `${e.qty} <small class="text-muted">(${e.order_code})</small>`);
+                                html += `<td class="text-center">${list.join('<br>')}</td>`;
+                            }
                         });
                         html += `</tr>`;
                     });
 
                     html += `</tbody></table>`;
                 } else {
-                    // CUSTOMER MODE
+                    const items = data.items;
+                    const customerMap = data.customer_map;
+
+                    const sortedCustomerEntries = Object.entries(customerMap)
+                        .sort((a, b) => a[1].localeCompare(b[1]));
+
                     html += `
                         <div class="text-center mb-4">
                             <h5 class="text-white d-inline-block bg-gradient-primary py-2 px-4 rounded-pill">
-                                Customer : ${data.customer_name}
+                                Customer : ${sortedCustomerEntries.map(([_, name]) => name).join(', ')}
                             </h5>
                         </div>
                         <table class="table table-bordered">
@@ -730,23 +769,39 @@
                                     <th class="text-center">No</th>
                                     <th class="text-center">Nama Komoditi</th>
                                     <th class="text-center">Satuan</th>
-                                    <th class="text-center">Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>`;
+                                    <th class="text-center">Total</th>`;
 
-                    Object.entries(data.items).forEach(([name, item], index) => {
+                    sortedCustomerEntries.forEach(([_, name]) => {
+                        html += `<th class="text-center">${name}</th>`;
+                    });
+
+                    html += `</tr></thead><tbody>`;
+
+                    let no = 1;
+                    Object.entries(items).forEach(([name, item]) => {
                         html += `
                             <tr>
-                                <td class="text-center">${index + 1}</td>
+                                <td class="text-center">${no++}</td>
                                 <td class="text-center">${name}</td>
                                 <td class="text-center">${item.unit}</td>
-                                <td class="text-center">${item.quantity}</td>
-                            </tr>`;
+                                <td class="text-center">${item.quantity}</td>`;
+
+                        sortedCustomerEntries.forEach(([custId, _]) => {
+                            const entries = item.quantities?.[custId] ?? [];
+                            if (entries.length === 0) {
+                                html += `<td class="text-center">0</td>`;
+                            } else {
+                                const list = entries.map(e => `${e.qty} <small class="text-muted">(${e.order_code})</small>`);
+                                html += `<td class="text-center">${list.join('<br>')}</td>`;
+                            }
+                        });
+
+                        html += `</tr>`;
                     });
 
                     html += `</tbody></table>`;
                 }
+
 
                 // PRINT WINDOW
                 let printWindow = window.open('', '', `left=0,top=0,width=${screen.width},height=${screen.height}`);
@@ -756,11 +811,11 @@
                         <title>Print Packing</title>
                         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
                         <style>
-                            body { padding: 20px; font-size: 12px; }
+                            body { padding: 10px; font-size: 11px; }
                             h5 { font-size: 14px; }
                             table { width: 100%; border-collapse: collapse; }
                             table th, table td { border: 1px solid #000; padding: 6px; text-align: center; }
-                            h4 { margin-bottom: 20px; text-align: center; }
+                            h4 { margin-bottom: 20px; text-align: center; font-size: 14px; }
                         </style>
                     </head>
                     <body>

@@ -372,10 +372,12 @@ class PrintLogController extends Controller
 
                     $grouped[$key]['total'] += $item->quantity;
                     if (!isset($grouped[$key]['quantities'][$custId])) {
-                        $grouped[$key]['quantities'][$custId] = 0;
+                        $grouped[$key]['quantities'][$custId] = [];
                     }
-                    $grouped[$key]['quantities'][$custId] += $item->quantity;
-
+                    $grouped[$key]['quantities'][$custId][] = [
+                        'qty' => $item->quantity,
+                        'order_code' => $order->order_code,
+                    ];
                 }
             }
 
@@ -388,17 +390,22 @@ class PrintLogController extends Controller
                 'customers' => $customers,
             ]);
         } else {
-            // Individual customer
             $items = [];
             $customerNames = [];
+            $customerMap = [];
 
             foreach ($log->details as $detail) {
-                $customer = $detail->order->customer;
+                $order = $detail->order;
+                $customer = $order->customer;
+
                 if ($customer) {
-                    $customerNames[] = $customer->name;
+                    $customerNames[$customer->id] = $customer->name;
+                    $orderCode = $order->order_code;
+                } else {
+                    continue;
                 }
 
-                foreach ($detail->order->orderItems as $item) {
+                foreach ($order->orderItems as $item) {
                     $goodsName = $item->goods->name;
                     $spec = $item->specification ? $item->specification->name : null;
                     $key = $spec ? "$goodsName ($spec)" : $goodsName;
@@ -407,21 +414,32 @@ class PrintLogController extends Controller
                         $items[$key] = [
                             'quantity' => 0,
                             'unit' => $item->goods->unit,
+                            'quantities' => [],
                         ];
                     }
+
+                    if (!isset($items[$key]['quantities'][$customer->id])) {
+                        $items[$key]['quantities'][$customer->id] = [];
+                    }
+
+                    $items[$key]['quantities'][$customer->id][] = [
+                        'qty' => $item->quantity,
+                        'order_code' => $orderCode,
+                    ];
+
                     $items[$key]['quantity'] += $item->quantity;
                 }
             }
 
-            $customerNames = array_unique($customerNames);
+            asort($customerNames);
             ksort($items);
-            sort($customerNames);
 
             return response()->json([
                 'success' => true,
                 'items' => $items,
-                'customer_name' => implode(', ', $customerNames),
+                'customer_map' => $customerNames,
             ]);
         }
+
     }
 }

@@ -133,6 +133,8 @@ class PackingController extends Controller
 
         foreach ($orders as $order) {
             $customerName = $order->customer->name;
+            $custId = $order->customer->id;
+            $orderCode = $order->order_code;
             if (!in_array($customerName, $customerNames)) {
                 $customerNames[] = $customerName;
             }
@@ -146,12 +148,27 @@ class PackingController extends Controller
                     $items[$key] = [
                         'quantity' => 0,
                         'unit' => $item->goods->unit,
+                        'quantities' => [],
                     ];
                 }
 
+                if (!isset($items[$key]['quantities'][$custId])) {
+                    $items[$key]['quantities'][$custId] = [];
+                }
+
+                $items[$key]['quantities'][$custId][] = [
+                    'qty' => $item->quantity,
+                    'order_code' => $orderCode
+                ];
+                
                 $items[$key]['quantity'] += $item->quantity;
             }
         }
+
+        $customerMap = $orders->pluck('customer')->unique('id')
+        ->mapWithKeys(function ($customer) {
+            return [$customer->id => $customer->name];
+        })->toArray();
 
         sort($customerNames);
         ksort($items);
@@ -171,6 +188,7 @@ class PackingController extends Controller
                 'customer_names' => $customerNames,
                 'customer_list' => $customerList,
                 'orderIds' => $orderIds,
+                'customerMap' => $customerMap,
             ]);
         }
 
