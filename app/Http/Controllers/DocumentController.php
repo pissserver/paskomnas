@@ -168,6 +168,21 @@ class DocumentController extends Controller
                 ]
             );
 
+            // Update total di OrderItem jika ada convert
+            $orderItem = OrderItem::where('order_id', $orderId)
+                ->where('goods_id', $goodsId)
+                ->when($specificationId, function ($q) use ($specificationId) {
+                    return $q->where('specification_id', $specificationId);
+                }, function ($q) {
+                    return $q->whereNull('specification_id');
+                })
+                ->first();  
+
+            if ($orderItem) {
+                $orderItem->total = $finalQty * $orderItem->price;
+                $orderItem->save();
+            }
+
             $convertedItems[] = [
                 'order_id' => $orderId,
                 'goods_id' => $goodsId,

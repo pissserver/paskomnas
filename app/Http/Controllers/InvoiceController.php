@@ -62,13 +62,14 @@ class InvoiceController extends Controller
                 return response()->json(['error' => 'Selected order not found'], 404);
             }
 
-            // 🔎 Cari periode aktif milik customer
-            $periode = Periode::with('prices')
-                ->where('customer_id', $customerId)
-                ->first();
+            //  * Cara 1 mencari total (mengambil harga dari periode aktif milik customer)
+            // Cari periode aktif milik customer
+            // $periode = Periode::with('prices')
+            //     ->where('customer_id', $customerId)
+            //     ->first();
 
-            // 💰 Ambil daftar harga dari periode (pakai keyBy supaya mudah dicari pakai goods_id)
-            $prices = $periode ? $periode->prices->keyBy('goods_id') : collect();
+            // Ambil daftar harga dari periode (pakai keyBy supaya mudah dicari pakai goods_id)
+            // $prices = $periode ? $periode->prices->keyBy('goods_id') : collect();
 
             $customer = Customer::find($customerId);
 
@@ -84,21 +85,10 @@ class InvoiceController extends Controller
                 $specification = $item->specification ? $item->specification->name : '';
                 $key = $name . '||' . $specification;
 
-                
                 // Cek apakah data order item sudah ada di OrderConvert
                 $goodsId = $item->goods_id;
                 $specificationId = $item->specification_id;
-
-                // Ambil harga dari periode (jika ada)
-                $price = $prices->get($goodsId)->price ? $prices->get($goodsId)->price : '-';
-                $totalPrice = $price * $qty;
-                $grandTotal += $totalPrice;
-
-                if ($ppn > 0) {
-                    $hasPpn = true;
-                    $totalPPN += $totalPrice * (11 / 100);
-                }
-
+                
                 $converted = OrderConvert::where('order_id', $selectedOrder->id)
                     ->where('goods_id', $goodsId)
                     ->when(!is_null($specificationId), function ($q) use ($specificationId) {
@@ -107,11 +97,31 @@ class InvoiceController extends Controller
                         return $q->whereNull('specification_id');
                     })
                     ->first();
-
+                
                 $usedQty = $converted ? $converted->quantity : $qty;
                 $usedUnit = $converted ? $converted->unit : $unit;
                 $displayQty = $converted ? $converted->quantity : '';
                 $displayUnit = $converted ? $converted->unit : '';
+
+                // * Cara 1: Menghitung total harga berdasarkan periode
+                // Ambil harga dari periode (jika ada)
+                // $price = $prices->get($goodsId)->price ? $prices->get($goodsId)->price : '-';
+                // $totalPrice = $price * $usedQty;
+
+                // if ($ppn > 0) {
+                //     $hasPpn = true;
+                //     $totalPPN += $totalPrice * (11 / 100);
+                // }
+                
+                // * Cara 2: Menghitung total harga berdasarkan total di order items
+                $price = $item->price;
+                $totalPrice = $item->total;
+                if ($ppn > 0) {                                   
+                    $hasPpn = true;
+                    $totalPPN += $totalPrice * (11 / 100);
+                }
+
+                $grandTotal += $totalPrice;
 
                 if (isset($data[$key])) {
                     $data[$key]['qty'] += $usedQty;
