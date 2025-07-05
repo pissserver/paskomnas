@@ -79,7 +79,7 @@ class InvoiceController extends Controller
             $hasPpn = false;
             foreach ($selectedOrder->orderItems as $item) {
                 $name = $item->goods->name;
-                $unit = $item->goods->unit;
+                $unit = $item->goods->unit_in_order !== null ? $item->goods->unit_in_order : $item->goods->unit;
                 $ppn = floatval($item->goods->ppn);
                 $qty = $item->quantity;
                 $specification = $item->specification ? $item->specification->name : '';

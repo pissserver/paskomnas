@@ -194,6 +194,10 @@
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label>Nama Barang Komoditi</label>
+                                                        <span id="warning-text-{{ $index }}" class="ms-2 text-danger"
+                                                            style="font-size: 12px; display: none;">
+                                                            *Barang belum diupdate harga!
+                                                        </span>
                                                         <select class="form-control select2"
                                                             id="goods-select-{{ $index }}" name="goods_id[]"
                                                             onchange="updateUnitAndPrice({{ $index }})">
@@ -201,6 +205,7 @@
                                                             @foreach ($goods as $item)
                                                             <option value="{{ $item->id }}"
                                                                 data-unit="{{ $item->unit }}"
+                                                                data-unit-in-order="{{ $item->unit_in_order }}"
                                                                 data-price="{{ optional($periode->prices)->firstWhere('goods_id', $item->id)?->price }}"
                                                                 {{ $orderItem->goods_id == $item->id ? 'selected' : '' }}>
                                                                 {{ $item->name }}
@@ -237,7 +242,8 @@
                                                 <div class="col-md-3">
                                                     <label>Satuan</label>
                                                     <input type="text" class="form-control" id="unit-{{ $index }}"
-                                                        placeholder="Satuan" value="{{ $orderItem->goods->unit }}"
+                                                        placeholder="Satuan"
+                                                        value="{{ $orderItem->goods->unit_in_order ?? $orderItem->goods->unit }}"
                                                         disabled>
                                                 </div>
 
@@ -446,6 +452,7 @@
 
 <script>
     let orderItemCount = {{ count($order->orderItems) }}; // mulai dari jumlah item awal
+    const unpricedGoods = @json($unpricedGoods);
 
     $(document).ready(function () {
         // Inisialisasi semua select2
@@ -467,6 +474,24 @@
         @foreach ($order->orderItems as $index => $orderItem)
             updateUnitAndPrice({{ $index }});
         @endforeach
+
+        //  Event untuk deteksi pilihan harga belum diupdate
+        @if ($order)
+            @foreach ($order->orderItems as $index => $orderItem)
+                $('#goods-select-{{ $index }}').on('select2:select', function (e) {
+                    const selectedValue = parseInt(e.params.data.id);
+                    if (unpricedGoods.includes(selectedValue)) {
+                        $('#warning-text-{{ $index }}').show();
+                    } else {
+                        $('#warning-text-{{ $index }}').hide();
+                    }
+                });
+
+                $('#goods-select-{{ $index }}').on('select2:clear', function () {
+                    $('#warning-text-{{ $index }}').hide();
+                });
+            @endforeach
+        @endif
     });
 
     // Fungsi inisialisasi Select2 untuk elemen baru
@@ -476,6 +501,24 @@
             placeholder: "-- Pilih Barang Komoditi --",
             allowClear: true,
             width: '100%'
+        });
+
+        //  Event untuk deteksi pilihan harga belum diupdate
+        const idAttr = selector.replace('#', '');
+        const index = idAttr.split('-').pop();
+        const warningId = `#warning-text-${index}`;
+
+        $(selector).on('select2:select', function (e) {
+            const selectedValue = parseInt(e.params.data.id);
+            if (unpricedGoods.includes(selectedValue)) {
+                $(warningId).show();
+            } else {
+                $(warningId).hide();
+            }
+        });
+
+        $(selector).on('select2:clear', function () {
+            $(warningId).hide();
         });
     }
 
@@ -500,10 +543,14 @@
 
             <div class="col-md-4">
                 <label>Nama Barang Komoditi</label>
+                <span id="warning-text-${orderItemCount}" class="ms-2 text-danger"
+                    style="font-size: 12px; display: none;">
+                    *Barang belum diupdate harga!
+                </span>
                 <select class="form-control select2" id="goods-select-${orderItemCount}" name="goods_id[]" onchange="updateUnitAndPrice(${orderItemCount})">
                     <option value="">-- Pilih Barang Komoditi --</option>
                     @foreach ($goods as $item)
-                    <option value="{{ $item->id }}" data-unit="{{ $item->unit }}" data-price="{{ optional($periode->prices)->firstWhere('goods_id', $item->id)?->price }}">{{ $item->name }}</option>
+                    <option value="{{ $item->id }}" data-unit="{{ $item->unit }}" data-unit-in-order="{{ $item->unit_in_order }}" data-price="{{ optional($periode->prices)->firstWhere('goods_id', $item->id)?->price }}">{{ $item->name }}</option>
                     @endforeach
                 </select>
             </div>
@@ -559,7 +606,7 @@
 
     function updateUnitAndPrice(id) {
         const selected = $(`#goods-select-${id}`).find(':selected');
-        const unit = selected.data('unit') || '';
+        const unit = selected.data('unit-in-order') || selected.data('unit') || '';
         const price = selected.data('price') || '';
         $(`#unit-${id}`).val(unit);
         $(`#price-${id}`).val(price);

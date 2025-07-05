@@ -169,6 +169,7 @@
                                                 <option value="">-- Pilih Barang Komoditi --</option>
                                                 @foreach ($goods as $item)
                                                 <option value="{{ $item->id }}" data-unit="{{ $item->unit }}"
+                                                    data-unit-in-order="{{ $item->unit_in_order }}"
                                                     data-price="{{ optional($periode?->prices)->firstWhere('goods_id', $item->id)?->price ?? '' }}">
                                                     {{ $item->name }}
                                                 </option>
@@ -323,6 +324,7 @@
                                                     <option value="">-- Pilih Barang Komoditi --</option>
                                                     @foreach ($goods as $item)
                                                     <option value="{{ $item->id }}" data-unit="{{ $item->unit }}"
+                                                        data-unit-in-order="{{ $item->unit_in_order }}"
                                                         data-price="{{ optional($periode->prices)->firstWhere('goods_id', $item->id)?->price }}"
                                                         {{ $orderItem->goods_id == $item->id ? 'selected' : '' }}>
                                                         {{ $item->name }}
@@ -359,7 +361,8 @@
                                         <div class="col-md-3">
                                             <label>Satuan</label>
                                             <input type="text" class="form-control" id="template-unit-{{ $index }}"
-                                                value="{{ $orderItem->goods->unit }}" disabled>
+                                                value="{{ $orderItem->goods->unit_in_order ?? $orderItem->goods->unit }}"
+                                                disabled>
                                         </div>
 
                                         {{-- * Dikomentar agar tidak ditampilkan --}}
@@ -520,7 +523,7 @@
         // Untuk item pertama (id = 0)
         $('#goods-select').on('change', function () {
             const selected = $(this).find(':selected');
-            const unit = selected.data('unit') || '';
+            const unit = selected.data('unit-in-order') || selected.data('unit') || '';
             const price = selected.data('price') || '';
             $('#unit-0').val(unit);
             $('#price-0').val(price);
@@ -528,7 +531,7 @@
 
         $('#template-goods-select').on('change', function () {
             const selected = $(this).find(':selected');
-            const unit = selected.data('unit') || '';
+            const unit = selected.data('unit-in-order') || selected.data('unit') || '';
             const price = selected.data('price') || '';
             $('#template-unit-0').val(unit);
             $('#template-price-0').val(price);
@@ -653,7 +656,7 @@
                 <select class="form-control select2" id="goods-select-${orderItemCount}" name="goods_id[]" onchange="updateUnitAndPrice(${orderItemCount})">
                     <option value="">-- Pilih Barang Komoditi --</option>
                     @foreach ($goods as $item)
-                    <option value="{{ $item->id }}" data-unit="{{ $item->unit }}" data-price="{{ optional($periode?->prices)->firstWhere('goods_id', $item->id)?->price ?? '' }}">{{ $item->name }}</option>
+                    <option value="{{ $item->id }}" data-unit="{{ $item->unit }}" data-unit-in-order="{{ $item->unit_in_order }}" data-price="{{ optional($periode?->prices)->firstWhere('goods_id', $item->id)?->price ?? '' }}">{{ $item->name }}</option>
                     @endforeach
                 </select>
             </div>
@@ -717,7 +720,7 @@
                 <select class="form-control select2" id="template-goods-select-${orderTemplateItemCount}" name="goods_id[]" onchange="updateTemplateUnitAndPrice(${orderTemplateItemCount})">
                     <option value="">-- Pilih Barang Komoditi --</option>
                     @foreach ($goods as $item)
-                    <option value="{{ $item->id }}" data-unit="{{ $item->unit }}"
+                    <option value="{{ $item->id }}" data-unit="{{ $item->unit }}" data-unit-in-order="{{ $item->unit_in_order }}"
                     data-price="{{ optional($periode?->prices)->firstWhere('goods_id', $item->id)?->price ?? '' }}">{{ $item->name }}</option>
                     @endforeach
                 </select>
@@ -781,7 +784,7 @@
     // Fungsi update satuan dan harga berdasarkan barang yang dipilih
     function updateUnitAndPrice(id) {
         const selected = $(`#goods-select-${id}`).find(':selected');
-        const unit = selected.data('unit') || '';
+        const unit = selected.data('unit-in-order') || selected.data('unit') || '';
         const price = selected.data('price') || '';
         $(`#unit-${id}`).val(unit);
         $(`#price-${id}`).val(price);
@@ -789,7 +792,7 @@
 
     function updateTemplateUnitAndPrice(id) {
         const selected = $(`#template-goods-select-${id}`).find(':selected');
-        const unit = selected.data('unit') || '';
+        const unit = selected.data('unit-in-order') || selected.data('unit') || '';
         const price = selected.data('price') || '';
         $(`#template-unit-${id}`).val(unit);
         $(`#template-price-${id}`).val(price);

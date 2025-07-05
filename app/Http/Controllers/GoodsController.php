@@ -47,12 +47,14 @@ class GoodsController extends Controller
         $attributes = request()->validate([
             'name' => ['required', 'max:50'],
             'unit' => ['required', 'max:50'],
+            'unit_in_order' => ['nullable', 'max:50'],
             'ppn' => ['nullable', 'numeric', 'min:0', 'max:100'],
         ]);
 
         $dataToCreate = [
             'name' => $attributes['name'],
             'unit' => $attributes['unit'],
+            'unit_in_order' => $attributes['unit_in_order'],
             'ppn' => $attributes['ppn'],
         ];
 
@@ -74,12 +76,14 @@ class GoodsController extends Controller
         $attributes = request()->validate([
             'name' => ['required', 'max:50'],
             'unit' => ['required', 'max:50'],
+            'unit_in_order' => ['nullable', 'max:50'],
             'ppn' => ['nullable', 'numeric', 'min:0', 'max:100'],
         ]);
 
         $dataToUpdate = [
             'name' => $attributes['name'],  
             'unit' => $attributes['unit'],
+            'unit_in_order' => $attributes['unit_in_order'],
             'ppn' => $attributes['ppn'],
         ];
 

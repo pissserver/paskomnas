@@ -151,7 +151,7 @@ class PrintLogController extends Controller
 
                 foreach ($order->orderItems as $item) {
                     $goodsName = $item->goods->name;
-                    $unit = $item->goods->unit;
+                    $unit = $item->goods->unit_in_order !== null ? $item->goods->unit_in_order : $item->goods->unit;
                     $spec = $item->specification ? $item->specification->name : null;
                     $key = $spec ? "$goodsName ($spec)" : $goodsName;
 
@@ -199,7 +199,7 @@ class PrintLogController extends Controller
                     if (!isset($items[$key])) {
                         $items[$key] = [
                             'quantity' => 0,
-                            'unit' => $item->goods->unit,
+                            'unit' => $item->goods->unit_in_order !== null ? $item->goods->unit_in_order : $item->goods->unit,
                         ];
                     }
                     $items[$key]['quantity'] += $item->quantity;
@@ -358,7 +358,7 @@ class PrintLogController extends Controller
 
                 foreach ($order->orderItems as $item) {
                     $goodsName = $item->goods->name;
-                    $unit = $item->goods->unit;
+                    $unit = $item->goods->unit_in_order !== null ? $item->goods->unit_in_order : $item->goods->unit;
                     $spec = $item->specification ? $item->specification->name : null;
                     $key = $spec ? "$goodsName ($spec)" : $goodsName;
 
@@ -413,7 +413,7 @@ class PrintLogController extends Controller
                     if (!isset($items[$key])) {
                         $items[$key] = [
                             'quantity' => 0,
-                            'unit' => $item->goods->unit,
+                            'unit' => $item->goods->unit_in_order !== null ? $item->goods->unit_in_order : $item->goods->unit,
                             'quantities' => [],
                         ];
                     }

@@ -10,6 +10,9 @@
         <span class="text-secondary text-xs font-weight-bold text-capitalize">{{ $good->unit }}</span>
     </td>
     <td class="text-center">
+        <span class="text-secondary text-xs font-weight-bold text-capitalize">{{ $good->unit_in_order ?? '-' }}</span>
+    </td>
+    <td class="text-center">
         <p class="text-xs font-weight-bold mb-0">{{ $good->ppn != null ? $good->ppn : '0' }}%</p>
     </td>
     <td class="text-center">

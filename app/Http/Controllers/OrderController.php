@@ -194,15 +194,24 @@ class OrderController extends Controller
             ->where('id', $orderId)
             ->firstOrFail();
 
-        $goods = Goods::all();
+        $goods = Goods::orderBy('name', 'asc')->get();
 
         $periode = Periode::with(['prices.goods'])
             ->where('customer_id', $customerId)
             ->first();
 
+        $unpricedGoods = collect();
+        if ($periode) {
+            $pricedGoodsIds = $periode->prices->pluck('goods_id')->toArray();
+
+            $unpricedGoods = Goods::whereNotIn('id', $pricedGoodsIds)->pluck('id');
+        } else {
+            $unpricedGoods = Goods::pluck('id');
+        }
+
         $specifications = Specification::orderBy('name', 'asc')->get();
 
-        return view('pages.order.detail-order', compact('order', 'goods', 'periode', 'specifications'));
+        return view('pages.order.detail-order', compact('order', 'goods', 'periode', 'specifications', 'unpricedGoods'));
     }
 
     public function update(Request $request, string $customerId, string $orderId)

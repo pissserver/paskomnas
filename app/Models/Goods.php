@@ -16,6 +16,7 @@ class Goods extends Model
     protected $fillable = [
         'name',
         'unit',
+        'unit_in_order',
         'ppn',
     ];
 

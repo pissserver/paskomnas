@@ -52,7 +52,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="unit" class="form-control-label">{{ __('Satuan') }}</label>
                                     <div class="@error('unit') border border-danger rounded-3 @enderror">
@@ -64,7 +64,20 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="unit_in_order"
+                                        class="form-control-label">{{ __('Satuan Order') }}</label>
+                                    <div class="@error('unit_in_order') border border-danger rounded-3 @enderror">
+                                        <input class="form-control" type="text" placeholder="Satuan dalam order"
+                                            id="unit_in_order" name="unit_in_order" value="{{ $goods->unit_in_order }}">
+                                        @error('unit_in_order')
+                                        <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
                                 <div class="form-group">
                                     <label for="ppn" class="form-control-label">{{ __('PPN') }}</label>
                                     <div class="@error('ppn') border border-danger rounded-3 @enderror">
