@@ -58,7 +58,7 @@
                     </div>
                 </div>
             </div>
-            <div class="card mt-3">
+            {{-- <div class="card mt-3">
                 <div class="col-12 pt-3 pb-2">
                     <div class="nav-wrapper position-relative d-flex justify-content-center">
                         <ul class="nav nav-pills bg-transparent" role="tablist">
@@ -80,7 +80,7 @@
                         </ul>
                     </div>
                 </div>
-            </div>
+            </div> --}}
         </div>
 
         <div class="col-md-9">
@@ -297,157 +297,156 @@
                     </div>
                 </div>
 
-                <div class="tab-pane fade" id="report" role="tabpanel" aria-labelledby="report">
+                {{-- <div class="tab-pane fade" id="report" role="tabpanel" aria-labelledby="report">
                     <div class="py-4">
                         <div class="card">
                             <div class="card-header p-4 d-flex justify-content-between">
                                 <div class="order">
                                     <h6 class="mb-3 btn bg-gradient-primary"><i
                                             class="fa fa-shopping-cart me-2"></i>{{ $order->order_code }}
-                                    </h6>
-                                    <p class="text-sm d-flex align-items-center mb-2">
-                                        <i class="fa fa-calendar me-2" style="width: 20px; text-align: center;"></i>
-                                        {{ \Carbon\Carbon::parse($order->order_date)->translatedFormat('l, d F Y') }}
-                                    </p>
-                                    <p class="text-sm d-flex align-items-center mb-1">
-                                        @if ($order->status === 'confirmed')
-                                        <span class="text-white bg-primary rounded-3 py-1 px-2">
-                                            <i class="fas fa-sync-alt me-2"></i> Diproses
-                                        </span>
-                                        @elseif ($order->status === 'done')
-                                        <span class="text-white bg-success rounded-3 py-1 px-2">
-                                            <i class="fas fa-check-circle me-2"></i> Selesai
-                                        </span>
-                                        @elseif ($order->status === 'cancelled')
-                                        <span class="text-white bg-danger rounded-3 py-1 px-2">
-                                            <i class="fas fa-times-circle me-2"></i> Dibatalkan
-                                        </span>
-                                        @endif
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="card-body pt-2 p-4">
-                                @if($errors->any())
-                                <div class="alert alert-primary alert-dismissible fade show" role="alert">
-                                    <span class="alert-text text-white">
-                                        {{$errors->first()}}</span>
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
-                                        <i class="fa fa-close" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                                @endif
-                                @if(session('success'))
-                                <div class="alert alert-success alert-dismissible fade show" id="alert-success"
-                                    role="alert">
-                                    <span class="alert-text text-white">
-                                        {{ session('success') }}</span>
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
-                                        <i class="fa fa-close" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                                @endif
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label for="order-date">Tanggal Order</label>
-                                            <input type="text" class="form-control" id="order-date" name="order_date"
-                                                value="{{ \Carbon\Carbon::parse($order->order_date)->translatedFormat('l, d F Y') }}"
-                                                disabled>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="table-responsive p-0">
-                                        <table class="table align-items-center mb-0 table-hover table-striped">
-                                            <thead>
-                                                <tr>
-                                                    <th
-                                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                                        No
-                                                    </th>
-                                                    <th
-                                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                                        Nama Barang
-                                                    </th>
-                                                    <th
-                                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                                        Spesifikasi
-                                                    </th>
-                                                    <th
-                                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                                        Satuan
-                                                    </th>
-                                                    <th
-                                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                                        Harga
-                                                    </th>
-                                                    <th
-                                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                                        Jumlah
-                                                    </th>
-                                                    <th
-                                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                                        Total
-                                                    </th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="customerTableBody">
-                                                @php
-                                                $no = 1;
-                                                $grandTotal = $order->orderItems->sum('total');
-                                                $rowCount = $order->orderItems->count();
-                                                @endphp
-                                                @foreach($order->orderItems as $index => $orderItem)
-                                                <tr>
-                                                    <td class="text-center">
-                                                        <p class="text-xs font-weight-bold mb-0"> {{ $no++ }} </p>
-                                                    </td>
-                                                    <td class="text-center">
-                                                        <p class="text-xs font-weight-bold mb-0">
-                                                            {{ $orderItem->goods->name }} </p>
-                                                    </td>
-                                                    <td class="text-center">
-                                                        <p class="text-xs font-weight-bold mb-0">
-                                                            {{ $orderItem->specification->name ?? 'Tidak ada' }} </p>
-                                                    </td>
-                                                    <td class="text-center">
-                                                        <p class="text-xs font-weight-bold mb-0">
-                                                            {{ $orderItem->goods->unit }} </p>
-                                                    </td>
-                                                    <td class="text-center">
-                                                        <p class="text-xs font-weight-bold mb-0">
-                                                            Rp {{ number_format($orderItem->price, 0, ',', '.') }} </p>
-                                                    </td>
-                                                    <td class="text-center">
-                                                        <p class="text-xs font-weight-bold mb-0">
-                                                            {{ $orderItem->quantity }} </p>
-                                                    </td>
-                                                    <td class="text-center">
-                                                        <p class="text-xs font-weight-bold mb-0">
-                                                            Rp {{ number_format($orderItem->total, 0, ',', '.') }} </p>
-                                                    </td>
-                                                </tr>
-                                                @endforeach
-
-                                                <tr>
-                                                    <td colspan="6" class="text-end text-bold">
-                                                        Total Keseluruhan :
-                                                    </td>
-                                                    <td class="text-center text-bold">
-                                                        Rp {{ number_format($grandTotal, 0, ',', '.') }}
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                </h6>
+                <p class="text-sm d-flex align-items-center mb-2">
+                    <i class="fa fa-calendar me-2" style="width: 20px; text-align: center;"></i>
+                    {{ \Carbon\Carbon::parse($order->order_date)->translatedFormat('l, d F Y') }}
+                </p>
+                <p class="text-sm d-flex align-items-center mb-1">
+                    @if ($order->status === 'confirmed')
+                    <span class="text-white bg-primary rounded-3 py-1 px-2">
+                        <i class="fas fa-sync-alt me-2"></i> Diproses
+                    </span>
+                    @elseif ($order->status === 'done')
+                    <span class="text-white bg-success rounded-3 py-1 px-2">
+                        <i class="fas fa-check-circle me-2"></i> Selesai
+                    </span>
+                    @elseif ($order->status === 'cancelled')
+                    <span class="text-white bg-danger rounded-3 py-1 px-2">
+                        <i class="fas fa-times-circle me-2"></i> Dibatalkan
+                    </span>
+                    @endif
+                </p>
+            </div>
+        </div>
+        <div class="card-body pt-2 p-4">
+            @if($errors->any())
+            <div class="alert alert-primary alert-dismissible fade show" role="alert">
+                <span class="alert-text text-white">
+                    {{$errors->first()}}</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                    <i class="fa fa-close" aria-hidden="true"></i>
+                </button>
+            </div>
+            @endif
+            @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" id="alert-success" role="alert">
+                <span class="alert-text text-white">
+                    {{ session('success') }}</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                    <i class="fa fa-close" aria-hidden="true"></i>
+                </button>
+            </div>
+            @endif
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="order-date">Tanggal Order</label>
+                        <input type="text" class="form-control" id="order-date" name="order_date"
+                            value="{{ \Carbon\Carbon::parse($order->order_date)->translatedFormat('l, d F Y') }}"
+                            disabled>
                     </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="table-responsive p-0">
+                    <table class="table align-items-center mb-0 table-hover table-striped">
+                        <thead>
+                            <tr>
+                                <th
+                                    class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    No
+                                </th>
+                                <th
+                                    class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    Nama Barang
+                                </th>
+                                <th
+                                    class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    Spesifikasi
+                                </th>
+                                <th
+                                    class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    Satuan
+                                </th>
+                                <th
+                                    class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    Harga
+                                </th>
+                                <th
+                                    class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    Jumlah
+                                </th>
+                                <th
+                                    class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    Total
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="customerTableBody">
+                            @php
+                            $no = 1;
+                            $grandTotal = $order->orderItems->sum('total');
+                            $rowCount = $order->orderItems->count();
+                            @endphp
+                            @foreach($order->orderItems as $index => $orderItem)
+                            <tr>
+                                <td class="text-center">
+                                    <p class="text-xs font-weight-bold mb-0"> {{ $no++ }} </p>
+                                </td>
+                                <td class="text-center">
+                                    <p class="text-xs font-weight-bold mb-0">
+                                        {{ $orderItem->goods->name }} </p>
+                                </td>
+                                <td class="text-center">
+                                    <p class="text-xs font-weight-bold mb-0">
+                                        {{ $orderItem->specification->name ?? 'Tidak ada' }} </p>
+                                </td>
+                                <td class="text-center">
+                                    <p class="text-xs font-weight-bold mb-0">
+                                        {{ $orderItem->goods->unit }} </p>
+                                </td>
+                                <td class="text-center">
+                                    <p class="text-xs font-weight-bold mb-0">
+                                        Rp {{ number_format($orderItem->price, 0, ',', '.') }} </p>
+                                </td>
+                                <td class="text-center">
+                                    <p class="text-xs font-weight-bold mb-0">
+                                        {{ $orderItem->quantity }} </p>
+                                </td>
+                                <td class="text-center">
+                                    <p class="text-xs font-weight-bold mb-0">
+                                        Rp {{ number_format($orderItem->total, 0, ',', '.') }} </p>
+                                </td>
+                            </tr>
+                            @endforeach
+
+                            <tr>
+                                <td colspan="6" class="text-end text-bold">
+                                    Total Keseluruhan :
+                                </td>
+                                <td class="text-center text-bold">
+                                    Rp {{ number_format($grandTotal, 0, ',', '.') }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
+</div>
+</div> --}}
+</div>
+</div>
+</div>
 </div>
 
 <script>

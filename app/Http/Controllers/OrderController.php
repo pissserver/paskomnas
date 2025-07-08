@@ -314,7 +314,8 @@ class OrderController extends Controller
 
         $keyword = $request->input('keyword');
         $query = Order::with(['customer', 'orderItems.goods'])
-            ->where('status', 'confirmed');
+            ->where('status', 'confirmed')
+            ->where('order_date', '>=', now()->subWeeks(2));
 
         $goods = Goods::all();
 
@@ -345,7 +346,8 @@ class OrderController extends Controller
 
         $keyword = $request->input('keyword');
         $query = Order::with(['customer', 'orderItems.goods'])
-            ->where('status', 'cancelled');
+            ->where('status', 'cancelled')
+            ->where('order_date', '>=', now()->subWeeks(2));
 
         $goods = Goods::all();
 
