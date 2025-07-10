@@ -58,13 +58,10 @@ Route::group(['middleware' => 'guest'], function () {
 Route::middleware(['auth', 'roleAccess'])->group(function () {
     Route::get('/', [HomeController::class, 'home']);
 
-	Route::get('dashboard', function () {
-		return view('pages.dashboard');
-	})->name('dashboard');
-
-	Route::get('billing', function () {
-		return view('pages.billing');
-	})->name('billing');
+	// Dashboard
+	Route::get('dashboard', [HomeController::class, 'index'])->name('dashboard.index');
+	Route::get('dashboard/data-group', [HomeController::class, 'dataGroup'])->name('dashboard.data.group');
+	Route::get('dashboard/data-customer', [HomeController::class, 'dataCustomer'])->name('dashboard.data.customer');
 
 	// Order
 	Route::get('order', [OrderController::class, 'index'])->name('order.index');

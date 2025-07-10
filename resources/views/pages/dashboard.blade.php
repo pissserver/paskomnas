@@ -21,6 +21,7 @@
   </button>
 </div>
 @endif
+
 <div class="row">
   <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
     <div class="card">
@@ -28,16 +29,17 @@
         <div class="row">
           <div class="col-8">
             <div class="numbers">
-              <p class="text-sm mb-0 text-capitalize font-weight-bold">Today's Money</p>
-              <h5 class="font-weight-bolder mb-0">
-                $53,000
-                <span class="text-success text-sm font-weight-bolder">+55%</span>
+              <p class="text-sm mb-0 text-capitalize font-weight-bold">Pengguna Sistem</p>
+              <h5 class="font-weight-bolder mb-2">
+                {{ $users }}
+                <span class="text-success text-sm font-weight-bolder">Pengguna</span>
               </h5>
+              <p class="text-sm mb-0 text-capitalize">Sekarang</p>
             </div>
           </div>
           <div class="col-4 text-end">
             <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
-              <i class="ni ni-money-coins text-lg opacity-10" aria-hidden="true"></i>
+              <i class="fa fa-users text-lg opacity-10" aria-hidden="true"></i>
             </div>
           </div>
         </div>
@@ -50,16 +52,17 @@
         <div class="row">
           <div class="col-8">
             <div class="numbers">
-              <p class="text-sm mb-0 text-capitalize font-weight-bold">Today's Users</p>
-              <h5 class="font-weight-bolder mb-0">
-                2,300
-                <span class="text-success text-sm font-weight-bolder">+3%</span>
+              <p class="text-sm mb-0 text-capitalize font-weight-bold">Barang Komoditi</p>
+              <h5 class="font-weight-bolder mb-2">
+                {{ $goods }}
+                <span class="text-success text-sm font-weight-bolder">Tersedia</span>
               </h5>
+              <p class="text-sm mb-0 text-capitalize">Sekarang</p>
             </div>
           </div>
           <div class="col-4 text-end">
             <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
-              <i class="ni ni-world text-lg opacity-10" aria-hidden="true"></i>
+              <i class="fa fa-box text-lg opacity-10" aria-hidden="true"></i>
             </div>
           </div>
         </div>
@@ -72,16 +75,17 @@
         <div class="row">
           <div class="col-8">
             <div class="numbers">
-              <p class="text-sm mb-0 text-capitalize font-weight-bold">New Clients</p>
-              <h5 class="font-weight-bolder mb-0">
-                +3,462
-                <span class="text-danger text-sm font-weight-bolder">-2%</span>
+              <p class="text-sm mb-0 text-capitalize font-weight-bold">Daftar Customer</p>
+              <h5 class="font-weight-bolder mb-2">
+                {{ $customers }}
+                <span class="text-success text-sm font-weight-bolder">Customer</span>
               </h5>
+              <p class="text-sm mb-0 text-capitalize">Sekarang</p>
             </div>
           </div>
           <div class="col-4 text-end">
             <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
-              <i class="ni ni-paper-diploma text-lg opacity-10" aria-hidden="true"></i>
+              <i class="fa fa-briefcase text-lg opacity-10" aria-hidden="true"></i>
             </div>
           </div>
         </div>
@@ -94,16 +98,20 @@
         <div class="row">
           <div class="col-8">
             <div class="numbers">
-              <p class="text-sm mb-0 text-capitalize font-weight-bold">Sales</p>
-              <h5 class="font-weight-bolder mb-0">
-                $103,430
-                <span class="text-success text-sm font-weight-bolder">+5%</span>
+              <p class="text-sm mb-0 text-capitalize font-weight-bold">Total Order</p>
+              <h5 class="font-weight-bolder mb-2">
+                {{ $orders }}
+                <span class="text-success text-sm font-weight-bolder">Order</span>
               </h5>
+              <p class="text-sm mb-0 text-capitalize">
+                {{ \Carbon\Carbon::parse($startOfYear)->translatedFormat('d F Y') }} -
+                {{ \Carbon\Carbon::parse($endOfNow)->translatedFormat('d F Y') }}
+              </p>
             </div>
           </div>
           <div class="col-4 text-end">
             <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
-              <i class="ni ni-cart text-lg opacity-10" aria-hidden="true"></i>
+              <i class="fas fa-shopping-cart text-lg opacity-10" aria-hidden="true"></i>
             </div>
           </div>
         </div>
@@ -111,55 +119,87 @@
     </div>
   </div>
 </div>
+
 <div class="row mt-4">
-  <div class="col-lg-7 mb-lg-0 mb-4">
+  <div class="col-lg-6 mb-lg-0 mb-4">
     <div class="card">
       <div class="card-body p-3">
         <div class="row">
           <div class="col-lg-6">
             <div class="d-flex flex-column h-100">
-              <p class="mb-1 pt-2 text-bold">Built by developers</p>
-              <h5 class="font-weight-bolder">Soft UI Dashboard</h5>
-              <p class="mb-5">From colors, cards, typography to complex elements, you will find the full documentation.
+              <p class="mb-1 pt-2 text-bold">Customer dengan order terbanyak</p>
+              <h5 class="font-weight-bolder">{{ $mostCustomerOrdered->customer->name }}</h5>
+              <span class="bg-gradient-info text-white px-3 py-1 text-sm rounded"
+                style="display: inline-block; width: auto; max-width: max-content;">
+                {{ $mostCustomerOrdered->order_count }} Order
+              </span><br>
+              <p class="mb-5">{{ $mostCustomerOrdered->customer->company_address }}</p>
               </p>
-              <a class="text-body text-sm font-weight-bold mb-0 icon-move-right mt-auto" href="javascript:;">
-                Read More
-                <i class="fas fa-arrow-right text-sm ms-1" aria-hidden="true"></i>
+              <a class="text-sm font-weight-bold mb-0 icon-move-right mt-auto btn bg-gradient-primary text-white"
+                href="{{ route('customer.edit', $mostCustomerOrdered->customer->id) }}">
+                Info selengkapnya
+                <i class="fas fa-arrow-right text-sm ms-1 text-white" aria-hidden="true"></i>
               </a>
             </div>
           </div>
-          <div class="col-lg-5 ms-auto text-center mt-5 mt-lg-0">
-            <div class="bg-gradient-primary border-radius-lg h-100">
-              <img src="../assets/img/shapes/waves-white.svg"
-                class="position-absolute h-100 w-50 top-0 d-lg-block d-none" alt="waves">
-              <div class="position-relative d-flex align-items-center justify-content-center h-100">
-                <img class="w-100 position-relative z-index-2 pt-4" src="../assets/img/illustrations/rocket-white.png"
-                  alt="rocket">
-              </div>
+          <div class="col-lg-5 ms-auto text-center mt-0 mt-lg-0">
+            <div class="position-relative d-flex align-items-center justify-content-center h-100 ">
+              <img class="w-100 position-relative z-index-2 pt-0 border-radius-lg"
+                src="{{ $mostCustomerOrdered->customer->photo ?? asset('assets/img/default-profile.jpg') }}"
+                alt="{{ $mostCustomerOrdered->customer->name }}">
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-  <div class="col-lg-5">
-    <div class="card h-100 p-3">
-      <div class="overflow-hidden position-relative border-radius-lg bg-cover h-100"
-        style="background-image: url('../assets/img/ivancik.jpg');">
-        <span class="mask bg-gradient-dark"></span>
-        <div class="card-body position-relative z-index-1 d-flex flex-column h-100 p-3">
-          <h5 class="text-white font-weight-bolder mb-4 pt-2">Work with the rockets</h5>
-          <p class="text-white">Wealth creation is an evolutionarily recent positive-sum game. It is all about who take
-            the opportunity first.</p>
-          <a class="text-white text-sm font-weight-bold mb-0 icon-move-right mt-auto" href="javascript:;">
-            Read More
-            <i class="fas fa-arrow-right text-sm ms-1" aria-hidden="true"></i>
-          </a>
+  <div class="col-lg-6 mb-lg-0 mb-4">
+    <div class="card">
+      <div class="card-body p-3">
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="d-flex flex-column h-100">
+              <p class="mb-1 pt-2 text-bold">Group dengan order terbanyak</p>
+              <h5 class="font-weight-bolder mb-1">
+                {{ $mostGroupOrdered->name }}
+              </h5>
+              <span class="bg-gradient-info text-white px-3 py-1 text-sm rounded"
+                style="display: inline-block; width: auto; max-width: max-content;">
+                {{ $mostGroupOrdered->order_count }} Order
+              </span><br>
+
+              @if ($mostGroupOrdered->group->customers->count() > 0)
+              <p>Member of group</p>
+              <div class="d-flex flex-wrap justify-content-start gap-1 mb-4">
+                @foreach ($mostGroupOrdered->group->customers as $customer)
+                <a href="{{ route('customer.edit', $customer->id) }}" class="avatar avatar-sm rounded-circle me-1 mb-1"
+                  data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $customer->name }}">
+                  <img alt="{{ $customer->name }}"
+                    src="{{ $customer->photo ? asset($customer->photo) : asset('assets/img/default-profile.jpg') }}">
+                </a>
+                @endforeach
+              </div>
+              <a class="text-white btn bg-gradient-primary text-sm font-weight-bold mb-0 icon-move-right mt-auto"
+                href="{{ route('customer.group.edit', $mostGroupOrdered->group->id) }}">
+                Info selengkapnya
+                <i class="fas fa-arrow-right text-white text-sm ms-1" aria-hidden="true"></i>
+              </a>
+              @endif
+            </div>
+          </div>
+          <div class="col-lg-5 ms-auto text-center mt-0 mt-lg-0">
+            <div class="position-relative d-flex align-items-center justify-content-center h-100 ">
+              <img class="w-100 position-relative z-index-2 pt-0 border-radius-lg"
+                src="{{ $mostGroupOrdered->group->photo ?? asset('assets/img/default-profile.jpg') }}"
+                alt="{{ $mostGroupOrdered->name }}">
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+
 <div class="row mt-4">
   <div class="col-lg-5 mb-lg-0 mb-4">
     <div class="card z-index-2">
@@ -169,9 +209,19 @@
             <canvas id="chart-bars" class="chart-canvas" height="170"></canvas>
           </div>
         </div>
-        <h6 class="ms-2 mt-4 mb-0"> Active Users </h6>
-        <p class="text-sm ms-2"> (<span class="font-weight-bolder">+23%</span>) than last week </p>
-        <div class="container border-radius-lg">
+        <div class="d-flex align-items-center ms-2 mt-4 mb-0">
+          <i class="fas fa-chart-line text-info me-2"></i>
+          <h6 class="mb-0">Statistik Order All Customer</h6>
+        </div>
+        <div class="d-flex align-items-center ms-2">
+          <i class="fas fa-calendar-alt text-secondary me-2"></i>
+          <p class="text-sm mb-0 ms-1">
+            Per
+            {{ \Carbon\Carbon::parse($startOfYear)->translatedFormat('d F Y') }} -
+            {{ \Carbon\Carbon::parse($endOfNow)->translatedFormat('d F Y') }}
+          </p>
+        </div>
+        {{-- <div class="container border-radius-lg">
           <div class="row">
             <div class="col-3 py-3 ps-0">
               <div class="d-flex mb-2">
@@ -307,7 +357,7 @@
               </div>
             </div>
           </div>
-        </div>
+        </div> --}}
       </div>
     </div>
   </div>
@@ -328,28 +378,24 @@
     </div>
   </div>
 </div>
+
 <div class="row my-4">
   <div class="col-lg-8 col-md-6 mb-md-0 mb-4">
     <div class="card">
       <div class="card-header pb-0">
         <div class="row">
           <div class="col-lg-6 col-7">
-            <h6>Projects</h6>
+            <h6 id="section-title">Progression Order Group</h6>
             <p class="text-sm mb-0">
               <i class="fa fa-check text-info" aria-hidden="true"></i>
-              <span class="font-weight-bold ms-1">30 done</span> this month
+              <span class="font-weight-bold ms-1">1 Bulan</span> terakhir
             </p>
           </div>
           <div class="col-lg-6 col-5 my-auto text-end">
-            <div class="dropdown float-lg-end pe-4">
-              <a class="cursor-pointer" id="dropdownTable" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fa fa-ellipsis-v text-secondary"></i>
+            <div class="pe-4">
+              <a class="cursor-pointer" id="toggleViewBtn">
+                <i class="fa fa-random text-secondary" title="Switch View"></i>
               </a>
-              <ul class="dropdown-menu px-2 py-3 ms-sm-n4 ms-n5" aria-labelledby="dropdownTable">
-                <li><a class="dropdown-item border-radius-md" href="javascript:;">Action</a></li>
-                <li><a class="dropdown-item border-radius-md" href="javascript:;">Another action</a></li>
-                <li><a class="dropdown-item border-radius-md" href="javascript:;">Something else here</a></li>
-              </ul>
             </div>
           </div>
         </div>
@@ -359,274 +405,24 @@
           <table class="table align-items-center mb-0">
             <thead>
               <tr>
-                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Companies</th>
-                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Members</th>
-                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Budget</th>
-                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Completion
-                </th>
+                <th id="th-name"
+                  class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Group
+                  Customer</th>
+                <th id="th-member"
+                  class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                  Member</th>
+                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Omzet</th>
+                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Order</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td>
-                  <div class="d-flex px-2 py-1">
-                    <div>
-                      <img src="../assets/img/small-logos/logo-xd.svg" class="avatar avatar-sm me-3" alt="xd">
-                    </div>
-                    <div class="d-flex flex-column justify-content-center">
-                      <h6 class="mb-0 text-sm">Soft UI XD Version</h6>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <div class="avatar-group mt-2">
-                    <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip"
-                      data-bs-placement="bottom" title="Ryan Tompson">
-                      <img src="../assets/img/team-1.jpg" alt="team1">
-                    </a>
-                    <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip"
-                      data-bs-placement="bottom" title="Romina Hadid">
-                      <img src="../assets/img/team-2.jpg" alt="team2">
-                    </a>
-                    <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip"
-                      data-bs-placement="bottom" title="Alexander Smith">
-                      <img src="../assets/img/team-3.jpg" alt="team3">
-                    </a>
-                    <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip"
-                      data-bs-placement="bottom" title="Jessica Doe">
-                      <img src="../assets/img/team-4.jpg" alt="team4">
-                    </a>
-                  </div>
-                </td>
-                <td class="align-middle text-center text-sm">
-                  <span class="text-xs font-weight-bold"> $14,000 </span>
-                </td>
-                <td class="align-middle">
-                  <div class="progress-wrapper w-75 mx-auto">
-                    <div class="progress-info">
-                      <div class="progress-percentage">
-                        <span class="text-xs font-weight-bold">60%</span>
-                      </div>
-                    </div>
-                    <div class="progress">
-                      <div class="progress-bar bg-gradient-info w-60" role="progressbar" aria-valuenow="60"
-                        aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <div class="d-flex px-2 py-1">
-                    <div>
-                      <img src="../assets/img/small-logos/logo-atlassian.svg" class="avatar avatar-sm me-3"
-                        alt="atlassian">
-                    </div>
-                    <div class="d-flex flex-column justify-content-center">
-                      <h6 class="mb-0 text-sm">Add Progress Track</h6>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <div class="avatar-group mt-2">
-                    <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip"
-                      data-bs-placement="bottom" title="Romina Hadid">
-                      <img src="../assets/img/team-2.jpg" alt="team5">
-                    </a>
-                    <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip"
-                      data-bs-placement="bottom" title="Jessica Doe">
-                      <img src="../assets/img/team-4.jpg" alt="team6">
-                    </a>
-                  </div>
-                </td>
-                <td class="align-middle text-center text-sm">
-                  <span class="text-xs font-weight-bold"> $3,000 </span>
-                </td>
-                <td class="align-middle">
-                  <div class="progress-wrapper w-75 mx-auto">
-                    <div class="progress-info">
-                      <div class="progress-percentage">
-                        <span class="text-xs font-weight-bold">10%</span>
-                      </div>
-                    </div>
-                    <div class="progress">
-                      <div class="progress-bar bg-gradient-info w-10" role="progressbar" aria-valuenow="10"
-                        aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <div class="d-flex px-2 py-1">
-                    <div>
-                      <img src="../assets/img/small-logos/logo-slack.svg" class="avatar avatar-sm me-3" alt="team7">
-                    </div>
-                    <div class="d-flex flex-column justify-content-center">
-                      <h6 class="mb-0 text-sm">Fix Platform Errors</h6>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <div class="avatar-group mt-2">
-                    <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip"
-                      data-bs-placement="bottom" title="Romina Hadid">
-                      <img src="../assets/img/team-3.jpg" alt="team8">
-                    </a>
-                    <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip"
-                      data-bs-placement="bottom" title="Jessica Doe">
-                      <img src="../assets/img/team-1.jpg" alt="team9">
-                    </a>
-                  </div>
-                </td>
-                <td class="align-middle text-center text-sm">
-                  <span class="text-xs font-weight-bold"> Not set </span>
-                </td>
-                <td class="align-middle">
-                  <div class="progress-wrapper w-75 mx-auto">
-                    <div class="progress-info">
-                      <div class="progress-percentage">
-                        <span class="text-xs font-weight-bold">100%</span>
-                      </div>
-                    </div>
-                    <div class="progress">
-                      <div class="progress-bar bg-gradient-success w-100" role="progressbar" aria-valuenow="100"
-                        aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <div class="d-flex px-2 py-1">
-                    <div>
-                      <img src="../assets/img/small-logos/logo-spotify.svg" class="avatar avatar-sm me-3" alt="spotify">
-                    </div>
-                    <div class="d-flex flex-column justify-content-center">
-                      <h6 class="mb-0 text-sm">Launch our Mobile App</h6>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <div class="avatar-group mt-2">
-                    <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip"
-                      data-bs-placement="bottom" title="Ryan Tompson">
-                      <img src="../assets/img/team-4.jpg" alt="user1">
-                    </a>
-                    <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip"
-                      data-bs-placement="bottom" title="Romina Hadid">
-                      <img src="../assets/img/team-3.jpg" alt="user2">
-                    </a>
-                    <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip"
-                      data-bs-placement="bottom" title="Alexander Smith">
-                      <img src="../assets/img/team-4.jpg" alt="user3">
-                    </a>
-                    <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip"
-                      data-bs-placement="bottom" title="Jessica Doe">
-                      <img src="../assets/img/team-1.jpg" alt="user4">
-                    </a>
-                  </div>
-                </td>
-                <td class="align-middle text-center text-sm">
-                  <span class="text-xs font-weight-bold"> $20,500 </span>
-                </td>
-                <td class="align-middle">
-                  <div class="progress-wrapper w-75 mx-auto">
-                    <div class="progress-info">
-                      <div class="progress-percentage">
-                        <span class="text-xs font-weight-bold">100%</span>
-                      </div>
-                    </div>
-                    <div class="progress">
-                      <div class="progress-bar bg-gradient-success w-100" role="progressbar" aria-valuenow="100"
-                        aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <div class="d-flex px-2 py-1">
-                    <div>
-                      <img src="../assets/img/small-logos/logo-jira.svg" class="avatar avatar-sm me-3" alt="jira">
-                    </div>
-                    <div class="d-flex flex-column justify-content-center">
-                      <h6 class="mb-0 text-sm">Add the New Pricing Page</h6>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <div class="avatar-group mt-2">
-                    <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip"
-                      data-bs-placement="bottom" title="Ryan Tompson">
-                      <img src="../assets/img/team-4.jpg" alt="user5">
-                    </a>
-                  </div>
-                </td>
-                <td class="align-middle text-center text-sm">
-                  <span class="text-xs font-weight-bold"> $500 </span>
-                </td>
-                <td class="align-middle">
-                  <div class="progress-wrapper w-75 mx-auto">
-                    <div class="progress-info">
-                      <div class="progress-percentage">
-                        <span class="text-xs font-weight-bold">25%</span>
-                      </div>
-                    </div>
-                    <div class="progress">
-                      <div class="progress-bar bg-gradient-info w-25" role="progressbar" aria-valuenow="25"
-                        aria-valuemin="0" aria-valuemax="25"></div>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <div class="d-flex px-2 py-1">
-                    <div>
-                      <img src="../assets/img/small-logos/logo-invision.svg" class="avatar avatar-sm me-3"
-                        alt="invision">
-                    </div>
-                    <div class="d-flex flex-column justify-content-center">
-                      <h6 class="mb-0 text-sm">Redesign New Online Shop</h6>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <div class="avatar-group mt-2">
-                    <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip"
-                      data-bs-placement="bottom" title="Ryan Tompson">
-                      <img src="../assets/img/team-1.jpg" alt="user6">
-                    </a>
-                    <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip"
-                      data-bs-placement="bottom" title="Jessica Doe">
-                      <img src="../assets/img/team-4.jpg" alt="user7">
-                    </a>
-                  </div>
-                </td>
-                <td class="align-middle text-center text-sm">
-                  <span class="text-xs font-weight-bold"> $2,000 </span>
-                </td>
-                <td class="align-middle">
-                  <div class="progress-wrapper w-75 mx-auto">
-                    <div class="progress-info">
-                      <div class="progress-percentage">
-                        <span class="text-xs font-weight-bold">40%</span>
-                      </div>
-                    </div>
-                    <div class="progress">
-                      <div class="progress-bar bg-gradient-info w-40" role="progressbar" aria-valuenow="40"
-                        aria-valuemin="0" aria-valuemax="40"></div>
-                    </div>
-                  </div>
-                </td>
-              </tr>
+            <tbody id="table-body">
             </tbody>
           </table>
         </div>
       </div>
     </div>
   </div>
+
   <div class="col-lg-4 col-md-6">
     <div class="card h-100">
       <div class="card-header pb-0">
@@ -700,176 +496,239 @@
 
 @endsection
 @push('dashboard')
+
 <script>
   window.onload = function() {
-      var ctx = document.getElementById("chart-bars").getContext("2d");
+        var ctx = document.getElementById("chart-bars").getContext("2d");
 
-      new Chart(ctx, {
-        type: "bar",
-        data: {
-          labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-          datasets: [{
-            label: "Sales",
-            tension: 0.4,
-            borderWidth: 0,
-            borderRadius: 4,
-            borderSkipped: false,
-            backgroundColor: "#fff",
-            data: [450, 200, 100, 220, 500, 100, 400, 230, 500],
-            maxBarThickness: 6
-          }, ],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: false,
-            }
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: {!! json_encode($chartLabels) !!},
+            datasets: [{
+              label: 'Order per Bulan Tahun {{ now()->year }}',
+              data: {!! json_encode($chartData) !!},
+              backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              borderColor: 'rgba(255, 255, 255, 0.9)',
+              borderWidth: 1
+            }]
           },
-          interaction: {
-            intersect: false,
-            mode: 'index',
-          },
-          scales: {
-            y: {
-              grid: {
-                drawBorder: false,
-                display: false,
-                drawOnChartArea: false,
-                drawTicks: false,
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                display: true,
+                labels: {
+                  color: '#fff' // Warna teks label legend
+                }
               },
-              ticks: {
-                suggestedMin: 0,
-                suggestedMax: 500,
+              tooltip: {
+                bodyColor: '#fff',
+                titleColor: '#fff'
+              }
+            },
+            scales: {
+              x: {
+                ticks: {
+                  color: '#fff' // Warna teks label sumbu X
+                },
+                grid: {
+                  color: 'rgba(255,255,255,0.1)' // warna garis grid (opsional)
+                }
+              },
+              y: {
                 beginAtZero: true,
-                padding: 15,
-                font: {
-                  size: 14,
-                  family: "Open Sans",
-                  style: 'normal',
-                  lineHeight: 2
+                ticks: {
+                  color: '#fff' // Warna teks label sumbu Y
                 },
-                color: "#fff"
-              },
-            },
-            x: {
-              grid: {
-                drawBorder: false,
-                display: false,
-                drawOnChartArea: false,
-                drawTicks: false
-              },
-              ticks: {
-                display: false
-              },
-            },
-          },
-        },
-      });
-
-
-      var ctx2 = document.getElementById("chart-line").getContext("2d");
-
-      var gradientStroke1 = ctx2.createLinearGradient(0, 230, 0, 50);
-
-      gradientStroke1.addColorStop(1, 'rgba(203,12,159,0.2)');
-      gradientStroke1.addColorStop(0.2, 'rgba(72,72,176,0.0)');
-      gradientStroke1.addColorStop(0, 'rgba(203,12,159,0)'); //purple colors
-
-      var gradientStroke2 = ctx2.createLinearGradient(0, 230, 0, 50);
-
-      gradientStroke2.addColorStop(1, 'rgba(20,23,39,0.2)');
-      gradientStroke2.addColorStop(0.2, 'rgba(72,72,176,0.0)');
-      gradientStroke2.addColorStop(0, 'rgba(20,23,39,0)'); //purple colors
-
-      new Chart(ctx2, {
-        type: "line",
-        data: {
-          labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-          datasets: [{
-              label: "Mobile apps",
-              tension: 0.4,
-              borderWidth: 0,
-              pointRadius: 0,
-              borderColor: "#cb0c9f",
-              borderWidth: 3,
-              backgroundColor: gradientStroke1,
-              fill: true,
-              data: [50, 40, 300, 220, 500, 250, 400, 230, 500],
-              maxBarThickness: 6
-
-            },
-            {
-              label: "Websites",
-              tension: 0.4,
-              borderWidth: 0,
-              pointRadius: 0,
-              borderColor: "#3A416F",
-              borderWidth: 3,
-              backgroundColor: gradientStroke2,
-              fill: true,
-              data: [30, 90, 40, 140, 290, 290, 340, 230, 400],
-              maxBarThickness: 6
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: false,
+                grid: {
+                  color: 'rgba(255,255,255,0.1)'
+                }
+              }
             }
-          },
-          interaction: {
-            intersect: false,
-            mode: 'index',
-          },
-          scales: {
-            y: {
-              grid: {
-                drawBorder: false,
-                display: true,
-                drawOnChartArea: true,
-                drawTicks: false,
-                borderDash: [5, 5]
+          }
+        });
+
+
+        var ctx2 = document.getElementById("chart-line").getContext("2d");
+
+        var gradientStroke1 = ctx2.createLinearGradient(0, 230, 0, 50);
+
+        gradientStroke1.addColorStop(1, 'rgba(203,12,159,0.2)');
+        gradientStroke1.addColorStop(0.2, 'rgba(72,72,176,0.0)');
+        gradientStroke1.addColorStop(0, 'rgba(203,12,159,0)'); //purple colors
+
+        var gradientStroke2 = ctx2.createLinearGradient(0, 230, 0, 50);
+
+        gradientStroke2.addColorStop(1, 'rgba(20,23,39,0.2)');
+        gradientStroke2.addColorStop(0.2, 'rgba(72,72,176,0.0)');
+        gradientStroke2.addColorStop(0, 'rgba(20,23,39,0)'); //purple colors
+
+        new Chart(ctx2, {
+          type: "line",
+          data: {
+            labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+            datasets: [{
+                label: "Mobile apps",
+                tension: 0.4,
+                borderWidth: 0,
+                pointRadius: 0,
+                borderColor: "#cb0c9f",
+                borderWidth: 3,
+                backgroundColor: gradientStroke1,
+                fill: true,
+                data: [50, 40, 300, 220, 500, 250, 400, 230, 500],
+                maxBarThickness: 6
+
               },
-              ticks: {
-                display: true,
-                padding: 10,
-                color: '#b2b9bf',
-                font: {
-                  size: 11,
-                  family: "Open Sans",
-                  style: 'normal',
-                  lineHeight: 2
-                },
-              }
-            },
-            x: {
-              grid: {
-                drawBorder: false,
+              {
+                label: "Websites",
+                tension: 0.4,
+                borderWidth: 0,
+                pointRadius: 0,
+                borderColor: "#3A416F",
+                borderWidth: 3,
+                backgroundColor: gradientStroke2,
+                fill: true,
+                data: [30, 90, 40, 140, 290, 290, 340, 230, 400],
+                maxBarThickness: 6
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
                 display: false,
-                drawOnChartArea: false,
-                drawTicks: false,
-                borderDash: [5, 5]
-              },
-              ticks: {
-                display: true,
-                color: '#b2b9bf',
-                padding: 20,
-                font: {
-                  size: 11,
-                  family: "Open Sans",
-                  style: 'normal',
-                  lineHeight: 2
-                },
               }
             },
+            interaction: {
+              intersect: false,
+              mode: 'index',
+            },
+            scales: {
+              y: {
+                grid: {
+                  drawBorder: false,
+                  display: true,
+                  drawOnChartArea: true,
+                  drawTicks: false,
+                  borderDash: [5, 5]
+                },
+                ticks: {
+                  display: true,
+                  padding: 10,
+                  color: '#b2b9bf',
+                  font: {
+                    size: 11,
+                    family: "Open Sans",
+                    style: 'normal',
+                    lineHeight: 2
+                  },
+                }
+              },
+              x: {
+                grid: {
+                  drawBorder: false,
+                  display: false,
+                  drawOnChartArea: false,
+                  drawTicks: false,
+                  borderDash: [5, 5]
+                },
+                ticks: {
+                  display: true,
+                  color: '#b2b9bf',
+                  padding: 20,
+                  font: {
+                    size: 11,
+                    family: "Open Sans",
+                    style: 'normal',
+                    lineHeight: 2
+                  },
+                }
+              },
+            },
           },
-        },
-      });
+        });
+      }
+
+
+    let isGroupView = true; // default tampilan awal: group customer
+
+    function loadData() {
+      document.getElementById('section-title').innerText = isGroupView
+        ? 'Progression Order Group'
+        : 'Progression Order Customer Tanpa Group';
+
+      document.getElementById('th-name').innerText = isGroupView
+        ? 'Group Customer'
+        : 'Customer';
+
+      document.getElementById('th-member').innerText = isGroupView
+        ? 'Member'
+        : '';
+
+      const thMember = document.getElementById('th-member');
+      thMember.style.display = isGroupView ? '' : 'none';
+
+      const groupUrl = @json(route('dashboard.data.group'));
+      const customerUrl = @json(route('dashboard.data.customer'));
+
+      fetch(isGroupView ? groupUrl : customerUrl)
+        .then(response => response.json())
+        .then(data => {
+          const tbody = document.getElementById('table-body');
+          tbody.innerHTML = '';
+
+          data.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>
+                <div class="d-flex px-2 py-1">
+                  <div>
+                    <img src="${item.logo}" class="avatar avatar-sm me-3" alt="logo">
+                  </div>
+                  <div class="d-flex flex-column justify-content-center">
+                    <h6 class="mb-0 text-sm">${item.name}</h6>
+                  </div>
+                </div>
+              </td>
+              ${isGroupView ? `
+                <td>
+                  <div class="avatar-group mt-2">
+                    ${item.members.map(m => `
+                      <a href="/customer/${m.id}/detail" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" title="${m.name}">
+                        <img src="${m.photo}" alt="${m.name}">
+                      </a>`).join('')}
+                  </div>
+                </td>` : ''}
+              <td class="align-middle text-center text-sm"><span class="text-xs font-weight-bold"> - </span></td>
+              <td class="align-middle text-center">
+                <div class="progress-wrapper mx-auto" style="width: 60%;">
+                  <div class="progress-info mb-1">
+                    <span class="text-xs font-weight-bold">${item.orders} Order</span>
+                  </div>
+                  <div class="d-flex justify-content-center">
+                    <div class="progress w-100">
+                      <div class="progress-bar bg-gradient-info" style="width: ${item.ordersPercent}%;" role="progressbar"></div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            `;
+            tbody.appendChild(row);
+          });
+        });
     }
+
+    // Tombol switch antara view group dan customer
+    document.getElementById('toggleViewBtn').addEventListener('click', function () {
+      isGroupView = !isGroupView;
+      loadData();
+    });
+
+    // Jalankan saat pertama kali page dimuat
+    window.addEventListener('DOMContentLoaded', loadData);
 </script>
 @endpush

@@ -70,7 +70,7 @@ class DocumentController extends Controller
                 $unit = $item->goods->unit_in_order !== null ? $item->goods->unit_in_order : $item->goods->unit;
                 $ppn = $item->goods->ppn;
                 $qty = $item->quantity;
-                $specification = $item->specification ? $item->specification->name : '';
+                $specification = $item->specification ? $item->specification->name : '-';
                 $key = $name . '||' . $specification;
 
                 if (!$hasPpn && floatval($ppn) > 0) {

@@ -82,7 +82,7 @@ class InvoiceController extends Controller
                 $unit = $item->goods->unit_in_order !== null ? $item->goods->unit_in_order : $item->goods->unit;
                 $ppn = floatval($item->goods->ppn);
                 $qty = $item->quantity;
-                $specification = $item->specification ? $item->specification->name : '';
+                $specification = $item->specification ? $item->specification->name : '-';
                 $key = $name . '||' . $specification;
 
                 // Cek apakah data order item sudah ada di OrderConvert
