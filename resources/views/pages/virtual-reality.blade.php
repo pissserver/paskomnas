@@ -14,8 +14,8 @@
           <img class="border-radius-lg" alt="Image placeholder"
             src="{{ Auth::user()->photo ? asset(Auth::user()->photo) : asset('assets/img/default-profile.jpg') }}">
         </a>
-        <a href="{{ route('dashboard') }}" class="btn btn-white border-radius-lg p-2 mt-2" data-bs-toggle="tooltip"
-          data-bs-placement="left" title="Dashboard">
+        <a href="{{ route('dashboard.index') }}" class="btn btn-white border-radius-lg p-2 mt-2"
+          data-bs-toggle="tooltip" data-bs-placement="left" title="Dashboard">
           <i class="fas fa-home p-2"></i>
         </a>
         <a href="{{ route('user.index') }}" class="btn btn-white border-radius-lg p-2" data-bs-toggle="tooltip"

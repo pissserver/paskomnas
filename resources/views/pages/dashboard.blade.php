@@ -380,7 +380,7 @@
 </div>
 
 <div class="row my-4">
-  <div class="col-lg-8 col-md-6 mb-md-0 mb-4">
+  <div class="col-lg-12 col-md-12 mb-md-0 mb-4">
     <div class="card">
       <div class="card-header pb-0">
         <div class="row">
@@ -423,7 +423,7 @@
     </div>
   </div>
 
-  <div class="col-lg-4 col-md-6">
+  {{-- <div class="col-lg-4 col-md-6">
     <div class="card h-100">
       <div class="card-header pb-0">
         <h6>Orders overview</h6>
@@ -491,7 +491,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> --}}
 </div>
 
 @endsection
@@ -687,7 +687,7 @@
               <td>
                 <div class="d-flex px-2 py-1">
                   <div>
-                    <img src="${item.logo}" class="avatar avatar-sm me-3" alt="logo">
+                    <img src="${item.logo}" class="avatar avatar-md b me-3" alt="logo">
                   </div>
                   <div class="d-flex flex-column justify-content-center">
                     <h6 class="mb-0 text-sm">${item.name}</h6>
@@ -698,7 +698,7 @@
                 <td>
                   <div class="avatar-group mt-2">
                     ${item.members.map(m => `
-                      <a href="/customer/${m.id}/detail" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" title="${m.name}">
+                      <a href="/customer/${m.id}/detail" class="avatar avatar-sm rounded-circle" data-bs-toggle="tooltip" title="${m.name}">
                         <img src="${m.photo}" alt="${m.name}">
                       </a>`).join('')}
                   </div>

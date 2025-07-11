@@ -295,6 +295,7 @@
                     .title-group { font-size: 14px; }
                     table { width: 100%; border-collapse: collapse; }
                     table th, table td { border: 1px solid #000; padding: 6px; text-align: center; }
+                    table td.commodity { text-align: left; }
                     h4 { margin-bottom: 20px; text-align: center; font-size: 14px; }
                 </style>
             </head>
@@ -372,6 +373,9 @@
                         padding: 6px;
                         text-align: center;
                     }
+                    table td.commodity {
+                        text-align: left;
+                    }
                     h4 {
                         margin-bottom: 20px;
                         text-align: center;
@@ -444,7 +448,7 @@
         Object.entries(dataTable).forEach(([goodsKey, row]) => {
             html += `<tr>`;
             html += `<td class="text-center">${i++}</td>`;
-            html += `<td class="text-center">${goodsKey}</td>`;
+            html += `<td class="text-center commodity">${goodsKey}</td>`;
             html += `<td class="text-center">${row.unit}</td>`;
             html += `<td class="text-center">${row.total}</td>`;
 
@@ -498,7 +502,7 @@
             html += `
                 <tr>
                     <td class="text-center">${no++}</td>
-                    <td class="text-center">${key}</td>
+                    <td class="text-center commodity">${key}</td>
                     <td class="text-center">${items[key].unit}</td>
                     <td class="text-center">${items[key].quantity}</td>
                 </tr>
@@ -704,7 +708,7 @@
                         html += `
                             <tr>
                                 <td class="text-center">${index + 1}</td>
-                                <td class="text-center">${komoditi}</td>
+                                <td class="text-center commodity">${komoditi}</td>
                                 <td class="text-center">${row.unit}</td>
                                 <td class="text-center">${row.total}</td>`;
                         sortedCustomerEntries.forEach(([custId, _]) => {
@@ -738,7 +742,7 @@
                         html += `
                             <tr>
                                 <td class="text-center">${index + 1}</td>
-                                <td class="text-center">${name}</td>
+                                <td class="text-center commodity">${name}</td>
                                 <td class="text-center">${item.unit}</td>
                                 <td class="text-center">${item.quantity}</td>
                             </tr>`;
@@ -759,6 +763,7 @@
                             h5 { font-size: 14px; }
                             table { width: 100%; border-collapse: collapse; }
                             table th, table td { border: 1px solid #000; padding: 6px; text-align: center; }
+                            table td.commodity { text-align: left; }
                             h4 { margin-bottom: 20px; text-align: center; font-size: 14px; }
                         </style>
                     </head>
