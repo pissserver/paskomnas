@@ -160,21 +160,21 @@
                                     <div class="form-group">
                                         <label>Status Perusahaan</label>
                                         <div
-                                            class="@error('status') border border-danger rounded-3 p-2 @enderror d-flex mt-1">
+                                            class="@error('company_status') border border-danger rounded-3 p-2 @enderror d-flex mt-1">
                                             <div class="form-check me-4">
                                                 <input class="form-check-input" type="radio" name="company_status"
                                                     value="pusat" id="status-pusat"
-                                                    {{ old('company_status', $customer->company_status) == 'pusat' ? 'checked' : '' }}>
+                                                    {{ old('company_status', $customer->company_status) == '+-pusat' ? 'checked' : '' }}>
                                                 <label class="form-check-label" for="status-pusat">Pusat</label>
                                             </div>
                                             <div class="form-check me-4">
-                                                <input class="form-check-input" type="radio" name="status"
+                                                <input class="form-check-input" type="radio" name="company_status"
                                                     value="cabang" id="status-cabang"
                                                     {{ old('company_status', $customer->company_status) == 'cabang' ? 'checked' : '' }}>
                                                 <label class="form-check-label" for="status-cabang">Cabang</label>
                                             </div>
                                         </div>
-                                        @error('status')
+                                        @error('company_status')
                                         <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                         @enderror
                                     </div>

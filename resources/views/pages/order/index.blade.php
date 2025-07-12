@@ -28,8 +28,12 @@
         <div class="col-xl-12 col-sm-12 mb-xl-0 mb-4">
             <div class="card">
                 <div class="card-body p-3">
-                    <div class="row">
-                        <div class="col-8">
+                    <div class="row align-items-center justify-content-between">
+                        <!-- Ikon dan Info -->
+                        <div class="col-md-4 d-flex align-items-center mb-2 mb-md-0">
+                            <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md me-3">
+                                <i class="fa fa-shopping-cart text-lg opacity-10" aria-hidden="true"></i>
+                            </div>
                             <div class="numbers">
                                 <p class="text-sm mb-0 text-capitalize font-weight-bold">Daftar Customer</p>
                                 <h5 class="font-weight-bolder mb-0">
@@ -38,9 +42,33 @@
                                 </h5>
                             </div>
                         </div>
-                        <div class="col-4 text-end">
-                            <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
-                                <i class="fa fa-shopping-cart text-lg opacity-10" aria-hidden="true"></i>
+
+                        <!-- Search -->
+                        <div class="col-md-4 d-flex justify-content-center mb-2 mb-md-0">
+                            <div class="input-group input-group-sm" style="max-width: 250px;">
+                                <input type="text" class="form-control" id="searchCustomer"
+                                    placeholder="Cari customer..." name="search">
+                                <span class="input-group-text">
+                                    <i class="fa fa-search" aria-hidden="true"></i>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Filter -->
+                        <div class="col-md-4 text-end">
+                            <div class="dropdown">
+                                <a class="icon icon-shape bg-gradient-secondary shadow text-center border-radius-md"
+                                    href="#" role="button" id="filterDropdown" data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                    <i class="fas fa-filter text-lg opacity-10" aria-hidden="true"></i>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end position-absolute top-10"
+                                    aria-labelledby="filterDropdown">
+                                    <li><a class="dropdown-item" href="javascript:void(0)"
+                                            onclick="filterBy('id')">Filter by ID</a></li>
+                                    <li><a class="dropdown-item" href="javascript:void(0)"
+                                            onclick="filterBy('name')">Filter by Nama</a></li>
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -49,62 +77,73 @@
         </div>
     </div>
 
-    <div class="row mt-n2 p-4">
-        @foreach($customers as $customer)
-        <div class="col-md-3 mt-4">
-            <div class="card">
-                <div class="card-header mx-4 p-3 text-center">
-                    <img src="{{ $customer->photo ?? asset('assets/img/default-profile.jpg') }}"
-                        alt="{{ $customer->name }}" class="avatar shadow-lg img-fluid"
-                        style="width: 80px; height: 80px; object-fit: cover;">
-                </div>
-                @php
-                $orderCount = $customer->orders_count;
-
-                if ($orderCount >= 500) {
-                $level = 'Platinum';
-                $badgeClass = 'bg-gradient-dark';
-                } elseif ($orderCount >= 100) {
-                $level = 'Gold';
-                $badgeClass = 'bg-gradient-warning';
-                } elseif ($orderCount >= 20) {
-                $level = 'Silver';
-                $badgeClass = 'bg-gradient-secondary';
-                } else {
-                $level = 'Basic';
-                $badgeClass = 'bg-gradient-light text-dark';
-                }
-                @endphp
-                <div class="card-body pt-0 p-3 text-center">
-                    @if ($customer->customer_group_id != null)
-                    <p
-                        class="text-xs font-weight-bold mb-0 text-capitalize bg-gradient-warning text-white rounded rounded-pill px-2 py-1 m-0 d-inline-block">
-                        <i class="fa fa-users me-2"></i>{{ $customer->customerGroup->name }}
-                    </p>
-                    @endif
-                    <h6 class="text-center mb-0">{{ $customer->name }}</h6>
-                    <div class="d-flex justify-content-center mb-2">
-                        <span class="badge {{ $badgeClass }} px-3 mt-2 py-1 rounded-pill text-uppercase small">
-                            <i class="fa fa-award me-1"></i>
-                            {{ $level }}
-                        </span>
-                    </div>
-                    <span class="text-xs d-inline-block"
-                        style="line-height: 1.5;">{{ $customer->company_address }}</span>
-                    <hr class="horizontal dark mt-2 mb-3">
-                    <div class="d-flex justify-content-center gap-2">
-                        <a href="{{ route('order.create', $customer->id) }}" class="btn  btn-primary">
-                            <i class="fas fa-shopping-cart me-2"></i> Order
-                        </a>
-                        <a href="{{ route('customer.edit', $customer->id) }}" class="btn  btn-info">
-                            <i class="fas fa-info-circle me-2"></i> Detail
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        @endforeach
+    <div class="row mt-n2 p-4" id="customer-container">
+        @include('components.card.customer-order-card')
     </div>
 </div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const dropdowns = document.querySelectorAll('.dropdown-menu');
+        dropdowns.forEach(menu => {
+        const style = document.createElement('style');
+        style.innerHTML = `
+            .dropdown-menu::before {
+            display: none !important;
+            }
+        `;
+        document.head.appendChild(style);
+        });
+    });
+
+    let searchTimeout;
+
+    document.getElementById('searchCustomer').addEventListener('input', function () {
+        clearTimeout(searchTimeout);
+
+        const keyword = this.value;
+        const container = document.getElementById('customer-container');
+
+        searchTimeout = setTimeout(() => {
+        container.innerHTML = `
+            <div class="w-100 text-center my-5">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-2 text-sm text-secondary">Memuat data...</p>
+            </div>
+            `;
+
+        fetch(`{{ route('order.index') }}?search=${encodeURIComponent(keyword)}`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(res => res.text())
+        .then(html => {
+            container.innerHTML = html;
+        });
+        }, 300); // debounce 300ms
+    });
+
+    function filterBy(column) {
+        const container = document.getElementById('customer-container');
+        
+        // Tampilkan loading sebelum request AJAX
+        container.innerHTML = `
+            <div class="w-100 text-center my-5">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-2 text-sm text-secondary">Memuat data...</p>
+            </div>
+            `;
+
+        fetch(`{{ route('order.index') }}?sort_by=${column}`, {
+            headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(res => res.text())
+        .then(html => {
+            container.innerHTML = html;
+        });
+    }
+</script>
 
 @endsection

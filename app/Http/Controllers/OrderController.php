@@ -14,16 +14,28 @@ use App\Models\OrderItem;
 
 class OrderController extends Controller
 {
-    // Function order
-    public function index()
+    public function index(Request $request)
     {
+        $sortBy = $request->input('sort_by', 'id');
+        $search = $request->input('search');
+
         $customers = Customer::withCount('orders')
-            ->orderBy('name', 'asc')
+            ->when($search, function ($query, $search) {
+                $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('id', 'like', "%{$search}%");
+            })
+            ->orderBy($sortBy, 'asc')
             ->get();
+
         $totalCustomers = $customers->count();
+
+        if ($request->ajax()) {
+            return view('components.card.customer-order-card', compact('customers'))->render();
+        }
 
         return view('pages.order.index', compact('customers', 'totalCustomers'));
     }
+
 
     public function create($customerId)
     {
