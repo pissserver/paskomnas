@@ -674,6 +674,7 @@
 
       const groupUrl = @json(route('dashboard.data.group'));
       const customerUrl = @json(route('dashboard.data.customer'));
+      const customerEditBaseUrl = "{{ url('customer') }}/";
 
       fetch(isGroupView ? groupUrl : customerUrl)
         .then(response => response.json())
@@ -698,7 +699,7 @@
                 <td>
                   <div class="avatar-group mt-2">
                     ${item.members.map(m => `
-                      <a href="/customer/${m.id}/detail" class="avatar avatar-sm rounded-circle" data-bs-toggle="tooltip" title="${m.name}">
+                      <a href="${customerEditBaseUrl}${m.id}/detail" class="avatar avatar-sm rounded-circle" data-bs-toggle="tooltip" title="${m.name}">
                         <img src="${m.photo}" alt="${m.name}">
                       </a>`).join('')}
                   </div>

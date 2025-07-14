@@ -54,13 +54,13 @@
                                 <span class="ms-1">{{ __('Harga') }}</span>
                             </a>
                         </li>
-                        {{-- <li class="nav-item">
-                            <a class="nav-link mb-0 px-0 py-1 " id="order-tab" data-bs-toggle="tab" href="#order"
-                                role="tab" aria-controls="order" aria-selected="true">
-                                <i class="fas fa-shopping-cart me-1"></i>
-                                <span class="ms-1">{{ __('Data Order') }}</span>
-                        </a>
-                        </li> --}}
+                        <li class="nav-item">
+                            <a class="nav-link mb-0 px-0 py-1 " id="achievement-tab" data-bs-toggle="tab"
+                                href="#achievement" role="tab" aria-controls="achievement" aria-selected="true">
+                                <i class="fa fa-crown me-1"></i>
+                                <span class="ms-1">{{ __('Pencapaian') }}</span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -990,48 +990,53 @@
                 </div>
             </form>
         </div>
+
     </div>
 
     <div class="tab-pane" id="price" role="tabpanel" aria-labelledby="price-tab">
         <div class="container-fluid py-4">
-            <form action="{{ route('customer.update.price', $customer->id) }}" method="POST" role="form text-left"
+            <form action="{{ route('customer.update.price', $customer->id) }}" method="POST"
                 enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
-                <div class="card">
-                    <div class="card-header pb-0 p-4 d-flex justify-content-between">
-                        <h6 class="mb-0">{{ __('Update Harga Customer') }}</h6>
 
-                        <a href="{{ route('customer.index') }}"
-                            class="btn bg-gradient-danger btn-md mb-0">{{ 'Kembali' }}&nbsp;&nbsp;<i
-                                class="fa fa-arrow-right"></i></a>
+                <div class="card">
+                    <!-- Header -->
+                    <div class="card-header pb-0 p-4 d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">{{ __('Update Harga Customer') }}</h6>
+                        <a href="{{ route('customer.index') }}" class="btn bg-gradient-danger btn-md mb-0">
+                            {{ 'Kembali' }}&nbsp;&nbsp;<i class="fa fa-arrow-right"></i>
+                        </a>
                     </div>
+
+                    <!-- Body -->
                     <div class="card-body pt-4 p-4">
+                        {{-- Alert: Error --}}
                         @if($errors->any())
                         <div class="alert alert-primary alert-dismissible fade show" role="alert">
-                            <span class="alert-text text-white">
-                                {{$errors->first()}}</span>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
-                                <i class="fa fa-close" aria-hidden="true"></i>
-                            </button>
-                        </div>
-                        @endif
-                        @if(session('success'))
-                        <div class="alert alert-success alert-dismissible fade show" id="alert-success" role="alert">
-                            <span class="alert-text text-white">
-                                {{ session('success') }}</span>
+                            <span class="alert-text text-white">{{ $errors->first() }}</span>
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
                                 <i class="fa fa-close" aria-hidden="true"></i>
                             </button>
                         </div>
                         @endif
 
+                        {{-- Alert: Success --}}
+                        @if(session('success'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <span class="alert-text text-white">{{ session('success') }}</span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                                <i class="fa fa-close" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        @endif
+
+                        <!-- Periode Fields -->
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="periode-name"
-                                        class="form-control-label">{{ __('Nama Periode') }}</label>
-                                    <div class="@error('periode_name')border border-danger rounded-3 @enderror">
+                                    <label for="periode-name" class="form-control-label">Nama Periode</label>
+                                    <div class="@error('periode_name') border border-danger rounded-3 @enderror">
                                         <input class="form-control" type="text" id="periode-name" name="periode_name"
                                             placeholder="Nama Periode"
                                             value="{{ old('periode_name', optional($ownPeriode)->periode_name) }}">
@@ -1041,9 +1046,10 @@
                                     </div>
                                 </div>
                             </div>
+
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="start-date" class="form-control-label">{{ __('Tanggal Awal') }}</label>
+                                    <label for="start-date" class="form-control-label">Tanggal Awal</label>
                                     <div class="@error('start_date') border border-danger rounded-3 @enderror">
                                         <input class="form-control datepicker" type="text" id="start-date"
                                             name="start_date"
@@ -1055,79 +1061,198 @@
                                     </div>
                                 </div>
                             </div>
+
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="end-date" class="form-control-label">{{ __('Tanggal Akhir') }}</label>
-                                    <div class="@error('start_date') border border-danger rounded-3 @enderror">
+                                    <label for="end-date" class="form-control-label">Tanggal Akhir</label>
+                                    <div class="@error('end_date') border border-danger rounded-3 @enderror">
                                         <input class="form-control datepicker" type="text" id="end-date" name="end_date"
-                                            placeholder="Tanggal Akhir"
                                             value="{{ old('end_date', optional($ownPeriode)->end_date) }}"
-                                            autocomplete="off">
+                                            placeholder="Tanggal Akhir" autocomplete="off">
                                         @error('end_date')
                                         <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                         @enderror
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                            @foreach($goods as $index => $item)
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="@error('goods_id') border border-danger rounded-3 @enderror">
-                                        <label for="goods-name"
-                                            class="form-control-label">{{ __('Barang Komoditi') }}</label>
+                        <!-- Harga Barang -->
+                        @foreach($goods as $index => $item)
+                        <div class="row mt-3">
+                            <div class="col-md-4">
+                                <div class="@error('goods_id') border border-danger rounded-3 @enderror">
+                                    <label class="form-control-label">Barang Komoditi</label>
+                                    <input type="hidden" name="goods_id[]" value="{{ $item->id }}">
+                                    <input class="form-control" type="text" value="{{ $item->name }}" disabled>
+                                    @error('goods_id')
+                                    <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
 
-                                        {{-- Hidden input to send goods_id --}}
-                                        <input type="hidden" name="goods_id[]" value="{{ $item->id }}">
-
-                                        {{-- Visible but disabled input for display only --}}
-                                        <input class="form-control" type="text" id="goods-name"
-                                            value="{{ $item->name }}" disabled>
-
-                                        @error('goods_id')
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="form-control-label">Satuan</label>
+                                    <div class="@error('goods_unit') border border-danger rounded-3 @enderror">
+                                        <input class="form-control" type="text" name="goods_unit"
+                                            value="{{ $item->unit }}" disabled>
+                                        @error('goods_unit')
                                         <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="goods_unit" class="form-control-label">{{ __('Satuan') }}</label>
-                                        <div class="@error('goods_unit') border border-danger rounded-3 @enderror">
-                                            <input class="form-control" type="text" id="goods_unit" name="goods_unit"
-                                                value="{{ $item->unit }}" disabled>
-                                            @error('goods_unit')
-                                            <p class="text-danger text-xs mt-2">{{ $message }}</p>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="goods-price" class="form-control-label">{{ __('Harga') }}</label>
-                                        <div class="@error('price') border border-danger rounded-3 @enderror">
-                                            <input class="form-control" type="number" placeholder="0" id="goods-price"
-                                                name="price[]" value="{{ old('price.' . $index, $item->price) }}"
-                                                {{ !$ownPeriode && $groupPeriode ? 'style=background-color:#fff3cd;' : '' }}>
-                                            @error('price')
-                                            <p class="text-danger text-xs mt-2">{{ $message }}</p>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
-                            @endforeach
 
-                            <div class="d-flex justify-content-end">
-                                <button type="submit"
-                                    class="btn bg-gradient-dark btn-md mt-4 mb-4">{{ 'Update Harga' }}&nbsp;&nbsp;<i
-                                        class="fa fa-save"></i></button>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="form-control-label">Harga</label>
+                                    <div class="@error('price') border border-danger rounded-3 @enderror">
+                                        <input class="form-control" type="number" placeholder="0" name="price[]"
+                                            value="{{ old('price.' . $index, $item->price) }}" @if(!$ownPeriode &&
+                                            $groupPeriode) style="background-color:#fff3cd;" @endif>
+                                        @error('price')
+                                        <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                </div>
                             </div>
                         </div>
+                        @endforeach
+
+                        <!-- Submit -->
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn bg-gradient-dark btn-md mt-4 mb-4">
+                                Update Harga&nbsp;&nbsp;<i class="fa fa-save"></i>
+                            </button>
+                        </div>
                     </div>
+                </div>
             </form>
         </div>
     </div>
+
+    <div class="tab-pane" id="achievement" role="tabpanel" aria-labelledby="achievement-tab">
+        <div class="container-fluid py-4">
+            <div class="card">
+                <div class="card-header pb-0 p-4">
+                    @php
+                    $orderCount = $customer->orders_count;
+                    $levels = [
+                    ['label' => 'Basic', 'icon' => 'fa-user', 'threshold' => 0, 'bg' => 'bg-gradient-light text-dark',
+                    'line' => '#adb5bd'],
+                    ['label' => 'Silver', 'icon' => 'fa-star', 'threshold' => 20, 'bg' => 'bg-gradient-secondary
+                    text-white','line' => '#6c757d'],
+                    ['label' => 'Gold', 'icon' => 'fa-medal', 'threshold' => 100, 'bg' => 'bg-gradient-warning
+                    text-white', 'line' => '#fbcf33'],
+                    ['label' => 'Platinum', 'icon' => 'fa-crown', 'threshold' => 500, 'bg' => 'bg-gradient-dark
+                    text-white', 'line' => '#212529'],
+                    ];
+                    @endphp
+
+                    <div class="d-flex align-items-center justify-content-between px-2 py-3">
+                        @foreach ($levels as $index => $level)
+                        @php
+                        $reached = $orderCount >= $level['threshold'];
+                        $nextLevel = $levels[$index + 1] ?? null;
+                        $isCurrent = $reached && (!$nextLevel || $orderCount < $nextLevel['threshold']);
+                            $badgeClass=$isCurrent ? $level['bg'] . ' border border-white border-3 shadow' : ($reached ?
+                            $level['bg'] : 'bg-secondary text-white' ); $labelClass=$isCurrent ? 'text-success fw-bold'
+                            : ($reached ? 'text-dark' : 'text-muted' ); $lineColor=($nextLevel && $orderCount>=
+                            $nextLevel['threshold']) ? $nextLevel['line'] : '#dee2e6';
+                            $iconText = $level['label'] === 'Basic' ? 'text-dark' : '';
+                            @endphp
+
+                            <div class="text-center position-relative z-2" style="width: 70px;">
+                                <div class="icon icon-shape shadow mb-1 mx-auto {{ $badgeClass }}">
+                                    <i class="fas {{ $level['icon'] }} {{ $iconText }}"></i>
+                                </div>
+                                <small class="{{ $labelClass }}">{{ $level['label'] }}</small>
+                            </div>
+
+                            @if (!$loop->last)
+                            <div class="flex-grow-1 mx-1 d-flex align-items-center" style="height: 2px;">
+                                <div
+                                    style="height: 2px; width: 100%; border-radius: 1px; background-color: {{ $lineColor }}; margin-top: -12px;">
+                                </div>
+                            </div>
+                            @endif
+                            @endforeach
+                    </div>
+                </div>
+
+                <div class="card-body pt-4 p-4">
+                    <div class="text-center mb-4">
+                        <h5 class="mb-2">Total Order {{ $customer->name }}</h5>
+                        <div class="bg-gradient-primary d-flex align-items-center justify-content-center rounded-3 px-3 py-2 mx-auto"
+                            style="width: fit-content;">
+                            <i class="fa fa-shopping-cart text-white me-3 fs-4"></i>
+                            <h2 class="text-white fw-bold mb-0">{{ $orderCount }}</h2>
+                        </div>
+                        <p class="text-sm text-muted mt-2">Jumlah order menentukan level Anda saat ini.</p>
+                    </div>
+
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3">
+                        @php
+                        $orderCount = $customer->orders_count;
+                        $levels = [
+                        ['label' => 'Basic', 'icon' => 'fa-user', 'threshold' => 0, 'bg' => 'bg-gradient-light', 'text'
+                        => 'text-dark'],
+                        ['label' => 'Silver', 'icon' => 'fa-star', 'threshold' => 20, 'bg' => 'bg-gradient-secondary',
+                        'text' => 'text-white'],
+                        ['label' => 'Gold', 'icon' => 'fa-medal', 'threshold' => 100, 'bg' => 'bg-gradient-warning',
+                        'text' => 'text-white'],
+                        ['label' => 'Platinum', 'icon' => 'fa-crown', 'threshold' => 500, 'bg' => 'bg-gradient-dark',
+                        'text' => 'text-white'],
+                        ];
+                        @endphp
+
+                        @foreach ($levels as $index => $level)
+                        @php
+                        $reached = $orderCount >= $level['threshold'];
+                        $nextThreshold = $levels[$index + 1]['threshold'] ?? null;
+
+                        $badgeTextColor=match($level['label']) { 'Basic'=> 'text-dark',
+                        'Silver' => 'text-secondary',
+                        'Gold' => 'text-warning',
+                        'Platinum' => 'text-dark',
+                        default => 'text-dark',
+                        };
+                        @endphp
+
+                        <div class="col">
+                            <div
+                                class="card border-0 shadow-sm h-100 text-center {{ $level['bg'] }} {{ $level['text'] }}">
+                                <div class="card-body py-4">
+                                    <div class="icon icon-shape rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3 border border-white border-2"
+                                        style="width: 60px; height: 60px;">
+                                        <i class="fas {{ $level['icon'] }} {{ $level['text'] }} mt-n4"></i>
+                                    </div>
+
+                                    <h6 class="fw-bold mb-1 {{ $level['text'] }}">{{ $level['label'] }}</h6>
+                                    <p class="text-sm mb-2 {{ $level['text'] }}">Min. {{ $level['threshold'] }}
+                                        Order</p>
+
+                                    @if ($reached)
+                                    <span class="badge bg-success text-white">Tercapai</span>
+                                    @else
+                                    <span class="badge bg-white text-dark">Belum Tercapai</span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                <p class="text-muted text-center text-sm mt-4">
+                    Semakin banyak order, semakin tinggi level Anda. Raih Platinum dengan lebih dari 500 order!
+                </p>
+            </div>
+        </div>
+    </div>
 </div>
+
 
 @include('components.modal.crop-image-modal')
 
