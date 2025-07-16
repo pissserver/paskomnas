@@ -957,7 +957,7 @@
 
 
                         {{-- Logo Customer --}}
-                        <div class="form-group">
+                        <div class="form-group mt-5">
                             <label for="photo">{{ 'Logo Customer' }}</label>
                             <div class="@error('photo') border border-danger rounded-3 @enderror">
                                 <div class="d-flex align-items-center">

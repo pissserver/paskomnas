@@ -121,7 +121,7 @@ class HomeController extends Controller
                     ];
                 }),
             ];
-        });
+        })->sortByDesc('orders')->values();
 
         return response()->json($dataGroupProgression);
     }
@@ -143,13 +143,15 @@ class HomeController extends Controller
         })->max() ?: 1;
 
 
-        return response()->json($customers->map(function ($c) use ($maxOrder) {
-            return [
-                'name' => $c->name,
-                'logo' => $c->photo ? $c->photo : asset('assets/img/default-profile.jpg'),
-                'orders' => $c->orders->count(),
-                'ordersPercent' => round(($c->orders->count() / $maxOrder) * 100),
-            ];
-        }));
+        return response()->json(
+            $customers->map(function ($c) use ($maxOrder) {
+                return [
+                    'name' => $c->name,
+                    'logo' => $c->photo ? $c->photo : asset('assets/img/default-profile.jpg'),
+                    'orders' => $c->orders->count(),
+                    'ordersPercent' => round(($c->orders->count() / $maxOrder) * 100),
+                ];
+            })->sortByDesc('orders')->values()
+        );
     }
 }
