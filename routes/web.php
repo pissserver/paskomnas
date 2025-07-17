@@ -58,6 +58,8 @@ Route::group(['middleware' => 'guest'], function () {
 Route::middleware(['auth', 'roleAccess'])->group(function () {
     Route::get('/', [HomeController::class, 'home']);
 
+	Route::view('/chats', 'vendor.wirechat.livewire.chat.chat')->name('wirechat');
+
 	// Dashboard
 	Route::get('dashboard', [HomeController::class, 'index'])->name('dashboard.index');
 	Route::get('dashboard/data-group', [HomeController::class, 'dataGroup'])->name('dashboard.data.group');
