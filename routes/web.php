@@ -23,6 +23,8 @@ use App\Http\Controllers\PackingController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PrintLogController;
+// 
+use App\Http\Controllers\ChatController;
 
 
 /*
@@ -165,6 +167,11 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 	Route::get('virtual-reality', function () {
 		return view('pages.virtual-reality');
 	})->name('virtual-reality');
+
+	// Chat
+	Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+    Route::get('/chat/messages/{user}', [ChatController::class, 'fetchMessages']);
+    Route::post('/chat/messages', [ChatController::class, 'sendMessage']);
 
 	// Sessions
     Route::get('logout', [SessionsController::class, 'destroy'])->name('logout');

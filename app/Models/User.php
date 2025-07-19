@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Carbon\Carbon;
+use App\Models\Messsage;
 
 class User extends Authenticatable
 {
@@ -53,5 +54,26 @@ class User extends Authenticatable
     public function getIsOnlineAttribute()
     {
         return $this->last_active_at && Carbon::parse($this->last_active_at)->gt(now()->subMinutes(15));
+    }
+
+    public function sentMessages()
+    {
+        return $this->hasMany(Message::class, 'sender_id');
+    }
+
+    public function receivedMessages()
+    {
+        return $this->hasMany(Message::class, 'receiver_id');
+    }
+
+    public function lastMessageWith($currentUserId)
+    {
+        return Message::where(function ($q) use ($currentUserId) {
+            $q->where('sender_id', $this->id)
+            ->where('receiver_id', $currentUserId);
+        })->orWhere(function ($q) use ($currentUserId) {
+            $q->where('sender_id', $currentUserId)
+            ->where('receiver_id', $this->id);
+        })->latest('created_at')->first();
     }
 }
