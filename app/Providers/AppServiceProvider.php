@@ -29,6 +29,11 @@ class AppServiceProvider extends ServiceProvider
 
         View::composer('layouts.navbars.auth.nav', function ($view) {
             $view->with('users', User::whereNull('google_id')->get());
+
+            if (auth()->check()) {
+                $unreadTotal = User::totalUnreadCount(auth()->id());
+                $view->with('totalUnreadMessages', $unreadTotal);
+            }
         });
 
         View::composer('pages.virtual-reality', function ($view) {

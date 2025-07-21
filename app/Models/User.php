@@ -76,4 +76,19 @@ class User extends Authenticatable
             ->where('receiver_id', $this->id);
         })->latest('created_at')->first();
     }
+
+    public function unreadMessagesCount($currentUserId)
+    {
+        return Message::where('sender_id', $this->id)
+            ->where('receiver_id', $currentUserId)
+            ->where('is_read', false)
+            ->count();
+    }
+
+    public static function totalUnreadCount($userId)
+    {
+        return Message::where('receiver_id', $userId)
+            ->where('is_read', false)
+            ->count();
+    }
 }

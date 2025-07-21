@@ -169,9 +169,12 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 	})->name('virtual-reality');
 
 	// Chat
-	Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
-    Route::get('/chat/messages/{user}', [ChatController::class, 'fetchMessages']);
-    Route::post('/chat/messages', [ChatController::class, 'sendMessage']);
+	Route::get('chat', [ChatController::class, 'index'])->name('chat.index');
+    Route::get('chat/messages/{user}', [ChatController::class, 'fetchMessages']);
+    Route::post('chat/messages', [ChatController::class, 'sendMessage']);
+	Route::post('chat/upload', [ChatController::class, 'uploadFile'])->name('chat.upload');
+	Route::get('chat/users/list', [ChatController::class, 'refreshUserList'])->name('chat.users.list');
+	Route::get('chat/unread-count', [ChatController::class, 'getUnreadCount'])->name('chat.unread-count');
 
 	// Sessions
     Route::get('logout', [SessionsController::class, 'destroy'])->name('logout');

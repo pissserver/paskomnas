@@ -11,6 +11,8 @@ class Message extends Model
         'sender_id',
         'receiver_id',
         'message',
+        'is_file',
+        'file_name',
     ];
 
     public function sender()
