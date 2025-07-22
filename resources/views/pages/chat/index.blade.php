@@ -71,15 +71,10 @@
         cursor: text;
     }
 
-    #emoji-picker {
-        background-color: white;
-        border: 1px solid #ccc;
-        position: absolute;
-        bottom: 60px;
-        left: 90px;
-        display: none;
-        z-index: 9999;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    .copyable-message.only-emoji {
+        font-size: 3rem;
+        text-align: center;
+        line-height: 1;
     }
 
     #emoji-picker {
@@ -87,12 +82,26 @@
         line-height: 2;
         cursor: pointer;
         user-select: none;
+
+        transition: all 0.3s ease;
+        opacity: 0;
+        transform: translateY(10px);
+        pointer-events: none;
+        position: absolute;
+        z-index: 999;
+        background: white;
     }
 
     #emoji-picker span {
         font-size: 1.3rem;
         margin: 3px;
         display: inline-block;
+    }
+
+    #emoji-picker.show {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
     }
 </style>
 
@@ -140,17 +149,16 @@
             });
         });
 
-        // Emoji
+        // Emoji & Tampilkan/semmbunyikan picker dengan animasi
         $(document).on('click', '#emoji-btn', function () {
-            console.log("Emoji button clicked");
-            $('#emoji-picker').toggle();
+            $('#emoji-picker').toggleClass('show');
         });
 
+        // Ketika emoji diklik, langsung kirim
         $(document).on('click', '#emoji-picker span, #emoji-picker div', function () {
             const emoji = $(this).text();
             const receiverId = $('#receiver_id').val();
 
-            // Kirim via AJAX
             $.ajax({
                 url: "{{ route('chat.messages') }}",
                 method: 'POST',
@@ -163,9 +171,9 @@
                 },
                 success: function (res) {
                     console.log("Berhasil:", res);
-                    $('#message').val(''); // kosongkan input kalau mau
-                    $('#emoji-picker').hide(); // sembunyikan emoji picker
-                    loadMessages(); // reload chat
+                    $('#message').val('');
+                    $('#emoji-picker').removeClass('show'); // SEMBUNYIKAN dg animasi
+                    loadMessages();
                 },
                 error: function (xhr) {
                     console.log("Error:", xhr.responseText);
@@ -174,9 +182,10 @@
             });
         });
 
+        // Klik di luar => sembunyikan
         $(document).on('click', function (e) {
             if (!$(e.target).closest('#emoji-btn, #emoji-picker').length) {
-                $('#emoji-picker').hide();
+                $('#emoji-picker').removeClass('show');
             }
         });
     });
@@ -218,7 +227,7 @@
                     😊
                 </button>
                 <div id="emoji-picker" class="bg-white border rounded p-2"
-                    style="position: absolute; bottom: 80px; left: 60px; display: none; z-index: 9999;">
+                    style="position: absolute; bottom: 80px; left: 60px; z-index: 9999;">
                     <span>😀</span> <span>😁</span> <span>😂</span> <span>🤣</span> <span>😊</span>
                     <span>😎</span> <span>😍</span> <span>😢</span> <span>😡</span> <span>👍</span>
                     <span>🙌</span> <span>🙏</span> <span>❤️</span> <span>💔</span> <span>🎉</span> <span>💯</span>
@@ -310,8 +319,10 @@
                     minute: '2-digit'
                 });
 
+                const onlyEmoji = isOnlyEmoji(content) ? 'only-emoji' : '';
+
                 const bubble = `<div class="${align} mb-3">
-                    <span class="px-3 py-2 d-inline-block rounded-3 text-white copyable-message"
+                    <span class="px-3 py-2 d-inline-block rounded-3 text-white copyable-message  ${onlyEmoji}"
                     style="max-width: 75%; white-space: pre-wrap; word-break: break-word; background-color: ${bgColor};">${content}<br><span class="text-light small" style="font-size: 0.60rem;">${formattedTime}</span></span>
                 </div>`;
 
@@ -409,11 +420,16 @@
     });
 
     // Klik di luar → sembunyikan picker
-    $(document).on('click', function (e) {
-        if (!$(e.target).closest('#emoji-btn, #emoji-picker').length) {
-            $('#emoji-picker').hide();
+    function isOnlyEmoji(text) {
+        const stripped = text.replace(/\s/g, '');
+        // Regex emoji dasar + tambahan karakter skin tone, gender, dsb
+        const emojiRegex = /^(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)+$/u;
+        try {
+            return emojiRegex.test(stripped);
+        } catch (e) {
+            return false; // fallback jika browser tidak support \p{}
         }
-    });
+    }
 
     // Input message
     $(document).on('keydown', '#message', function (e) {
