@@ -89,7 +89,6 @@ class ChatController extends Controller
         return response()->json(['success' => true]);
     }
 
-
     public function refreshUserList()
     {
         $currentUserId = auth()->id();
@@ -116,4 +115,20 @@ class ChatController extends Controller
 
         return response()->json(['unread' => $unreadCount]);
     }
+
+    public function deleteMessages(User $user)
+    {
+        $currentUserId = auth()->id();
+
+        Message::where(function ($q) use ($currentUserId, $user) {
+            $q->where('sender_id', $currentUserId)
+            ->where('receiver_id', $user->id);
+        })->orWhere(function ($q) use ($currentUserId, $user) {
+            $q->where('sender_id', $user->id)
+            ->where('receiver_id', $currentUserId);
+        })->delete();
+
+        return response()->json(['success' => true]);
+    }
+
 }

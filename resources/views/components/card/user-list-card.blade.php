@@ -4,12 +4,21 @@ $lastMessage = $user->lastMessage;
 $isUnread = $lastMessage && $lastMessage->sender_id == $user->id && !$lastMessage->is_read;
 @endphp
 <li class="list-group-item user-item cursor-pointer mb-n4 pt-3" style="background-color: #1d1d1d;"
-    data-id="{{ $user->id }}" data-name="{{ $user->name }}"
+    data-id="{{ $user->id }}" data-name="{{ $user->name }}" data-status="{{ $user->is_online ? 'online' : 'offline' }}"
     data-photo="{{ asset($user->photo ? $user->photo : 'assets/img/default-profile.jpg') }}">
 
     <div class="d-flex align-items-center">
-        <img src="{{ asset($user->photo ? $user->photo : 'assets/img/default-profile.jpg') }}" class="avatar me-3"
-            width="40" height="40" style="object-fit: cover; border-radius: 50%;">
+        <div class="position-relative">
+            <img src="{{ asset($user->photo ? $user->photo : 'assets/img/default-profile.jpg') }}"
+                class="avatar me-3 border {{ $user->role == 'master' ? 'border-primary' : 'border-warning' }} border-2"
+                width="40" height="40" style="object-fit: cover; border-radius: 50%;">
+
+            @if ($user->is_online)
+            <span class="position-absolute p-1 bg-success border border-white rounded-circle"
+                style="width: 10px; height: 10px; top: 5px; right: 15px;"></span>
+            @endif
+        </div>
+
         <div class="flex-grow-1">
             <div class="d-flex justify-content-between align-items-center">
                 <span class="fw-bold text-white">{{ $user->name }}</span>

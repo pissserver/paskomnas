@@ -171,10 +171,11 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 	// Chat
 	Route::get('chat', [ChatController::class, 'index'])->name('chat.index');
     Route::get('chat/messages/{user}', [ChatController::class, 'fetchMessages']);
-    Route::post('chat/messages', [ChatController::class, 'sendMessage']);
+    Route::post('chat/messages', [ChatController::class, 'sendMessage'])->name('chat.messages');
 	Route::post('chat/upload', [ChatController::class, 'uploadFile'])->name('chat.upload');
 	Route::get('chat/users/list', [ChatController::class, 'refreshUserList'])->name('chat.users.list');
 	Route::get('chat/unread-count', [ChatController::class, 'getUnreadCount'])->name('chat.unread-count');
+	Route::delete('chat/delete/{user}', [ChatController::class, 'deleteMessages'])->name('chat.delete');
 
 	// Sessions
     Route::get('logout', [SessionsController::class, 'destroy'])->name('logout');
