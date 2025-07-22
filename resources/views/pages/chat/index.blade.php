@@ -5,7 +5,7 @@
 @section('content')
 <div class="container-fluid card py-3 mb-3" id="chat-container">
     <div class="row" style="height: 700px;">
-        <div class="col-4 border-end overflow-auto">
+        <div class="col-4 border-end overflow-auto h-100">
             <h5 class="text-white">Kontak</h5>
             <ul class="list-group mt-3" id="user-list">
                 @include('components.card.user-list-card', ['users' => $users, 'currentUserId' => $currentUserId])
@@ -65,6 +65,35 @@
     #message::-webkit-scrollbar {
         display: none;
     }
+
+    .copyable-message {
+        user-select: text;
+        cursor: text;
+    }
+
+    #emoji-picker {
+        background-color: white;
+        border: 1px solid #ccc;
+        position: absolute;
+        bottom: 60px;
+        left: 90px;
+        display: none;
+        z-index: 9999;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    #emoji-picker {
+        max-width: 250px;
+        line-height: 2;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    #emoji-picker span {
+        font-size: 1.3rem;
+        margin: 3px;
+        display: inline-block;
+    }
 </style>
 
 <script>
@@ -110,6 +139,46 @@
                 }
             });
         });
+
+        // Emoji
+        $(document).on('click', '#emoji-btn', function () {
+            console.log("Emoji button clicked");
+            $('#emoji-picker').toggle();
+        });
+
+        $(document).on('click', '#emoji-picker span, #emoji-picker div', function () {
+            const emoji = $(this).text();
+            const receiverId = $('#receiver_id').val();
+
+            // Kirim via AJAX
+            $.ajax({
+                url: "{{ route('chat.messages') }}",
+                method: 'POST',
+                data: {
+                    message: emoji,
+                    receiver_id: receiverId
+                },
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function (res) {
+                    console.log("Berhasil:", res);
+                    $('#message').val(''); // kosongkan input kalau mau
+                    $('#emoji-picker').hide(); // sembunyikan emoji picker
+                    loadMessages(); // reload chat
+                },
+                error: function (xhr) {
+                    console.log("Error:", xhr.responseText);
+                    alert('Gagal mengirim emoji.');
+                }
+            });
+        });
+
+        $(document).on('click', function (e) {
+            if (!$(e.target).closest('#emoji-btn, #emoji-picker').length) {
+                $('#emoji-picker').hide();
+            }
+        });
     });
 
     // Event: Klik kontak user
@@ -121,7 +190,9 @@
 
         if (refreshInterval) clearInterval(refreshInterval);
         refreshInterval = setInterval(function () {
-            if (selectedUserId) loadMessages();
+            if (selectedUserId && !isSelectingText) {
+                loadMessages();
+            }
         }, 1000);
 
         $('#receiver_id').val(selectedUserId);
@@ -131,16 +202,27 @@
                 <img src="${contactPhoto}" width="32" height="32" class="me-2 rounded-circle" style="object-fit: cover;">
                 ${contactName}
 
-                <i class="fa fa-trash ms-auto text-danger cursor-pointer" onclick="confirmDeleteChat(${selectedUserId}, this)" title="Hapus Chat"></i>
+                <i class="fa fa-trash ms-auto text-danger cursor-pointer" data-user-name="${contactName}" onclick="confirmDeleteChat(${selectedUserId}, this)" title="Hapus Chat"></i>
             </div>
 
             <div class="flex-grow-1 overflow-auto" id="chat-box" style="padding: 10px; min-height: 0;"></div>
 
-            <form id="chat-form" class="d-flex mt-1 align-items-center p-2">
+            <form id="chat-form" class="d-flex mt-1 align-items-center p-2"
+                style="position: relative; z-index: 100;">
                 <button type="button" id="upload-btn" class="btn btn-dark p-3 mt-3 me-2" style="border-radius: 20%;" title="Upload file">
                     <i class="fa fa-paperclip text-white"></i>
                 </button>
                 <input type="file" id="file-input" class="d-none">
+
+                <button type="button" id="emoji-btn" class="btn btn-dark p-3 mt-3 me-2" style="border-radius: 20%;" title="Emoji">
+                    😊
+                </button>
+                <div id="emoji-picker" class="bg-white border rounded p-2"
+                    style="position: absolute; bottom: 80px; left: 60px; display: none; z-index: 9999;">
+                    <span>😀</span> <span>😁</span> <span>😂</span> <span>🤣</span> <span>😊</span>
+                    <span>😎</span> <span>😍</span> <span>😢</span> <span>😡</span> <span>👍</span>
+                    <span>🙌</span> <span>🙏</span> <span>❤️</span> <span>💔</span> <span>🎉</span> <span>💯</span>
+                </div>
 
                 <input type="hidden" id="receiver_id" value="${selectedUserId}">
                 <textarea id="message" class="form-control me-2 text-white"
@@ -229,7 +311,7 @@
                 });
 
                 const bubble = `<div class="${align} mb-3">
-                    <span class="px-3 py-2 d-inline-block rounded-3 text-white"
+                    <span class="px-3 py-2 d-inline-block rounded-3 text-white copyable-message"
                     style="max-width: 75%; white-space: pre-wrap; word-break: break-word; background-color: ${bgColor};">${content}<br><span class="text-light small" style="font-size: 0.60rem;">${formattedTime}</span></span>
                 </div>`;
 
@@ -318,6 +400,20 @@
             }
         });
     }
+
+    // Copy text
+    let isSelectingText = false;
+    document.addEventListener('selectionchange', () => {
+        const selection = window.getSelection();
+        isSelectingText = selection && selection.toString().length > 0;
+    });
+
+    // Klik di luar → sembunyikan picker
+    $(document).on('click', function (e) {
+        if (!$(e.target).closest('#emoji-btn, #emoji-picker').length) {
+            $('#emoji-picker').hide();
+        }
+    });
 
     // Input message
     $(document).on('keydown', '#message', function (e) {
