@@ -57,7 +57,6 @@ class ChatController extends Controller
         return response()->json($messages);
     }
 
-
     public function sendMessage(Request $request)
     {
         $message = Message::create([

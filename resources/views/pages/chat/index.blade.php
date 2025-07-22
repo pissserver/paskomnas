@@ -61,6 +61,10 @@
     #chat-box::-webkit-scrollbar {
         display: none;
     }
+
+    #message::-webkit-scrollbar {
+        display: none;
+    }
 </style>
 
 <script>
@@ -126,6 +130,8 @@
                 style="position: sticky; top: 0; z-index: 10; background-color: #1d1d1d;">
                 <img src="${contactPhoto}" width="32" height="32" class="me-2 rounded-circle" style="object-fit: cover;">
                 ${contactName}
+
+                <i class="fa fa-trash ms-auto text-danger cursor-pointer" onclick="confirmDeleteChat(${selectedUserId}, this)" title="Hapus Chat"></i>
             </div>
 
             <div class="flex-grow-1 overflow-auto" id="chat-box" style="padding: 10px; min-height: 0;"></div>
@@ -135,10 +141,13 @@
                     <i class="fa fa-paperclip text-white"></i>
                 </button>
                 <input type="file" id="file-input" class="d-none">
+
                 <input type="hidden" id="receiver_id" value="${selectedUserId}">
-                <input type="text" id="message" class="form-control me-2 text-white" style="background-color: #1d1d1d;" placeholder="Tulis pesan..."
-                    style="border-radius: 1rem;">
-                <button type="submit" class="btn btn-primary mt-3" style="border-radius: 1rem;">
+                <textarea id="message" class="form-control me-2 text-white"
+                    style="background-color: #1d1d1d; border-radius: 1rem; resize: none; overflow: hidden;"
+                    placeholder="Tulis pesan..."></textarea>
+
+                <button id="send-button" type="submit" class="btn btn-primary mt-3" style="border-radius: 1rem;">
                     <i class="fas fa-paper-plane"></i>
                 </button>
             </form>
@@ -182,6 +191,18 @@
 
             chatBox.html(''); // Bersihkan dulu
 
+            if (data.length === 0) {
+                // Tampilkan placeholder jika belum ada chat
+                chatBox.html(`
+                    <div class="text-center text-muted mt-5">
+                        <img src="{{ asset('assets/img/select-contact.png') }}" width="300" class="mb-3">
+                        <h5 class="text-white">Belum ada chat</h5>
+                        <p class=""text-white>Kirim pesan untuk memulai percakapan</p>
+                    </div>
+                `);
+                return;
+            }
+
             data.forEach(function (msg) {
                 const align = msg.sender_id === currentUserId ? 'text-end' : 'text-start';
                 const bgColor = msg.sender_id === currentUserId ? '#14532d' : '#1d1d1d';
@@ -207,7 +228,7 @@
                     minute: '2-digit'
                 });
 
-                const bubble = `<div class="${align} mb-2">
+                const bubble = `<div class="${align} mb-3">
                     <span class="px-3 py-2 d-inline-block rounded-3 text-white"
                     style="max-width: 75%; white-space: pre-wrap; word-break: break-word; background-color: ${bgColor};">${content}<br><span class="text-light small" style="font-size: 0.60rem;">${formattedTime}</span></span>
                 </div>`;
@@ -259,6 +280,62 @@
             $('#user-list').html(html);
         });
     }, 1000);
+
+    // Delete chat
+    const deleteChatUrlTemplate = `{{ route('chat.delete', ['user' => '__USER_ID__']) }}`;
+    function confirmDeleteChat(selectedUserId, el) {
+        const deleteUrl = deleteChatUrlTemplate.replace('__USER_ID__', selectedUserId);
+        const selectedUserName = $(el).data('user-name');
+
+        Swal.fire({
+            title: 'Hapus semua pesan?',
+            html: `Semua pesan dengan <strong>${selectedUserName}</strong> akan dihapus secara permanen.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: deleteUrl,
+                    type: 'DELETE',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        Swal.fire('Berhasil', 'Semua pesan telah dihapus.', 'success');
+                        $('#chat-box').html('');
+                        $('#chat-placeholder').show();
+                        $('#contact-name').remove(); // Optional: sembunyikan header
+                    },
+                    error: function(xhr) {
+                        console.error(xhr.responseText);
+                        Swal.fire('Gagal', 'Terjadi kesalahan saat menghapus pesan.', 'error');
+                    }
+                });
+            }
+        });
+    }
+
+    // Input message
+    $(document).on('keydown', '#message', function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            $('#send-button').click();
+
+            $(this).val('');
+            this.style.height = 'auto';
+        }
+    });
+
+    $(document).on('input', '#message', function () {
+        this.style.height = 'auto';
+        const maxHeight = 100;
+        this.style.overflowY = this.scrollHeight > maxHeight ? 'scroll' : 'hidden';
+        this.style.height = Math.min(this.scrollHeight, maxHeight) + 'px';
+    });
 </script>
 
 @endsection
