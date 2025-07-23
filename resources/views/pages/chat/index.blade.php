@@ -195,6 +195,7 @@
         selectedUserId = $(this).data('id');
         const contactName = $(this).data('name');
         const contactPhoto = $(this).data('photo');
+        const contactStatus = $(this).data('status');
         isFirstLoad = true;
 
         if (refreshInterval) clearInterval(refreshInterval);
@@ -208,8 +209,17 @@
         $('#chat-area').html(`
             <div id="contact-name" class="py-2 px-3 text-white fw-bold rounded-3 d-flex align-items-center border"
                 style="position: sticky; top: 0; z-index: 10; background-color: #1d1d1d;">
-                <img src="${contactPhoto}" width="32" height="32" class="me-2 rounded-circle" style="object-fit: cover;">
-                ${contactName}
+                <img src="${contactPhoto}" width="32" height="32" class="me-3 rounded-circle" style="object-fit: cover;">
+
+                <div>
+                    <div>${contactName}</div>
+                    ${contactStatus === 'online' ? `
+                        <div class="d-flex align-items-center">
+                            <span class="bg-success rounded-circle me-1 border border-white"
+                                style="width: 10px; height: 10px; display: inline-block;"></span>
+                            <small class="text-white">Online</small>
+                        </div>` : ''}
+                </div>
 
                 <i class="fa fa-trash ms-auto text-danger cursor-pointer" data-user-name="${contactName}" onclick="confirmDeleteChat(${selectedUserId}, this)" title="Hapus Chat"></i>
             </div>
@@ -235,11 +245,13 @@
 
                 <input type="hidden" id="receiver_id" value="${selectedUserId}">
                 <textarea id="message" class="form-control me-2 text-white"
-                    style="background-color: #1d1d1d; border-radius: 1rem; resize: none; overflow: hidden;"
+                    rows="1"
+                    style="background-color: #1d1d1d; border-radius: 1rem; resize: none; overflow-y: hidden; 
+                        min-height: 48px; max-height: 120px; padding: 10px 12px; line-height: 1.4;"
                     placeholder="Tulis pesan..."></textarea>
 
-                <button id="send-button" type="submit" class="btn btn-primary mt-3" style="border-radius: 1rem;">
-                    <i class="fas fa-paper-plane"></i>
+                <button id="send-button" type="submit" class="btn btn-primary p-3 mt-3" style="border-radius: 100%">
+                    <i class="fas fa-paper-plane fa-lg"></i>
                 </button>
             </form>
         `);
@@ -297,6 +309,7 @@
             data.forEach(function (msg) {
                 const align = msg.sender_id === currentUserId ? 'text-end' : 'text-start';
                 const bgColor = msg.sender_id === currentUserId ? '#14532d' : '#1d1d1d';
+                const trashIcon = msg.sender_id === currentUserId ? '' : 'display: none';
 
                 let content = '';
                 if (msg.is_file) {
@@ -323,7 +336,13 @@
 
                 const bubble = `<div class="${align} mb-3">
                     <span class="px-3 py-2 d-inline-block rounded-3 text-white copyable-message  ${onlyEmoji}"
-                    style="max-width: 75%; white-space: pre-wrap; word-break: break-word; background-color: ${bgColor};">${content}<br><span class="text-light small" style="font-size: 0.60rem;">${formattedTime}</span></span>
+                    style="max-width: 75%; white-space: pre-wrap; word-break: break-word; background-color: ${bgColor};">${content}<br><span class="text-light small d-flex justify-content-between align-items-center mt-1"
+                        style="font-size: 0.60rem;">
+                        <i class="fas fa-trash-alt text-white me-3 delete-message-icon"
+                        style="font-size: 0.7rem; cursor: pointer; ${trashIcon}"
+                        title="Hapus pesan" data-id="${msg.id}"></i>
+                        <span>${formattedTime}</span>
+                    </span></span>
                 </div>`;
 
                 chatBox.append(bubble);
@@ -436,17 +455,43 @@
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             $('#send-button').click();
-
             $(this).val('');
-            this.style.height = 'auto';
+            this.style.height = '48px'; // reset tinggi
         }
     });
 
     $(document).on('input', '#message', function () {
-        this.style.height = 'auto';
-        const maxHeight = 100;
-        this.style.overflowY = this.scrollHeight > maxHeight ? 'scroll' : 'hidden';
-        this.style.height = Math.min(this.scrollHeight, maxHeight) + 'px';
+        this.style.height = 'auto'; // reset dulu
+        const minHeight = 48;
+        const maxHeight = 120;
+        const scrollH = this.scrollHeight;
+
+        this.style.overflowY = scrollH > maxHeight ? 'scroll' : 'hidden';
+        this.style.height = Math.min(Math.max(scrollH, minHeight), maxHeight) + 'px';
+    });
+
+    // Delete sender messeges
+    $(document).on('click', '.delete-message-icon', function () {
+        const messageId = $(this).data('id');
+
+        // Hapus dari DOM
+        $('#message-' + messageId).remove();
+
+        // (Opsional) Panggil AJAX untuk hapus di database
+        $.ajax({
+            url: "{{ route('chat.delete.sender') }}",
+            method: 'POST',
+            data: {
+                id: messageId,
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function (response) {
+                console.log('Pesan berhasil dihapus');
+            },
+            error: function () {
+                alert('Gagal menghapus pesan');
+            }
+        });
     });
 </script>
 

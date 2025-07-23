@@ -130,4 +130,13 @@ class ChatController extends Controller
         return response()->json(['success' => true]);
     }
 
+    public function deleteSenderMessages(Request $request)
+    {
+        $message = Message::find($request->id);
+        if ($message && $message->sender_id === auth()->id()) {
+            $message->delete();
+            return response()->json(['success' => true]);
+        }
+        return response()->json(['success' => false], 403);
+    }
 }

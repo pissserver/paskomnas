@@ -176,6 +176,7 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 	Route::get('chat/users/list', [ChatController::class, 'refreshUserList'])->name('chat.users.list');
 	Route::get('chat/unread-count', [ChatController::class, 'getUnreadCount'])->name('chat.unread-count');
 	Route::delete('chat/delete/{user}', [ChatController::class, 'deleteMessages'])->name('chat.delete');
+	Route::post('chat/delete-message', [ChatController::class, 'deleteSenderMessages'])->name('chat.delete.sender');
 
 	// Sessions
     Route::get('logout', [SessionsController::class, 'destroy'])->name('logout');
