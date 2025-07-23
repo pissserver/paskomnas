@@ -74,11 +74,11 @@
     .copyable-message.only-emoji {
         font-size: 3rem;
         text-align: center;
-        line-height: 1;
+        line-height: 1.5;
     }
 
     #emoji-picker {
-        max-width: 250px;
+        max-width: 450px;
         line-height: 2;
         cursor: pointer;
         user-select: none;
@@ -236,11 +236,25 @@
                 <button type="button" id="emoji-btn" class="btn btn-dark p-3 mt-3 me-2" style="border-radius: 20%;" title="Emoji">
                     😊
                 </button>
-                <div id="emoji-picker" class="bg-white border rounded p-2"
+                <div id="emoji-picker" class="bg-white border rounded-3 p-2"
                     style="position: absolute; bottom: 80px; left: 60px; z-index: 9999;">
-                    <span>😀</span> <span>😁</span> <span>😂</span> <span>🤣</span> <span>😊</span>
-                    <span>😎</span> <span>😍</span> <span>😢</span> <span>😡</span> <span>👍</span>
-                    <span>🙌</span> <span>🙏</span> <span>❤️</span> <span>💔</span> <span>🎉</span> <span>💯</span>
+                    <span>😀</span> <span>😁</span> <span>😂</span> <span>🤣</span> <span>😃</span>
+                    <span>😄</span> <span>😅</span> <span>😆</span> <span>😉</span> <span>😊</span>
+                    <span>😋</span> <span>😎</span> <span>😍</span> <span>😘</span> <span>😗</span>
+                    <span>😙</span> <span>😚</span> <span>🙂</span> <span>🤗</span> <span>🤩</span>
+                    <span>🤔</span> <span>😐</span> <span>😑</span> <span>😶</span> <span>🙄</span>
+                    <span>😏</span> <span>😣</span> <span>😥</span> <span>😮</span> <span>🤐</span>
+                    <span>😯</span> <span>😪</span> <span>😫</span> <span>😴</span> <span>😌</span>
+                    <span>😛</span> <span>😜</span> <span>😝</span> <span>🤤</span> <span>😒</span>
+                    <span>😓</span> <span>😔</span> <span>😕</span> <span>🙃</span> <span>🤑</span>
+                    <span>😲</span> <span>☹️</span> <span>🙁</span> <span>😖</span> <span>😞</span>
+                    <span>😟</span> <span>😤</span> <span>😢</span> <span>😭</span> <span>😦</span>
+                    <span>😧</span> <span>😨</span> <span>😩</span> <span>🤯</span> <span>😬</span>
+                    <span>😰</span> <span>😱</span> <span>🥵</span> <span>🥶</span> <span>😳</span>
+                    <span>🤪</span> <span>😵</span> <span>😠</span> <span>😡</span> <span>🤬</span>
+                    <span>👍</span> <span>👎</span> <span>👏</span> <span>🙌</span> <span>🙏</span>
+                    <span>💪</span> <span>❤️</span> <span>💔</span> <span>🔥</span> <span>🎉</span>
+                    <span>💯</span> <span>✅</span> <span>❌</span>
                 </div>
 
                 <input type="hidden" id="receiver_id" value="${selectedUserId}">
@@ -313,7 +327,7 @@
 
                 let content = '';
                 if (msg.is_file) {
-                    const isImage = /\.(jpg|jpeg|png|gif|bmp)$/i.test(msg.file_name);
+                    const isImage = /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(msg.file_name);
                     if (isImage) {
                         content = `<img src="${msg.file_url}" class="img-fluid rounded" style="max-width: 200px;">`;
                     } else {
@@ -335,7 +349,7 @@
                 const onlyEmoji = isOnlyEmoji(content) ? 'only-emoji' : '';
 
                 const bubble = `<div class="${align} mb-3">
-                    <span class="px-3 py-2 d-inline-block rounded-3 text-white copyable-message  ${onlyEmoji}"
+                    <span class="px-3 py-2 d-inline-block rounded-3 text-white copyable-message ${onlyEmoji}"
                     style="max-width: 75%; white-space: pre-wrap; word-break: break-word; background-color: ${bgColor};">${content}<br><span class="text-light small d-flex justify-content-between align-items-center mt-1"
                         style="font-size: 0.60rem;">
                         <i class="fas fa-trash-alt text-white me-3 delete-message-icon"
@@ -364,7 +378,6 @@
             }
         }).fail(function (xhr) {
             console.error(xhr.responseText);
-            alert("Gagal memuat pesan.");
         });
     }
 
