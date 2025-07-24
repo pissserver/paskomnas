@@ -501,8 +501,9 @@
             success: function (response) {
                 console.log('Pesan berhasil dihapus');
             },
-            error: function () {
+            error: function (xhr) {
                 alert('Gagal menghapus pesan');
+                console.error('Error:', xhr.responseText);
             }
         });
     });

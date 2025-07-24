@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Message;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ChatController extends Controller
 {
@@ -75,18 +76,26 @@ class ChatController extends Controller
             'receiver_id' => 'required|exists:users,id',
         ]);
 
-        $path = $request->file('file')->store('chat_files', 'public');
+        $file = $request->file('file');
+        $filename = time() . '_' . $file->getClientOriginalName();
+
+        // Simpan file ke storage/app/public/chat_files/
+        $file->storeAs('public/chat_files', $filename);
+
+        // Simpan path relatif (tanpa 'public/') agar cocok dengan disk('public')
+        $relativePath = 'chat_files/' . $filename;
 
         Message::create([
-            'sender_id' => auth()->id(),
+            'sender_id'   => auth()->id(),
             'receiver_id' => $request->receiver_id,
-            'message' => $path, // kita simpan path sebagai "message"
-            'file_name' => $request->file('file')->getClientOriginalName(),
-            'is_file' => true,
+            'message'     => $relativePath, // hanya 'chat_files/xxx.jpg'
+            'file_name'   => $file->getClientOriginalName(),
+            'is_file'     => true,
         ]);
 
         return response()->json(['success' => true]);
     }
+
 
     public function refreshUserList()
     {
@@ -119,13 +128,24 @@ class ChatController extends Controller
     {
         $currentUserId = auth()->id();
 
-        Message::where(function ($q) use ($currentUserId, $user) {
+        // Ambil semua pesan terlebih dahulu
+        $messages = Message::where(function ($q) use ($currentUserId, $user) {
             $q->where('sender_id', $currentUserId)
             ->where('receiver_id', $user->id);
         })->orWhere(function ($q) use ($currentUserId, $user) {
             $q->where('sender_id', $user->id)
             ->where('receiver_id', $currentUserId);
-        })->delete();
+        })->get(); // ✅ Ambil data dulu
+
+        // Hapus file jika is_file = true
+        foreach ($messages as $message) {
+            if ($message->is_file && $message->message) {
+                Storage::disk('public')->delete($message->message);
+            }
+        }
+
+        // Lalu hapus semua pesan dari DB
+        Message::whereIn('id', $messages->pluck('id'))->delete();
 
         return response()->json(['success' => true]);
     }
@@ -133,10 +153,19 @@ class ChatController extends Controller
     public function deleteSenderMessages(Request $request)
     {
         $message = Message::find($request->id);
+
         if ($message && $message->sender_id === auth()->id()) {
+            // Hapus file jika is_file = true
+            if ($message->is_file && $message->message) {
+                Storage::disk('public')->delete($message->message);
+            }
+
             $message->delete();
+
             return response()->json(['success' => true]);
         }
+
         return response()->json(['success' => false], 403);
     }
+
 }
