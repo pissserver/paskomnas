@@ -1,4 +1,4 @@
-@foreach ($users as $user)
+@forelse ($users as $user)
 @php
 $lastMessage = $user->lastMessage;
 $isUnread = $lastMessage && $lastMessage->sender_id == $user->id && !$lastMessage->is_read;
@@ -55,4 +55,9 @@ $isUnread = $lastMessage && $lastMessage->sender_id == $user->id && !$lastMessag
     </div>
     <hr>
 </li>
-@endforeach
+@empty
+<div class="empty-data text-center mt-5" id="chat-placeholder">
+    <img src="{{ asset('assets/img/empty-contact.png') }}" width="250" class="mt-5">
+    <h4 class="text-white">Kontak tidak ditemukan</h4>
+</div>
+@endforelse

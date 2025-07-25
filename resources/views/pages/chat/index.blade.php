@@ -6,7 +6,19 @@
 <div class="container-fluid card py-3 mb-3" id="chat-container">
     <div class="row" style="height: 700px;">
         <div class="col-4 border-end overflow-auto h-100">
-            <h5 class="text-white">Kontak</h5>
+            <div class="d-flex justify-content-between align-items-center mb-2 pt-2">
+                <h5 class="text-white mb-0">Chat</h5>
+                <div class="d-flex align-items-center">
+                    <input type="text" class="form-control form-control-sm me-1 text-white"
+                        style="background-color: #1d1d1d;" id="searchUser" placeholder="Cari kontak..." name="search"
+                        style="max-width: 200px;">
+                    <span class="input-group-text" onclick="togglePassword('password_confirmation', this)"
+                        style="cursor:pointer; background-color: #1d1d1d;">
+                        <i class="fa fa-search text-white" aria-hidden="true"></i>
+                    </span>
+                </div>
+            </div>
+
             <ul class="list-group mt-3" id="user-list">
                 @include('components.card.user-list-card', ['users' => $users, 'currentUserId' => $currentUserId])
             </ul>
@@ -109,8 +121,29 @@
     let selectedUserId = null;
     let currentUserId = {{ auth()->id() }};
     let refreshInterval = null;
+    let isSearching = false;
 
     $(document).ready(function () {
+        // Search user contact
+        $('#searchUser').on('keyup', function () {
+            let keyword = $(this).val();
+            isSearching = keyword.length > 0;
+
+            $.ajax({
+                url: "{{ route('chat.users.list') }}",
+                type: "GET",
+                data: {
+                    search: keyword
+                },
+                success: function (res) {
+                    $('#user-list').html(res);
+                },
+                error: function () {
+                    console.error('Gagal memuat user.');
+                }
+            });
+        });
+        
         // Event delegation: tombol upload
         $(document).on('click', '#upload-btn', function () {
             console.log("Upload diklik");
@@ -401,9 +434,11 @@
     });
 
     setInterval(function () {
-        $.get('{{ route("chat.users.list") }}', function (html) {
-            $('#user-list').html(html);
-        });
+        if (!isSearching) {
+            $.get('{{ route("chat.users.list") }}', function (html) {
+                $('#user-list').html(html);
+            });
+        }
     }, 1000);
 
     // Delete chat
@@ -433,7 +468,6 @@
                         Swal.fire('Berhasil', 'Semua pesan telah dihapus.', 'success');
                         $('#chat-box').html('');
                         $('#chat-placeholder').show();
-                        $('#contact-name').remove(); // Optional: sembunyikan header
                     },
                     error: function(xhr) {
                         console.error(xhr.responseText);

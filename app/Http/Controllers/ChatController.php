@@ -97,10 +97,15 @@ class ChatController extends Controller
     }
 
 
-    public function refreshUserList()
+    public function refreshUserList(Request $request)
     {
         $currentUserId = auth()->id();
+        $keyword = $request->input('search');
+
         $users = User::where('id', '!=', $currentUserId)
+            ->when($keyword, function ($query, $keyword) {
+                return $query->where('name', 'like', '%' . $keyword . '%');
+            })
             ->orderBy('name')
             ->get();
 
@@ -112,6 +117,7 @@ class ChatController extends Controller
 
         return view('components.card.user-list-card', compact('users', 'currentUserId'));
     }
+
 
     public function getUnreadCount()
     {
