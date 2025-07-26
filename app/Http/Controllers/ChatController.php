@@ -7,6 +7,7 @@ use App\Models\Message;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ChatController extends Controller
 {
@@ -123,7 +124,7 @@ class ChatController extends Controller
     {
         $userId = auth()->id();
 
-        $unreadCount = \App\Models\Message::where('receiver_id', $userId)
+        $unreadCount = Message::where('receiver_id', $userId)
             ->where('is_read', false)
             ->count();
 
@@ -172,6 +173,46 @@ class ChatController extends Controller
         }
 
         return response()->json(['success' => false], 403);
+    }
+
+    public function getUnreadMessages()
+    {
+        $userId = auth()->id();
+
+        $messages = Message::with('sender')
+            ->where('receiver_id', $userId)
+            ->where('is_read', false)
+            ->latest()
+            ->take(5)
+            ->get();
+
+        $data = $messages->map(function ($msg) {
+            $messageContent = '';
+
+            if ($msg->is_file) {
+                $ext = strtolower(pathinfo($msg->file_name, PATHINFO_EXTENSION));
+                $isImage = in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp']);
+
+                if ($isImage) {
+                    $messageContent = '<i class="fas fa-camera me-1"></i> Foto';
+                } else {
+                    $messageContent = '<i class="fas fa-paperclip me-1"></i> File';
+                }
+            } else {
+                $messageContent = e(Str::limit($msg->message, 50));
+            }
+
+            return [
+                'id' => $msg->id,
+                'name' => $msg->sender->name,
+                'avatar' => $msg->sender->photo ? $msg->sender->photo : asset('assets/img/avatar.png'),
+                'message' => $messageContent,
+                'time' => $msg->created_at->diffForHumans(),
+                'url' => route('chat.fetch', ['user' => $msg->sender_id]),
+            ];
+        });
+
+        return response()->json(['messages' => $data]);
     }
 
 }
