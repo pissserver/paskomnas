@@ -138,7 +138,7 @@
 						}
 					});
 				});
-		}, 5000); // Cek setiap 5 detik
+		}, 1000); // Cek setiap 1 detik
 	</script>
 
 

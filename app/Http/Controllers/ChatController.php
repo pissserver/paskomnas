@@ -210,7 +210,7 @@ class ChatController extends Controller
             return [
                 'id' => $msg->id,
                 'name' => $msg->sender->name,
-                'avatar' => $msg->sender->photo ? $msg->sender->photo : asset('assets/img/avatar.png'),
+                'avatar' => $msg->sender->photo ? asset($msg->sender->photo) : asset('assets/img/avatar.png'),
                 'message' => $messageContent,
                 'time' => $msg->created_at->diffForHumans(),
                 'url' => route('chat.show', ['userId' => $msg->sender_id]),
