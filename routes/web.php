@@ -170,6 +170,7 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 
 	// Chat
 	Route::get('chat', [ChatController::class, 'index'])->name('chat.index');
+	Route::get('chat/user/{userId}', [ChatController::class, 'index'])->name('chat.show');
     Route::get('chat/messages/{user}', [ChatController::class, 'fetchMessages'])->name('chat.fetch');
     Route::post('chat/messages', [ChatController::class, 'sendMessage'])->name('chat.messages');
 	Route::post('chat/upload', [ChatController::class, 'uploadFile'])->name('chat.upload');

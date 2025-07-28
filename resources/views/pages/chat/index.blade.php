@@ -541,6 +541,16 @@
             }
         });
     });
+
+    // Click notification
+    @if(isset($selectedUser))
+        $(document).ready(function () {
+            const target = $('.user-item[data-id="{{ $selectedUser->id }}"]');
+            if (target.length) {
+                target.trigger('click'); // Trigger klik kontak
+            }
+        });
+    @endif
 </script>
 
 @endsection

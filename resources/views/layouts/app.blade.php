@@ -103,7 +103,7 @@
 			notif.style.width = '400px';
 			notif.style.boxShadow = '0 0 10px rgba(0,0,0,0.5)';
 			notif.innerHTML = `
-				<div class="card-body d-flex align-items-center">
+				<div class="card-body d-flex align-items-center cursor-pointer">
 					<img src="${data.avatar}" class="rounded-circle me-2" width="40" height="40" style="object-fit:cover;">
 					<div style="flex-grow:1;">
 						<strong>${data.name}</strong><br>

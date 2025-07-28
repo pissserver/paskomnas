@@ -11,7 +11,7 @@ use Illuminate\Support\Str;
 
 class ChatController extends Controller
 {
-    public function index()
+    public function index(Request $request, $userId = null)
     {
         $currentUserId = auth()->id();
 
@@ -25,7 +25,12 @@ class ChatController extends Controller
             return $user;
         });
 
-        return view('pages.chat.index', compact('users', 'currentUserId'));
+        $selectedUser = null;
+        if ($userId) {
+            $selectedUser = User::find($userId);
+        }
+
+        return view('pages.chat.index', compact('users', 'currentUserId', 'selectedUser'));
     }
 
     public function fetchMessages(User $user)
@@ -208,7 +213,7 @@ class ChatController extends Controller
                 'avatar' => $msg->sender->photo ? $msg->sender->photo : asset('assets/img/avatar.png'),
                 'message' => $messageContent,
                 'time' => $msg->created_at->diffForHumans(),
-                'url' => route('chat.fetch', ['user' => $msg->sender_id]),
+                'url' => route('chat.show', ['userId' => $msg->sender_id]),
             ];
         });
 
