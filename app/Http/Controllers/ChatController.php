@@ -124,7 +124,6 @@ class ChatController extends Controller
         return view('components.card.user-list-card', compact('users', 'currentUserId'));
     }
 
-
     public function getUnreadCount()
     {
         $userId = auth()->id();
@@ -212,7 +211,7 @@ class ChatController extends Controller
                 'name' => $msg->sender->name,
                 'avatar' => $msg->sender->photo ? asset($msg->sender->photo) : asset('assets/img/avatar.png'),
                 'message' => $messageContent,
-                'time' => $msg->created_at->diffForHumans(),
+                'time' => ($msg->created_at->diffInSeconds(now()) < 5) ? 'sekarang' : $msg->created_at->diffForHumans(),
                 'url' => route('chat.show', ['userId' => $msg->sender_id]),
             ];
         });

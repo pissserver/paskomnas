@@ -5,7 +5,7 @@
 @section('content')
 <div class="container-fluid card py-3 mb-3" id="chat-container">
     <div class="row" style="height: 700px;">
-        <div class="col-4 border-end overflow-auto h-100">
+        <div class="col-4 border-end overflow-auto h-100 panel-contact">
             <div class="d-flex justify-content-between align-items-center mb-2 pt-2">
                 <h5 class="text-white mb-0">Chat</h5>
                 <div class="d-flex align-items-center">
@@ -35,6 +35,18 @@
 </div>
 
 <style>
+    .panel-contact {
+        scrollbar-width: none;
+        /* Firefox */
+        -ms-overflow-style: none;
+        /* IE and Edge */
+    }
+
+    .panel-contact::-webkit-scrollbar {
+        display: none;
+        /* Chrome, Safari and Opera */
+    }
+
     #chat-container {
         position: relative;
         background-image: url("{{ asset('assets/img/chat-background.jpg') }}");

@@ -109,7 +109,7 @@
 						<strong>${data.name}</strong><br>
 						<small class="message-content">${data.message}</small>
 					</div>
-					<span class="ms-2 text-muted" style="font-size: 0.75rem;">${data.time}</span>
+					<span class="ms-2 text-white" style="font-size: 0.75rem;">${data.time}</span>
 				</div>
 			`;
 
