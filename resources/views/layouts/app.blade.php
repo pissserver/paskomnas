@@ -99,8 +99,9 @@
 
 			const notif = document.createElement('div');
 			notif.id = notifId;
-			notif.className = 'card text-white bg-dark mb-2';
+			notif.className = 'card text-white mb-2';
 			notif.style.width = '400px';
+			notif.style.backgroundColor = '#1d1d1d';
 			notif.style.boxShadow = '0 0 10px rgba(0,0,0,0.5)';
 			notif.innerHTML = `
 				<div class="card-body d-flex align-items-center cursor-pointer">
@@ -112,7 +113,7 @@
 					<span class="ms-2 text-white" style="font-size: 0.75rem;">${data.time}</span>
 				</div>
 			`;
-
+   
 		    notif.addEventListener('click', () => {
 				window.location.href = data.url;
 			});

@@ -7,7 +7,7 @@
     <div class="row" style="height: 700px;">
         <div class="col-4 border-end overflow-auto h-100 panel-contact">
             <div class="d-flex justify-content-between align-items-center mb-2 pt-2">
-                <h5 class="text-white mb-0">Chat</h5>
+                <h5 class="text-white mb-0" style="font-weight: 700;">Chat</h5>
                 <div class="d-flex align-items-center">
                     <input type="text" class="form-control form-control-sm me-1 text-white"
                         style="background-color: #1d1d1d;" id="searchUser" placeholder="Cari kontak..." name="search"
