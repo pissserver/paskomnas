@@ -46,14 +46,17 @@
             <ul class="navbar-nav  justify-content-end">
                 <li class="nav-item d-flex align-items-center">
                     <div class="nav-item d-flex align-self-end">
-                        <a href="javascript:;" class="btn btn-primary active mb-0 text-white"
-                            onclick="confirmSignOut()">
-                            <i class="fa fa-sign-out-alt me-sm-1"></i>
-                            <span class="d-sm-inline d-none">Keluar</span>
+                        <a href="{{ route('chat.index') }}"
+                            class="btn btn-dark active mb-0 text-white position-relative">
+                            <i class="fas fa-comments fa-lg"></i>
+                            <span id="chat-unread-badge"
+                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">
+                                0
+                            </span>
                         </a>
                     </div>
                 </li>
-                <li class="nav-item dropdown d-flex align-items-center ps-2 pe-4">
+                <li class="nav-item dropdown d-flex align-items-center ps-2">
                     <a href="javascript:;" class="btn btn-secondary active mb-0 text-white" id="dropdownMenu"
                         data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fa fa-exchange-alt me-sm-1"></i>
@@ -149,6 +152,15 @@
                         </li>
                         @endforeach
                     </ul>
+                </li>
+                <li class="nav-item d-flex align-items-center ps-2">
+                    <div class="nav-item d-flex align-self-end">
+                        <a href="javascript:;" class="btn btn-primary active mb-0 text-white"
+                            onclick="confirmSignOut()">
+                            <i class="fa fa-sign-out-alt me-sm-1"></i>
+                            <span class="d-sm-inline d-none">Keluar</span>
+                        </a>
+                    </div>
                 </li>
                 {{-- <li class="nav-item dropdown pe-2 d-flex align-items-center">
                     <a href="javascript:;" class="nav-link text-body p-0" id="dropdownMenuButton"
@@ -335,4 +347,22 @@
         });
     }
 
+    function updateUnreadBadge() {
+            $.get('{{ route("chat.unread-count") }}', function (data) {
+                const count = data.unread;
+                const badge = $('#chat-unread-badge');
+
+                if (count > 0) {
+                    badge.removeClass('d-none').text(count);
+                } else {
+                    badge.addClass('d-none').text(0);
+                }
+            });
+        }
+
+        // Jalankan saat page load
+        updateUnreadBadge();
+
+        // Jalankan ulang tiap 1 detik
+        setInterval(updateUnreadBadge, 1000);
 </script>

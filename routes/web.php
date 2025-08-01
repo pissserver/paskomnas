@@ -23,6 +23,8 @@ use App\Http\Controllers\PackingController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PrintLogController;
+// 
+use App\Http\Controllers\ChatController;
 
 
 /*
@@ -165,6 +167,18 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 	Route::get('virtual-reality', function () {
 		return view('pages.virtual-reality');
 	})->name('virtual-reality');
+
+	// Chat
+	Route::get('chat', [ChatController::class, 'index'])->name('chat.index');
+	Route::get('chat/user/{userId}', [ChatController::class, 'index'])->name('chat.show');
+    Route::get('chat/messages/{user}', [ChatController::class, 'fetchMessages'])->name('chat.fetch');
+    Route::post('chat/messages', [ChatController::class, 'sendMessage'])->name('chat.messages');
+	Route::post('chat/upload', [ChatController::class, 'uploadFile'])->name('chat.upload');
+	Route::get('chat/users/list', [ChatController::class, 'refreshUserList'])->name('chat.users.list');
+	Route::get('chat/unread-count', [ChatController::class, 'getUnreadCount'])->name('chat.unread-count');
+	Route::delete('chat/delete/{user}', [ChatController::class, 'deleteMessages'])->name('chat.delete');
+	Route::post('chat/delete-message', [ChatController::class, 'deleteSenderMessages'])->name('chat.delete.sender');
+	Route::get('chat/unread-messages', [ChatController::class, 'getUnreadMessages'])->name('chat.unread-messages');
 
 	// Sessions
     Route::get('logout', [SessionsController::class, 'destroy'])->name('logout');

@@ -1,0 +1,63 @@
+@forelse ($users as $user)
+@php
+$lastMessage = $user->lastMessage;
+$isUnread = $lastMessage && $lastMessage->sender_id == $user->id && !$lastMessage->is_read;
+@endphp
+<li class="list-group-item user-item cursor-pointer mb-n4 pt-3" style="background-color: #1d1d1d;"
+    data-id="{{ $user->id }}" data-name="{{ $user->name }}" data-status="{{ $user->is_online ? 'online' : 'offline' }}"
+    data-photo="{{ asset($user->photo ? $user->photo : 'assets/img/default-profile.jpg') }}">
+
+    <div class="d-flex align-items-center">
+        <div class="position-relative">
+            <img src="{{ asset($user->photo ? $user->photo : 'assets/img/default-profile.jpg') }}"
+                class="avatar me-3 border {{ $user->role == 'master' ? 'border-primary' : 'border-warning' }} border-2"
+                width="40" height="40" style="object-fit: cover; border-radius: 50%;">
+
+            @if ($user->is_online)
+            <span class="position-absolute p-1 bg-success border border-white rounded-circle"
+                style="width: 10px; height: 10px; top: 5px; right: 15px;"></span>
+            @endif
+        </div>
+
+        <div class="flex-grow-1">
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-bold text-white">{{ $user->name }}</span>
+                @if($user->unreadCount > 0)
+                <span class="badge bg-danger rounded-pill">{{ $user->unreadCount }}</span>
+                @endif
+            </div>
+            <div class="small text-truncate {{ $isUnread ? 'text-secondary fw-bold' : 'text-muted' }}"
+                style="max-width: 300px;">
+                @if ($lastMessage && $lastMessage->sender_id === $currentUserId)
+                <i class="fas fa-check-double me-1 {{ $lastMessage->is_read ? 'text-info' : 'text-secondary' }}"></i>
+                @endif
+
+                @if ($lastMessage)
+                @if ($lastMessage->is_file)
+                @php
+                $ext = pathinfo($lastMessage->file_name, PATHINFO_EXTENSION);
+                $isImage = in_array(strtolower($ext), ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp']);
+                @endphp
+
+                @if ($isImage)
+                <i class="fas fa-camera me-1"></i> Foto
+                @else
+                <i class="fas fa-paperclip me-1"></i> File
+                @endif
+                @else
+                {{ $lastMessage->message }}
+                @endif
+                @else
+                Belum ada pesan.
+                @endif
+            </div>
+        </div>
+    </div>
+    <hr>
+</li>
+@empty
+<div class="empty-data text-center mt-5" id="chat-placeholder">
+    <img src="{{ asset('assets/img/empty-contact.png') }}" width="250" class="mt-5">
+    <h4 class="text-white">Kontak tidak ditemukan</h4>
+</div>
+@endforelse
