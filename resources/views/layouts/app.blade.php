@@ -79,14 +79,15 @@
 	<script src="{{ asset('assets/js/plugins/chartjs.min.js') }}"></script>
 
 	@stack('dashboard')
+
 	<script>
 		var win = navigator.platform.indexOf('Win') > -1;
-    if (win && document.querySelector('#sidenav-scrollbar')) {
-    	var options = {
-       	damping: '0.5'
-    	}
-      	Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
-    }
+		if (win && document.querySelector('#sidenav-scrollbar')) {
+			var options = {
+			damping: '0.5'
+			}
+			Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+		}
 	</script>
 
 	<script>
@@ -113,8 +114,8 @@
 					<span class="ms-2 text-white" style="font-size: 0.75rem;">${data.time}</span>
 				</div>
 			`;
-   
-		    notif.addEventListener('click', () => {
+
+			notif.addEventListener('click', () => {
 				window.location.href = data.url;
 			});
 
@@ -124,7 +125,6 @@
 				notif.remove();
 			}, 5000);
 		}
-
 
 		setInterval(() => {
 			fetch("{{ route('chat.unread-messages') }}")
@@ -141,7 +141,6 @@
 				});
 		}, 1000); // Cek setiap 1 detik
 	</script>
-
 
 	<!-- Bootstrap 5 (JS + Popper) -->
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="..."
