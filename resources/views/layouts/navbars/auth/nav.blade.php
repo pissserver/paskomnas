@@ -348,21 +348,21 @@
     }
 
     function updateUnreadBadge() {
-            $.get('{{ route("chat.unread-count") }}', function (data) {
-                const count = data.unread;
-                const badge = $('#chat-unread-badge');
+        $.get('{{ route("chat.unread-count") }}', function (data) {
+            const count = data.unread;
+            const badge = $('#chat-unread-badge');
 
-                if (count > 0) {
-                    badge.removeClass('d-none').text(count);
-                } else {
-                    badge.addClass('d-none').text(0);
-                }
-            });
-        }
+            if (count > 0) {
+                badge.removeClass('d-none').text(count);
+            } else {
+                badge.addClass('d-none').text(0);
+            }
+        });
+    }
 
-        // Jalankan saat page load
-        updateUnreadBadge();
+    // Jalankan saat page load
+    updateUnreadBadge();
 
-        // Jalankan ulang tiap 1 detik
-        setInterval(updateUnreadBadge, 1000);
+    // Jalankan ulang tiap 1 detik
+    setInterval(updateUnreadBadge, 1000);
 </script>

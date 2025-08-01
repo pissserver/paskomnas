@@ -5,7 +5,7 @@
 @section('content')
 
 <div>
-    <form action="{{ route('goods.update', $goods->id) }}" method="POST" role="form text-left"
+    <form action="{{ route('specification.update', $specification->id) }}" method="POST" role="form text-left"
         enctype="multipart/form-data">
         <div class="container-fluid">
             @csrf
@@ -15,7 +15,7 @@
                     <div class="card-header pb-0 p-4 d-flex justify-content-between">
                         <h6 class="mb-0">{{ __('Data Barang Komoditi') }}</h6>
 
-                        <a href="{{ route('goods.index') }}"
+                        <a href="{{ route('specification.index') }}"
                             class="btn bg-gradient-danger btn-md mb-0">{{ 'Kembali' }}&nbsp;&nbsp;<i
                                 class="fa fa-arrow-right"></i></a>
                     </div>
@@ -39,26 +39,14 @@
                         </div>
                         @endif
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <div class="form-group">
-                                    <label for="goods-name"
-                                        class="form-control-label">{{ __('Nama Barang Komoditi') }}</label>
-                                    <div class="@error('goods.name')border border-danger rounded-3 @enderror">
-                                        <input class="form-control" type="text" placeholder="Nama Barang Komoditi"
-                                            id="goods-name" name="name" value="{{ $goods->name }}">
+                                    <label for="specification-name"
+                                        class="form-control-label">{{ __('Spesifikasi Komoditi') }}</label>
+                                    <div class="@error('specification.name')border border-danger rounded-3 @enderror">
+                                        <input class="form-control" type="text" placeholder="Spesifikasi Komoditi"
+                                            id="specification-name" name="name" value="{{ $specification->name }}">
                                         @error('name')
-                                        <p class="text-danger text-xs mt-2">{{ $message }}</p>
-                                        @enderror
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="unit" class="form-control-label">{{ __('Satuan') }}</label>
-                                    <div class="@error('unit') border border-danger rounded-3 @enderror">
-                                        <input class="form-control" type="text" placeholder="Satuan" id="unit"
-                                            name="unit" value="{{ $goods->unit }}">
-                                        @error('unit')
                                         <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                         @enderror
                                     </div>

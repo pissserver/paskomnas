@@ -39,7 +39,7 @@ class ImageArchiveController extends Controller
         
         $imageArchive->create($dataToCreate);
 
-        return redirect('arsip-gambar')->with('success','Data berhasil ditambahkan');
+        return redirect('request-order')->with('success','Data berhasil ditambahkan');
     }
 
     public function data(Request $request)
@@ -100,7 +100,7 @@ class ImageArchiveController extends Controller
 
         $archive->update($dataToUpdate);
 
-        return redirect('/arsip-gambar')->with('success','Data berhasil diperbarui');
+        return redirect('/request-order')->with('success','Data berhasil diperbarui');
     }
 
     public function destroy($id)
@@ -113,7 +113,7 @@ class ImageArchiveController extends Controller
 
         $archive->delete();
 
-        return redirect('/arsip-gambar')->with('success','Data berhasil dihapus');
+        return redirect('/request-order')->with('success','Data berhasil dihapus');
     }
 
     public function deleteAllSelected(Request $request)
@@ -136,6 +136,6 @@ class ImageArchiveController extends Controller
         }
 
 
-        return redirect('/arsip-gambar')->with('success','Data berhasil dihapus dari tanggal ' . Carbon::parse($request->start_date)->translatedFormat('d F Y') . ' sampai ' . Carbon::parse($request->end_date)->translatedFormat('d F Y'));
+        return redirect('/request-order')->with('success','Data berhasil dihapus dari tanggal ' . Carbon::parse($request->start_date)->translatedFormat('d F Y') . ' sampai ' . Carbon::parse($request->end_date)->translatedFormat('d F Y'));
     }
 }

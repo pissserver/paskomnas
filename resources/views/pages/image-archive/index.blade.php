@@ -1,6 +1,6 @@
 @extends('layouts.user_type.auth')
 
-@section('title', 'Arsip Gambar Paskomnas || PISS')
+@section('title', 'Request Order Paskomnas || PISS')
 
 @section('content')
 
@@ -32,7 +32,7 @@
                 <div class="container-fluid py-4">
                     <div class="card">
                         <div class="card-header p-4">
-                            <h6 class="mb-0">{{ __('Arsip Gambar') }}</h6>
+                            <h6 class="mb-0">{{ __('Request Order') }}</h6>
                         </div>
                         <div class="card-body pt-1 p-4">
                             <div class="row">
@@ -40,7 +40,7 @@
                                     <div class="form-group">
                                         <label for="name" class="form-control-label">{{ __('Nama') }}</label>
                                         <div class="@error('archive.name')border border-danger rounded-3 @enderror">
-                                            <input class="form-control" type="text" placeholder="Nama Gambar" id="name"
+                                            <input class="form-control" type="text" placeholder="Nama Request" id="name"
                                                 name="name">
                                             @error('name')
                                             <p class="text-danger text-xs mt-2">{{ $message }}</p>
@@ -51,7 +51,7 @@
 
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="imageInput" class="form-label mb-2">Gambar</label>
+                                        <label for="imageInput" class="form-label mb-2">Foto</label>
                                         <div class="row">
                                             <div class="col-md-1">
                                                 <div id="imagePreview" class="zoomable"
@@ -65,7 +65,7 @@
                                                     onclick="document.getElementById('imageInput').click()"
                                                     class="btn bg-gradient-primary w-100">
                                                     <i class="fa fa-upload pe-2" data-bs-toggle="tooltip"
-                                                        title="Upload Image"></i>Unggah Gambar
+                                                        title="Upload Image"></i>Unggah Foto
                                                 </a>
                                             </div>
                                         </div>
@@ -76,8 +76,8 @@
                             <div class="form-group">
                                 <label for="about">{{ 'Deskripsi' }}</label>
                                 <div class="@error('archive.about') border border-danger rounded-3 @enderror">
-                                    <textarea class="form-control" id="about" rows="3" placeholder="Deskripsi Gambar"
-                                        name="description"></textarea>
+                                    <textarea class="form-control" id="about" rows="3"
+                                        placeholder="Deskripsi Request Order" name="description"></textarea>
                                 </div>
                             </div>
                             <div class="d-flex justify-content-end">
@@ -99,8 +99,8 @@
                     <div class="d-flex justify-content-between">
                         <div class="d-flex align-items-center">
                             <div class="bg-gradient-dark px-3 py-2 rounded-2 text-white d-flex align-items-center">
-                                <i class="fa fa-images me-2"></i>
-                                <h6 class="mb-0 text-white">Data Arsip Gambar</h6>
+                                <i class="fa fa-inbox me-2"></i>
+                                <h6 class="mb-0 text-white">Data Request Order</h6>
                             </div>
                         </div>
 
