@@ -1,0 +1,565 @@
+@extends('layouts.user_type.auth')
+
+@section('title', 'Surat Jalan Paskomnas || PISS')
+
+@section('content')
+
+<div>
+    @if($errors->any())
+    <div class="mx-4 alert alert-primary alert-dismissible fade show" role="alert">
+        <span class="alert-text text-white">
+            {{$errors->first()}}</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+            <i class="fa fa-close" aria-hidden="true"></i>
+        </button>
+    </div>
+    @endif
+    @if(session('success'))
+    <div class="mx-4 alert alert-success alert-dismissible fade show" id="alert-success" role="alert">
+        <span class="alert-text text-white">
+            {{ session('success') }}</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+            <i class="fa fa-close" aria-hidden="true"></i>
+        </button>
+    </div>
+    @endif
+
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4 mx-4">
+                <div class="card-header pb-5">
+                    <div class="d-flex flex-row justify-content-between align-items-center">
+                        {{-- Kiri --}}
+                        <div
+                            class="d-flex align-items-center bg-gradient-secondary ps-3 pe-3 py-2 rounded-2 text-white">
+                            <i class="fa fa-clipboard-list me-2"></i>
+                            <h6 class="mb-0 text-white">Surat Jalan</h6>
+                        </div>
+
+                        {{-- Tengah --}}
+                        <div class="mt-2 d-flex justify-content-center align-items-center gap-3">
+                            <i class="fa fa-calendar fa-2x"></i>
+                            <input type="date" class="form-control datepicker" id="order-date-customer"
+                                name="order_date" required>
+
+                            <div style="min-width: 250px; flex-grow: 1;">
+                                <select class="form-select select2 w-50" id="order-select-customer" required>
+                                    <option value="all" selected>-- Pilih Customer --</option>
+                                    @foreach ($customers as $customer)
+                                    <option value="{{ $customer->id }}">{{ $customer->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <i class="fa fa-briefcase fa-2x"></i>
+                        </div>
+
+                        {{-- Kanan (Tombol Print) --}}
+                        <div class="d-flex align-items-center">
+                            <button class="btn btn btn-primary mb-0" onclick="printDocument()">
+                                <i class="fa fa-print me-1"></i> Print
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="document-data">
+                    {{-- Render Table --}}
+                </div>
+
+                <div class="d-flex justify-content-center mt-3 mb-2" id="pagination">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Ubah Order -->
+<div class="modal fade" id="ubahOrderModal" tabindex="-1" aria-labelledby="ubahOrderModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-gradient-primary">
+                <i class="fa fa-edit me-2 text-white"></i>
+                <h5 class="modal-title text-white" id="ubahOrderModalLabel">Ubah Quantity Order</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-secondary alert-dismissible fade show mb-3" id="alert-success" role="alert">
+                    <i class="fa fa-info me-2 text-white"></i><span class="alert-text text-white">
+                        Perubahan ini tidak akan merubah data asli PO, hanya untuk surat jalan & invoice</span>
+                </div>
+                <form id="ubah-order-form">
+                    <div class="container">
+                        <div class="row fw-bold mb-2">
+                            <div class="col-md-4">Nama Barang</div>
+                            <div class="col-md-2">Qty Awal</div>
+                            <div class="col-md-2">Satuan Awal</div>
+                            <div class="col-md-2">Qty Baru</div>
+                            <div class="col-md-2">Satuan Baru</div>
+                        </div>
+                        <div id="ubah-order-items"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" form="ubah-order-form" class="btn btn-primary"><i
+                        class="fa fa-save me-2"></i>Simpan</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    const userName = @json(auth()->user()->name);
+    const selectImageUrl = "{{ asset('assets/img/empty-data2.png') }}";
+    let currentOrderData = null;
+    let modalConverted = []; 
+
+    flatpickr(".datepicker", {
+        locale: "id",
+        altInput: true,
+        altFormat: "l, d F Y",
+        dateFormat: "Y-m-d",
+        defaultDate: "{{ \Carbon\Carbon::today()->toDateString() }}", // Hari ini
+        onReady: function (selectedDates, dateStr, instance) {
+            if (instance.altInput) {
+                instance.altInput.setAttribute("style", "background-color: white; cursor: text;");
+            }
+        },
+        onChange: function(selectedDates, dateStr, instance) {
+            if (dateStr) {
+                $('#order-date-customer').trigger('change'); // tetap sinkron dengan AJAX listener
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        $('.select2').select2({ 
+            theme: 'bootstrap-5',
+            placeholder: '-- Pilih Customer --', 
+            allowClear: true, 
+            width: '100%' 
+        });
+
+        let initialDate = $('#order-date-customer').val();
+
+        // Trigger AJAX pertama saat halaman pertama kali dibuka
+        if (initialDate) {
+            $.ajax({
+                url: "{{ route('document.index') }}",
+                method: 'GET',
+                data: { order_date: initialDate },
+                success: function (response) {
+                    let options = '<option value="all">-- Pilih Customer --</option>';
+
+                    if (response.customers && Array.isArray(response.customers) && response.customers.length > 0) {
+                        response.customers
+                            .sort((a, b) => a.name.localeCompare(b.name))
+                            .forEach(c => {
+                                options += `<option value="${c.id}">${c.name}</option>`;
+                            });
+
+                        $('#order-select-customer').html(options).prop('disabled', false);
+                    } 
+                }
+            });
+        }
+
+        $('#order-date-customer').on('change', function () {
+            $('#document-data').html(`
+                <div style="display:flex; justify-content:center; align-items:center; height:150px; font-size:1.2rem; color:#555;">
+                    <i class="fa fa-spinner fa-spin me-2"></i> Memuat data...
+                </div>
+            `);
+
+            const orderDate = $(this).val();
+            if (!orderDate) return;
+
+            $.get("{{ route('document.index') }}", { order_date: orderDate }, function (response) {
+                if (response.customers?.length > 0) {
+                    let options = '<option value="">-- Pilih Customer --</option>';
+                    response.customers.forEach(c => options += `<option value="${c.id}">${c.name}</option>`);
+                    $('#order-select-customer').html(options).prop('disabled', false);
+                    $('#document-data').html(`
+                        <div class="empty-data text-center">
+                            <img src="{{ asset('assets/img/select.png') }}" width="450">
+                            <h4 class="text-secondary">Pilih Customer</h4>
+                        </div>
+                    `);
+                } else {
+                    $('#order-select-customer').html('<option>-- Tidak ada Customer --</option>').prop('disabled', true);
+                    $('#document-data').html(`
+                        <div class="empty-data text-center">
+                            <img src="{{ asset('assets/img/empty-data2.png') }}" width="450">
+                            <h4 class="text-secondary">Tidak ada order di tanggal ini</h4>
+                        </div>`);
+                }
+            });
+        });
+
+        $('#order-select-customer').on('change', function () {
+            const orderDate = $('#order-date-customer').val();
+            const customerId = $(this).val();
+            if (!orderDate || !customerId) return;
+
+            $.get("{{ route('document.index') }}", {
+                order_date: orderDate,
+                customer_id: customerId
+            }, function (response) {
+                currentOrderData = response;
+                $('#document-data').html(renderDocument(response));
+            });
+        });
+
+        $('body').on('change', '#po-selector', function () {
+            const orderDate = $('#order-date-customer').val();
+            const customerId = $('#order-select-customer').val();
+            const orderId = $(this).val();
+
+            $.get("{{ route('document.index') }}", {
+                order_date: orderDate,
+                customer_id: customerId,
+                order_id: orderId
+            }, function (response) {
+                currentOrderData = response;
+                $('#document-data').html(renderDocument(response));
+            });
+        });
+
+        $('body').on('click', '[data-bs-target="#ubahOrderModal"]', function () {
+            if (currentOrderData) {
+                openUbahOrderModal(currentOrderData);
+            }
+        });
+
+        if (initialDate) {
+            // Tampilkan indikator sementara sebelum customer muncul
+            $('#document-data').html(`
+                <div style="display:flex; justify-content:center; align-items:center; height:150px; font-size:1.2rem; color:#555;">
+                    <i class="fa fa-spinner fa-spin me-2"></i> Memuat data..
+                </div>
+            `);
+                        
+            $('#order-date-customer').trigger('change');
+        }
+    });
+
+    function renderDocument(data) {
+        const bulan = ['JANUARI','FEBRUARI','MARET','APRIL','MEI','JUNI','JULI','AGUSTUS','SEPTEMBER','OKTOBER','NOVEMBER','DESEMBER'];
+        let currentDate = new Date();
+        currentDate.setDate(currentDate.getDate() + 1); // besok
+
+        const tanggal = `Surabaya, ${currentDate.getDate().toString().padStart(2, '0')} ${bulan[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+
+        let dropdownOptions = '';
+        if (Array.isArray(data.po_list)) {
+            for (const po of data.po_list) {
+                dropdownOptions += `<option value="${po.id}" ${po.id === data.order_id ? 'selected' : ''}>${po.code}</option>`;
+            }
+        }
+
+        let html = `
+        <div class="col-12 d-flex justify-content-center mb-3 pe-4">
+            <div class="d-flex align-items-center gap-2">
+                <div class="position-relative d-inline-block" style="min-width: 150px;">
+                    <label class="btn bg-gradient-dark text-white w-100 d-flex align-items-center justify-content-center rounded-pill shadow-sm" style="height: 38px;">
+                        <i class="fa fa-file-alt me-2"></i> Pilih Order <i class="fa fa-caret-down ms-2"></i>
+                    </label>
+                    <select id="po-selector"
+                        class="form-select form-select-sm position-absolute top-0 start-3 w-100 h-100 bg-dark text-white"
+                        style="opacity: 0; cursor: pointer; border-radius: 50px;">
+                        ${dropdownOptions}
+                    </select>
+                </div>
+
+                <button type="button" class="ms-2 btn btn-primary d-flex align-items-center gap-2 rounded-pill" data-bs-toggle="modal" data-bs-target="#ubahOrderModal">
+                    <i class="fa fa-edit"></i> Ubah Order
+                </button>
+            </div>
+        </div>
+        <div id="surat-jalan-print" style="font-family: Arial, sans-serif; font-size: 14px; padding: 20px;">
+            <div class="title" style="text-align: center;">
+                <strong>PT. SELARAS MAKMUR PANGAN JAYA</strong><br>
+                SURABAYA
+            </div>
+            <hr>
+            <div style="margin-top: 10px;">
+                <div style="float: left; width: 60%;">
+                    <div style="font-size: 14px; line-height: 1.4;">
+                        <div><strong>SURAT JALAN</strong></div><br>   
+                        <div><span style="display: inline-block; min-width: 65px;">Nota No</span>: ${data.order_code}</div>
+                        <div><span style="display: inline-block; min-width: 65px;">No. PO</span>: ${data.reference_customer ? data.reference_customer : '-'}</div>
+                        <div><span style="display: inline-block; min-width: 65px;">Sales</span>: Mikael Candra ES</div>
+                        <div> <span style="display: inline-block; min-width: 65px;">PO</span>: ${data.ppn_status}</div>
+                    </div>
+                </div>
+                <div style="float: right; width: 40%; text-align: left;">
+                    <div style="font-size: 14px; line-height: 1.4;">
+                        <div>${tanggal}</div>
+                        <div>Kepada Yth:</div>
+                        <div><strong>${data.customer}</strong></div>
+                        <div>${data.address}</div>
+                    </div>
+                </div>
+                <div style="clear: both;"></div>
+            </div>
+
+            <table class="table table-striped table-responsive" style="width: 100%; margin-top: 20px;">
+                <thead>
+                    <tr>
+                        <th style="padding: 6px; text-align: center; width: 20%;">BANYAKNYA</th>
+                        <th style="padding: 6px; text-align: center; width: 50%;">NAMA BARANG</th>
+                        <th style="padding: 6px; text-align: center; width: 30%;">SPESIFIKASI</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+
+        for (const item of data.data) {
+            html += `
+                <tr>
+                    <td style="padding: 6px; text-align: center; font-size: 14px;"
+                        data-original-qty="${item.qty}"
+                        data-unit="${item.unit}"
+                        data-converted="false"
+                        data-goods-id="${item.goods_id}"
+                        data-specification-id="${item.specification_id !== null ? item.specification_id : ''}">
+                        <span class="qty-val" style="display: inline-block; min-width: 40px; text-align: right;">
+                            ${Number(item.qty).toLocaleString('id-ID')}
+                        </span>
+                        <span class="qty-unit" style="display: inline-block; min-width: 30px; text-align: left;">
+                            ${item.unit}
+                        </span>
+                    </td>
+                    <td class="td-name" style="padding: 6px; text-align: center; font-size: 14px;">${item.name}</td>
+                    <td style="padding: 6px; text-align: center; font-size: 14px;">${item.specification}</td>
+                </tr>`;
+        }
+
+        html += `
+                </tbody>
+            </table>
+
+            <div style="margin-top: 80px; display: flex; justify-content: space-around; text-align: center; font-size: 14px;">
+                <div style="min-width: 150px;">
+                    <div>Diterima kondisi baik</div><br><br><br>
+                    <div style="height: 150px;">(                                )</div>
+                </div>
+                <div style="min-width: 150px;">
+                    <div>Pengirim,</div><br><br><br>
+                    <div style="height: 150px;">(                                )</div>
+                </div>
+                <div style="min-width: 150px;">
+                    <div>Hormat Saya,</div><br><br><br>
+                    <div style="height: 150px;">( ${userName} )</div>
+                </div>
+            </div>
+        </div>`;
+
+        return html;
+    }
+
+    function openUbahOrderModal(data) {
+        const container = document.getElementById('ubah-order-items');
+        container.innerHTML = '';
+
+        // Simpan semua row dalam string terlebih dahulu
+        let rows = '';
+        data.data.forEach((item, index) => {
+            rows += `
+                    <div class="row mb-2">
+                        <input type="hidden" name="order_id[]" value="${data.order_id}">
+                        <input type="hidden" name="goods_id[]" value="${item.goods_id}">
+                        <input type="hidden" name="specification_id[]" value="${item.specification_id ? item.specification_id : ''}">
+                        <input type="hidden" name="original_quantity[]" value="${item.qty}">
+                        <input type="hidden" name="original_unit[]" value="${item.unit}">
+
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" value="${item.name}${item.specification ? ' (' + item.specification + ')' : ''}" readonly>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" class="form-control" value="${item.original_qty}" readonly>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" class="form-control" value="${item.original_unit}" readonly>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="number" class="form-control" placeholder="0" name="new_quantity[]" step="any" value="${item.display_qty}">
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" class="form-control" placeholder="Satuan" name="new_unit[]" value="${item.display_unit}">
+                        </div>
+                    </div>`;
+        });
+
+        // Langsung render konten
+        container.innerHTML = rows;
+
+        // Tampilkan modal
+        const modalElement = document.getElementById('ubahOrderModal');
+        const modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+        modalInstance.show();
+
+        // Timpa input qty/unit pakai yang terbaru
+        setTimeout(() => {
+            modalConverted.forEach(function (item) {
+                const goodsId = item.goods_id;
+                const specId = item.specification_id ?? '';
+
+                const inputRow = $(`input[name="goods_id[]"][value="${goodsId}"]`)
+                    .filter(function () {
+                        return $(this).closest('.row').find(`input[name="specification_id[]"]`).val() === specId;
+                    }).closest('.row');
+
+                if (inputRow.length > 0) {
+                    inputRow.find('input[name="new_quantity[]"]').val(item.quantity);
+                    inputRow.find('input[name="new_unit[]"]').val(item.unit);
+                }
+            });
+        }, 100);
+    }
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    $('#ubah-order-form').on('submit', function (e) {
+        e.preventDefault();
+        const formData = $(this).serialize();
+
+        $.post("{{ route('document.convert') }}", formData)
+            .done(function (res) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: res.message,
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+
+                // Tutup modal
+                const modalElement = document.getElementById('ubahOrderModal');
+                const modalInstance = bootstrap.Modal.getInstance(modalElement);
+
+                // Blur elemen yang sedang aktif sebel
+                document.activeElement?.blur();
+
+                // Update dilakukan setelah modal benar-benar tertutup
+                let renderDocumentConverted = res.converted || [];
+                modalConverted = res.converted || [];
+
+                modalElement.addEventListener('hidden.bs.modal', function handleModalHidden() {
+                    modalElement.removeEventListener('hidden.bs.modal', handleModalHidden);
+                    $('.modal-backdrop').remove();
+                    $('body').removeClass('modal-open').css('padding-right', '');
+
+                    // Ambil ulang data dan render ulang tampilan
+                    const customerId = $('#customer-selector').val();
+                    const orderDate = $('#order-date').val();
+
+                    // 🚀 Lakukan update tampilan DI SINI
+                    renderDocumentConverted.forEach(function (item) {
+                        const goodsId = item.goods_id;
+                        const specId = item.specification_id ?? '';
+
+                        let cell = $(`td[data-goods-id="${item.goods_id}"][data-specification-id="${specId}"]`);
+
+                        if (cell.length > 0) {
+                            cell.find('.qty-val').text(Number(item.quantity).toLocaleString('id-ID'));
+                            cell.find('.qty-unit').text(item.unit);
+                            cell.attr('data-converted', 'true');
+                        } else {
+                            console.warn('Cell tidak ditemukan untuk', item.goods_id, item.specification_id);
+                        }
+                    });
+
+                    // Kosongkan variabel sementara
+                    renderDocumentConverted = [];
+                });
+                
+                modalInstance.hide();
+
+            })
+            .fail(function (xhr) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal menyimpan!',
+                    text: xhr.responseJSON?.message || 'Terjadi kesalahan.',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true
+                });
+            });
+    });
+
+    $('#btn-ubah-order').on('click', function () {
+        openUbahOrderModal(currentDocumentData);
+    });
+
+    function printDocument() {
+        const printElement = document.getElementById("surat-jalan-print");
+
+        let printWindow = window.open('', '', `left=0,top=0,width=${screen.width},height=${screen.height}`);
+        printWindow.document.write(`
+            <html>
+            <head>
+                <title>Print Surat Jalan</title>
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+                <style>
+                    html, body {
+                        height: 100%;
+                        margin: 0;
+                        padding: 0;
+                    }
+                    body {
+                        font-family: Arial, sans-serif;
+                        font-size: 12px;
+                        box-sizing: border-box;
+                    }
+                    .print-wrapper {
+                        border: 2px solid black;
+                        padding: 20px;
+                        height: calc(100% - 40px); /* 100% minus padding top+bottom */
+                        box-sizing: border-box;
+                    }
+                    .title {
+                        font-size: 14px;
+                        margin-top: -25px;
+                    }
+                    table {
+                        width: 100%;
+                        border-collapse: collapse;
+                    }
+                    table th, table td {
+                        border: 1px solid #000;
+                        padding: 6px;
+                        text-align: center;
+                        font-size: 12px;
+                    }
+                    table td.td-name {
+                        text-align: left !important;
+                    }
+                    hr {
+                        border: 1px solid black;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="print-wrapper">
+                    ${printElement.outerHTML}
+                </div>
+            </body>
+            </html>
+        `);
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+        printWindow.close();
+    }
+</script>
+
+@endsection

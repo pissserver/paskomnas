@@ -4,7 +4,8 @@
   <div class="container-fluid {{ (Request::is('static-sign-up') ? 'container' : 'container-fluid') }}">
     <a class="navbar-brand font-weight-bolder ms-lg-0 ms-3 {{ (Request::is('static-sign-up') ? 'text-white' : '') }}"
       href="{{ url('dashboard') }}">
-      Soft UI Dashboard Laravel
+      <img src="{{ asset('assets/img/logo2.png') }}" alt="" width="35" height="35">
+      &nbsp;PASKOMNAS
     </a>
     <button class="navbar-toggler shadow-none ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#navigation"
       aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
@@ -16,12 +17,12 @@
     </button>
     <div class="collapse navbar-collapse" id="navigation">
       <ul class="navbar-nav mx-auto">
-        @if (auth()->user())
+        {{-- @if (auth()->user())
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center me-2 active" aria-current="page" href="{{ url('dashboard') }}">
-            <i class="fa fa-chart-pie opacity-6 me-1 {{ (Request::is('static-sign-up') ? '' : 'text-dark') }}"></i>
-            Dashboard
-          </a>
+        <i class="fa fa-chart-pie opacity-6 me-1 {{ (Request::is('static-sign-up') ? '' : 'text-dark') }}"></i>
+        Dashboard
+        </a>
         </li>
         <li class="nav-item">
           <a class="nav-link me-2" href="{{ url('profile') }}">
@@ -29,25 +30,27 @@
             Profile
           </a>
         </li>
-        @endif
+        @endif --}}
         <li class="nav-item">
           <a class="nav-link me-2" href="{{ auth()->user() ? url('static-sign-up') : url('register') }}">
             <i class="fas fa-user-circle opacity-6 me-1 {{ (Request::is('static-sign-up') ? '' : 'text-dark') }}"></i>
-            Sign Up
+            Daftar
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link me-2" href="{{ auth()->user() ? url('static-sign-in') : url('login') }}">
             <i class="fas fa-key opacity-6 me-1 {{ (Request::is('static-sign-up') ? '' : 'text-dark') }}"></i>
-            Sign In
+            Login
           </a>
         </li>
       </ul>
       <ul class="navbar-nav d-lg-block d-none">
         <li class="nav-item">
-          <a href="https://www.creative-tim.com/product/soft-ui-dashboard-laravel" target="_blank"
-            class="btn btn-sm btn-round mb-0 me-1 bg-gradient-{{ (Request::is('static-sign-up') ? 'light' : 'dark') }}">Free
-            download</a>
+          <a href="" target="_blank"
+            class="btn btn-sm btn-round mb-0 me-1 bg-gradient-{{ (Request::is('static-sign-up') ? 'light' : 'dark') }}">
+            <i class="fab fa-instagram" style="font-size: 16px;"></i>&nbsp;
+            <span>Instagram</span>
+          </a>
         </li>
       </ul>
     </div>

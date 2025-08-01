@@ -2,61 +2,71 @@
 
 @section('auth')
 
+@if (Auth::user()->role === 'master')
+@if (\Request::is('virtual-reality'))
+{{-- @include('layouts.navbars.auth.nav') --}}
+<div id="background-wrapper" class="border-radius-xl my-3 mx-3 position-relative" style="background-image: url('{{ asset('assets/img/vr-bg1.jpg') }}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            height: 96vh;
+            overflow: hidden;">
 
-@if(\Request::is('static-sign-up'))
-@include('layouts.navbars.guest.nav')
-@yield('content')
-@include('layouts.footers.guest.footer')
-
-@elseif (\Request::is('static-sign-in'))
-@include('layouts.navbars.guest.nav')
-@yield('content')
-@include('layouts.footers.guest.footer')
-
-@else
-@if (\Request::is('rtl'))
-@include('layouts.navbars.auth.sidebar-rtl')
-<main class="main-content position-relative max-height-vh-100 h-100 mt-1 border-radius-lg overflow-hidden">
-    @include('layouts.navbars.auth.nav-rtl')
-    <div class="container-fluid py-4">
-        @yield('content')
-        @include('layouts.footers.auth.footer')
-    </div>
-</main>
-
-@elseif (\Request::is('profile'))
-@include('layouts.navbars.auth.sidebar')
-<div class="main-content position-relative bg-gray-100 max-height-vh-100 h-100">
-    @include('layouts.navbars.auth.nav')
-    @yield('content')
-</div>
-
-@elseif (\Request::is('virtual-reality'))
-@include('layouts.navbars.auth.nav')
-<div class="border-radius-xl mt-3 mx-3 position-relative"
-    style="background-image: url('../assets/img/vr-bg.jpg') ; background-size: cover;">
-    @include('layouts.navbars.auth.sidebar')
+    {{-- @include('layouts.navbars.auth.master.sidebar') --}}
     <main class="main-content mt-1 border-radius-lg">
         @yield('content')
     </main>
 </div>
-@include('layouts.footers.auth.footer')
+{{-- @include('layouts.footers.auth.footer') --}}
 
 @else
-@include('layouts.navbars.auth.sidebar')
-<main
-    class="main-content position-relative max-height-vh-100 h-100 mt-1 border-radius-lg {{ (Request::is('rtl') ? 'overflow-hidden' : '') }}">
+@include('layouts.navbars.auth.master.sidebar')
+<main class="main-content position-relative max-height-vh-100 h-100 mt-1 border-radius-lg">
     @include('layouts.navbars.auth.nav')
     <div class="container-fluid py-4">
         @yield('content')
         @include('layouts.footers.auth.footer')
     </div>
 </main>
-@endif
-
 @include('components.fixed-plugin')
 @endif
 
+@elseif (Auth::user()->role === 'user')
+@if (\Request::is('virtual-reality'))
+{{-- @include('layouts.navbars.auth.nav') --}}
+<div id="background-wrapper" class="border-radius-xl my-3 mx-3 position-relative" style="background-image: url('{{ asset('assets/img/vr-bg1.jpg') }}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            height: 96vh;
+            overflow: hidden;">
+
+    {{-- Sidebar jika perlu --}}
+    {{-- @include('layouts.navbars.auth.user.sidebar') --}}
+
+    <main class="main-content border-radius-lg w-100">
+        @yield('content')
+    </main>
+</div>
+
+{{-- @include('layouts.footers.auth.footer') --}}
+
+@else
+@include('layouts.navbars.auth.user.sidebar')
+<main class="main-content position-relative max-height-vh-100 h-100 mt-1 border-radius-lg">
+    @include('layouts.navbars.auth.nav')
+    <div class="container-fluid py-4">
+        @yield('content')
+        @include('layouts.footers.auth.footer')
+    </div>
+</main>
+@include('components.fixed-plugin')
+@endif
+
+
+@endif
 
 
 @endsection

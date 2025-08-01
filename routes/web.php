@@ -1,14 +1,31 @@
 <?php
 
-use App\Http\Controllers\ChangePasswordController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\InfoUserController;
-use App\Http\Controllers\RegisterController;
-use App\Http\Controllers\ResetController;
-use App\Http\Controllers\SessionsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Route;
+// Auth
+use App\Http\Controllers\Auth\ChangePasswordController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\ResetController;
+use App\Http\Controllers\Auth\SessionsController;
+use App\Http\Controllers\Auth\GoogleController;
+// Views
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserManagementController;
+use App\Http\Controllers\ImageArchiveController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\GoodsController;
+use App\Http\Controllers\SpecificationController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\PackingController;
+use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\PrintLogController;
+// 
+use App\Http\Controllers\ChatController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -21,73 +38,154 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// Default Route
+Route::get('login', [SessionsController::class, 'create'])->name('login');
 
-Route::group(['middleware' => 'auth'], function () {
+// Google Authentication
+Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.auth');
+Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 
+// Group Middleware Guest
+Route::group(['middleware' => 'guest'], function () {
+    Route::post('login-session', [SessionsController::class, 'store'])->name('login.store');
+    Route::get('register', [RegisterController::class, 'create'])->name('register');
+    Route::post('register-session', [RegisterController::class, 'store'])->name('register.store');
+	Route::get('forgot-password', [ResetController::class, 'create'])->name('password.forgot');
+	Route::post('forgot-password-session', [ResetController::class, 'sendEmail'])->name('password.request');
+	Route::get('change-password', [ChangePasswordController::class, 'create'])->name('password.change');
+	Route::put('change-password-session', [ChangePasswordController::class, 'changePassword'])->name('password.update');
+});
+
+// Group Middleware Auth 
+Route::middleware(['auth', 'roleAccess'])->group(function () {
     Route::get('/', [HomeController::class, 'home']);
-	Route::get('dashboard', function () {
-		return view('dashboard');
-	})->name('dashboard');
 
-	Route::get('billing', function () {
-		return view('billing');
-	})->name('billing');
+	Route::view('/chats', 'vendor.wirechat.livewire.chat.chat')->name('wirechat');
 
-	Route::get('profile', function () {
-		return view('profile');
-	})->name('profile');
+	// Dashboard
+	Route::get('dashboard', [HomeController::class, 'index'])->name('dashboard.index');
+	Route::get('dashboard/data-group', [HomeController::class, 'dataGroup'])->name('dashboard.data.group');
+	Route::get('dashboard/data-customer', [HomeController::class, 'dataCustomer'])->name('dashboard.data.customer');
 
-	Route::get('rtl', function () {
-		return view('rtl');
-	})->name('rtl');
+	// Order
+	Route::get('order', [OrderController::class, 'index'])->name('order.index');
+	Route::get('buat-order/{customer_id}', [OrderController::class, 'create'])->name('order.create');
+	Route::post('buat-order/{customer_id}', [OrderController::class, 'store'])->name('order.store');
+	Route::get('buat-order/data/{customer_id}', [OrderController::class, 'data'])->name('order.data');
+	Route::get('buat-order/{customer_id}/detail/{order_id}', [OrderController::class, 'show'])->name('order.show');
+	Route::put('buat-order/{customer_id}/detail/{order_id}', [OrderController::class, 'update'])->name('order.update');
 
-	// Route::get('user-management', function () {
-	// 	return view('laravel-examples/user-management');
-	// })->name('user-management');
+	// Process & Cancel Order
+	Route::get('order-diproses', [OrderController::class, 'orderProcessView'])->name('order.process.view');
+	Route::get('order-diproses/data', [OrderController::class, 'orderProcessData'])->name('order.process.data');
+	Route::put('order-diproses/{id}', [OrderController::class, 'orderProcessAction'])->name('order.process.action');
+	Route::get('order-dibatalkan/data', [OrderController::class, 'orderCancelData'])->name('order.cancel.data');
+	Route::put('order-dibatalkan/{id}', [OrderController::class, 'orderCancelAction'])->name('order.cancel.action');
 
+	// Purchase
+	Route::get('purchase', [PurchaseController::class, 'index'])->name('purchase.index');
+	Route::get('purchase-group', [PurchaseController::class, 'groupCustomer'])->name('purchase.group');
+	Route::get('purchase-customer', [PurchaseController::class, 'purchaseCustomer'])->name('purchase.customer');
+	Route::get('purchase/data-log-print', [PrintLogController::class, 'purchaseDataLogPrint'])->name('purchase.data.log-print');
+	Route::post('purchase/log-print', [PrintLogController::class, 'purchaseStoreLogPrint'])->name('purchase.log-print');
+	Route::get('purchase/log-print/{id}', [PrintLogController::class, 'purchaseViewLogPrint'])->name('purchase.reprint');
+
+	// Packing
+	Route::get('packing', [PackingController::class, 'index'])->name('packing.index');
+	Route::get('packing-group', [PackingController::class, 'groupCustomer'])->name('packing.group');
+	Route::get('packing-customer', [PackingController::class, 'packingCustomer'])->name('packing.customer');
+	Route::get('packing/data-log-print', [PrintLogController::class, 'packingDataLogPrint'])->name('packing.data.log-print');
+	Route::post('packing/log-print', [PrintLogController::class, 'packingStoreLogPrint'])->name('packing.log-print');
+	Route::get('packing/log-print/{id}', [PrintLogController::class, 'packingViewLogPrint'])->name('packing.reprint');
+
+	// Travel Document
+	Route::get('surat-jalan', [DocumentController::class, 'index'])->name('document.index');
+	Route::post('surat-jalan/convert', [DocumentController::class, 'storeConversion'])->name('document.convert');
+
+	// Invoice
+	Route::get('invoice', [InvoiceController::class, 'index'])->name('invoice.index');
+
+	// Image Archive
+	Route::get('arsip-gambar', [ImageArchiveController::class, 'index'])->name('image-archive.index');
+	Route::post('arsip-gambar', [ImageArchiveController::class, 'store'])->name('image-archive.store');
+	Route::get('arsip-gambar/data', [ImageArchiveController::class, 'data'])->name('image-archive.data');
+	Route::get('arsip-gambar/{id}/edit', [ImageArchiveController::class, 'edit'])->name('image-archive.edit');
+	Route::put('arsip-gambar/{id}', [ImageArchiveController::class, 'update'])->name('image-archive.update');
+	Route::delete('arsip-gambar/{id}', [ImageArchiveController::class, 'destroy'])->name('image-archive.destroy');
+	Route::post('arsip-gambar/delete-selected', [ImageArchiveController::class, 'deleteAllSelected'])->name('image-archive.delete-selected');
+
+	// Group Customer
+	Route::get('customer-group', [CustomerController::class, 'groupIndex'])->name('customer.group.index');
+	Route::get('customer-group/tambah', [CustomerController::class, 'groupCreate'])->name('customer.group.create');
+	Route::put('customer-group', [CustomerController::class, 'groupStore'])->name('customer.group.store');
+	Route::get('customer-group/{id}/edit', [CustomerController::class, 'groupEdit'])->name('customer.group.edit');
+	Route::put('customer-group/{id}', [CustomerController::class, 'groupUpdate'])->name('customer.group.update');
+	Route::delete('customer-group/{id}', [CustomerController::class, 'groupDestroy'])->name('customer.group.destroy');
+
+	// Customer
+	Route::get('customer', [CustomerController::class, 'index'])->name('customer.index');
+	Route::get('customer/data', [CustomerController::class, 'data'])->name('customer.data');
+	Route::get('customer/tambah', [CustomerController::class, 'create'])->name('customer.create');
+	Route::put('customer', [CustomerController::class, 'store'])->name('customer.store');
+	Route::get('customer/{id}/detail', [CustomerController::class, 'edit'])->name('customer.edit');
+	Route::put('customer/{id}', [CustomerController::class, 'update'])->name('customer.update');
+	Route::put('customer/{id}/price', [CustomerController::class, 'updatePrice'])->name('customer.update.price');
+	Route::delete('customer/{id}', [CustomerController::class, 'destroy'])->name('customer.destroy');
+
+	// Goods
+	Route::get('barang-komoditi', [GoodsController::class, 'index'])->name('goods.index');
+	Route::get('barang-komoditi/data', [GoodsController::class, 'data'])->name('goods.data');
+	Route::get('barang-komoditi/tambah', [GoodsController::class, 'create'])->name('goods.create');
+	Route::put('barang-komoditi', [GoodsController::class, 'store'])->name('goods.store');
+	Route::get('barang-komoditi/{id}/edit', [GoodsController::class, 'edit'])->name('goods.edit');
+	Route::put('barang-komoditi/{id}', [GoodsController::class, 'update'])->name('goods.update');
+	Route::delete('barang-komoditi/{id}', [GoodsController::class, 'destroy'])->name('goods.destroy');
+
+	// Specification
+	Route::get('spesifikasi-komoditi', [SpecificationController::class, 'index'])->name('specification.index');
+	Route::get('spesifikasi-komoditi/data', [SpecificationController::class, 'data'])->name('specification.data');
+	Route::get('spesifikasi-komoditi/tambah', [SpecificationController::class, 'create'])->name('specification.create');
+	Route::put('spesifikasi-komoditi', [SpecificationController::class, 'store'])->name('specification.store');
+	Route::get('spesifikasi-komoditi/{id}/edit', [SpecificationController::class, 'edit'])->name('specification.edit');
+	Route::put('spesifikasi-komoditi/{id}', [SpecificationController::class, 'update'])->name('specification.update');
+	Route::delete('spesifikasi-komoditi/{id}', [SpecificationController::class, 'destroy'])->name('specification.destroy');
+
+	// User Management
+	Route::get('kelola-pengguna', [UserManagementController::class, 'index'])->name('user-management.index');
+	Route::get('kelola-pengguna/data', [UserManagementController::class, 'data'])->name('user-management.data');	
+	Route::get('kelola-pengguna/tambah', [UserManagementController::class, 'create'])->name('user-management.create');
+	Route::put('kelola-pengguna', [UserManagementController::class, 'store'])->name('user-management.store');
+	Route::get('kelola-pengguna/{id}/edit', [UserManagementController::class, 'edit'])->name('user-management.edit');
+	Route::put('kelola-pengguna/{id}', [UserManagementController::class, 'update'])->name('user-management.update');
+	Route::delete('kelola-pengguna/{id}', [UserManagementController::class, 'destroy'])->name('user-management.destroy');
 	
-	Route::get('tables', function () {
-		return view('tables');
-	})->name('tables');
+	// User Profile
+	Route::get('profil', [UserController::class, 'index'])->name('user.index');
+	Route::put('profil', [UserController::class, 'update'])->name('user.update');
 
-    Route::get('virtual-reality', function () {
-		return view('virtual-reality');
+	// Virtual Reality
+	Route::get('virtual-reality', function () {
+		return view('pages.virtual-reality');
 	})->name('virtual-reality');
 
-    Route::get('static-sign-in', function () {
-		return view('static-sign-in');
-	})->name('sign-in');
+	// Chat
+	Route::get('chat', [ChatController::class, 'index'])->name('chat.index');
+	Route::get('chat/user/{userId}', [ChatController::class, 'index'])->name('chat.show');
+    Route::get('chat/messages/{user}', [ChatController::class, 'fetchMessages'])->name('chat.fetch');
+    Route::post('chat/messages', [ChatController::class, 'sendMessage'])->name('chat.messages');
+	Route::post('chat/upload', [ChatController::class, 'uploadFile'])->name('chat.upload');
+	Route::get('chat/users/list', [ChatController::class, 'refreshUserList'])->name('chat.users.list');
+	Route::get('chat/unread-count', [ChatController::class, 'getUnreadCount'])->name('chat.unread-count');
+	Route::delete('chat/delete/{user}', [ChatController::class, 'deleteMessages'])->name('chat.delete');
+	Route::post('chat/delete-message', [ChatController::class, 'deleteSenderMessages'])->name('chat.delete.sender');
+	Route::get('chat/unread-messages', [ChatController::class, 'getUnreadMessages'])->name('chat.unread-messages');
 
-    Route::get('static-sign-up', function () {
-		return view('static-sign-up');
-	})->name('sign-up');
-
-
-	Route::get('user-profile', [InfoUserController::class, 'index'])->name('user-profile.index');
-	Route::post('user-profile/update', [InfoUserController::class, 'update'])->name('user-profile.update');
-	Route::get('user-management/create', [InfoUserController::class, 'create'])->name('user-management.create');
-	Route::post('user-management', [InfoUserController::class, 'store'])->name('user-management.store');
-	Route::get('user-management', [InfoUserController::class, 'show'])->name('user-management');
-	
-    Route::get('/logout', [SessionsController::class, 'destroy']);
-
-    Route::get('/login', function () {
-		return view('dashboard');
-	})->name('sign-up');
+	// Sessions
+    Route::get('logout', [SessionsController::class, 'destroy'])->name('logout');
+	Route::post('switch-account', [SessionsController::class, 'switchAccount'])->name('switch-account');
 });
 
-Route::group(['middleware' => 'guest'], function () {
-    Route::get('/register', [RegisterController::class, 'create']);
-    Route::post('/register', [RegisterController::class, 'store']);
-    Route::get('/login', [SessionsController::class, 'create']);
-    Route::post('/session', [SessionsController::class, 'store']);
-	Route::get('/login/forgot-password', [ResetController::class, 'create']);
-	Route::post('/forgot-password', [ResetController::class, 'sendEmail']);
-	Route::get('/reset-password/{token}', [ResetController::class, 'resetPass'])->name('password.reset');
-	Route::post('/reset-password', [ChangePasswordController::class, 'changePassword'])->name('password.update');
-
+// Error Handling
+Route::fallback(function () {
+    return response()->view('errors.not-found', [], 404);
 });
-
-Route::get('/login', function () {
-    return view('session/login-session');
-})->name('login');
