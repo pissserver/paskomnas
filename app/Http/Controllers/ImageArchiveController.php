@@ -39,7 +39,7 @@ class ImageArchiveController extends Controller
         
         $imageArchive->create($dataToCreate);
 
-        return redirect('request-order')->with('success','Data berhasil ditambahkan');
+        return redirect()->route('image-archive.index')->with('success','Data berhasil ditambahkan');
     }
 
     public function data(Request $request)
@@ -100,7 +100,7 @@ class ImageArchiveController extends Controller
 
         $archive->update($dataToUpdate);
 
-        return redirect('/request-order')->with('success','Data berhasil diperbarui');
+        return redirect()->route('image-archive.index')->with('success','Data berhasil diperbarui');
     }
 
     public function destroy($id)
@@ -113,7 +113,7 @@ class ImageArchiveController extends Controller
 
         $archive->delete();
 
-        return redirect('/request-order')->with('success','Data berhasil dihapus');
+        return redirect()->route('image-archive.index')->with('success','Data berhasil dihapus');
     }
 
     public function deleteAllSelected(Request $request)

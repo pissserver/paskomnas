@@ -33,7 +33,7 @@
 					<div
 						class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
 						<i style="margin-top: -5px;"
-							class="fas fa-inbox {{ (Request::is('request-order') || Request::is('request-order/create') || Request::is('arsip-gambar/*/edit') ? 'text-white' : 'text-dark') }}"></i>
+							class="fas fa-inbox {{ (Request::is('request-order') || Request::is('request-order/create') || Request::is('request-order/*/edit') ? 'text-white' : 'text-dark') }}"></i>
 					</div>
 					<span class="nav-link-text ms-1">Request Order</span>
 				</a>

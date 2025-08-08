@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
@@ -9,42 +8,38 @@
 
 	<link rel="apple-touch-icon" sizes="76x76" href="{{ asset('assets/img/logo2.png') }}">
 	<link rel="icon" type="image/png" href="{{ asset('assets/img/logo2.png') }}">
-	<title>
-		@yield('title')
-	</title>
+	<title>@yield('title')</title>
+
 	{{-- Fonts awesome --}}
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-	<!--     Fonts and icons     -->
 	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
-	<!-- Nucleo Icons -->
 	<link href="{{ asset('assets/css/nucleo-icons.css') }}" rel="stylesheet" />
 	<link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
-	<!-- Font Awesome Icons -->
 	<script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+
 	{{-- MediumZoom --}}
 	<script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
-	<!-- Select2 CSS -->
+
+	{{-- Select2 --}}
 	<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-	<!-- Select2 Bootstrap Theme -->
 	<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"
 		rel="stylesheet" />
-	<!-- CSS Files -->
+
+	{{-- CSS --}}
 	<link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
 	<link id="pagestyle" href="{{ asset('assets/css/soft-ui-dashboard.css?v=1.0.3') }}" rel="stylesheet" />
-	<!-- Cropper.js CSS -->
+
+	{{-- Cropper.js --}}
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
-	<!-- Flatpickr CSS -->
+
+	{{-- Flatpickr --}}
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
-	<!-- jQuery (wajib) -->
+	{{-- jQuery --}}
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-	<!-- Select2 JS -->
 	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-	<!-- Bootstrap CSS -->
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-	<!-- Cropper.js JS -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-	<!-- Flatpickr JS -->
 	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 	<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
 </head>
@@ -59,18 +54,17 @@
 	@yield('guest')
 	@endguest
 
-	@if(session()->has('success'))
+	{{-- @if(session()->has('success'))
 	<div x-data="{ show: true}" x-init="setTimeout(() => show = false, 4000)" x-show="show"
 		class="position-fixed bg-success rounded right-3 text-sm py-2 px-4">
 		<p class="m-0">{{ session('success')}}</p>
 	</div>
-	@endif
+	@endif --}}
 
-	{{-- * Notification Chat --}}
+	{{-- Container Notifikasi Chat --}}
 	<div id="chat-notification-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;"></div>
 
-
-	<!--   Core JS Files   -->
+	<!-- Core JS Files -->
 	<script src="{{ asset('assets/js/core/popper.min.js') }}"></script>
 	<script src="{{ asset('assets/js/core/bootstrap.min.js') }}"></script>
 	<script src="{{ asset('assets/js/plugins/perfect-scrollbar.min.js') }}"></script>
@@ -83,19 +77,18 @@
 	<script>
 		var win = navigator.platform.indexOf('Win') > -1;
 		if (win && document.querySelector('#sidenav-scrollbar')) {
-			var options = {
-			damping: '0.5'
-			}
+			var options = { damping: '0.5' }
 			Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
 		}
 	</script>
 
+	{{-- Script Notifikasi Chat, hanya untuk user login --}}
+	@auth
 	<script>
 		let lastNotifiedIds = [];
 
 		function showChatNotification(data) {
 			const notifId = 'notif-' + data.id;
-
 			if (document.getElementById(notifId)) return;
 
 			const notif = document.createElement('div');
@@ -127,29 +120,44 @@
 		}
 
 		setInterval(() => {
-			fetch("{{ route('chat.unread-messages') }}")
-				.then(res => res.json())
-				.then(data => {
-					data.messages.forEach(msg => {
-						if (!lastNotifiedIds.includes(msg.id)) {
-							showChatNotification(msg);
-							lastNotifiedIds.push(msg.id);
+			fetch("{{ route('chat.unread-messages') }}", {
+				headers: {
+					'Accept': 'application/json'
+				}
+			})
+			.then(res => {
+				const contentType = res.headers.get("content-type") || "";
+				if (contentType.includes("application/json")) {
+					return res.json();
+				} else {
+					console.warn("Respon bukan JSON, kemungkinan HTML/login page:", res);
+					return null; // skip supaya tidak error
+				}
+			})
+			.then(data => {
+				if (!data || !data.messages) return;
 
-							if (lastNotifiedIds.length > 20) lastNotifiedIds.shift();
-						}
-					});
+				data.messages.forEach(msg => {
+					if (!lastNotifiedIds.includes(msg.id)) {
+						showChatNotification(msg);
+						lastNotifiedIds.push(msg.id);
+
+						if (lastNotifiedIds.length > 20) lastNotifiedIds.shift();
+					}
 				});
-		}, 1000); // Cek setiap 1 detik
+			})
+			.catch(err => {
+				console.error("Gagal ambil notif:", err);
+			});
+		}, 1000); // cek tiap 1 detik
 	</script>
+	@endauth
 
-	<!-- Bootstrap 5 (JS + Popper) -->
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="..."
-		crossorigin="anonymous"></script>
-	<!-- Github buttons -->
+	<!-- Bootstrap 5 Bundle -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous">
+	</script>
 	<script async defer src="https://buttons.github.io/buttons.js"></script>
-	<!-- SweetAlert2 CDN -->
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-	<!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
 	<script src="{{ asset('assets/js/soft-ui-dashboard.min.js?v=1.0.3') }}"></script>
 </body>
 
