@@ -149,7 +149,7 @@
 			.catch(err => {
 				console.error("Gagal ambil notif:", err);
 			});
-		}, 1000); // cek tiap 1 detik
+		}, 5000); // cek tiap 5 detik
 	</script>
 	@endauth
 

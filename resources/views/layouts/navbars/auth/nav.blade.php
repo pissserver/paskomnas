@@ -364,5 +364,5 @@
     updateUnreadBadge();
 
     // Jalankan ulang tiap 1 detik
-    setInterval(updateUnreadBadge, 1000);
+    setInterval(updateUnreadBadge, 5000);
 </script>
