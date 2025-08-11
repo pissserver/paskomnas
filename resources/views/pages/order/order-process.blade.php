@@ -117,7 +117,7 @@
                 </div>
                 <div class="card-body px-0 pt-4 pb-2">
                     <div class="table-responsive p-0">
-                        @if ($orderCancel->isEmpty())
+                        @if ($orderCancel->total() === 0)
                         <div class="empty-data">
                             <div class="text-center">
                                 <img src="{{ asset('assets/img/empty-data.png') }}" alt="No Data" class="img-fluid"

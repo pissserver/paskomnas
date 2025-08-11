@@ -15,7 +15,8 @@
 	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
 	<link href="{{ asset('assets/css/nucleo-icons.css') }}" rel="stylesheet" />
 	<link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
-	<script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+	{{-- <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script> --}}
+
 
 	{{-- MediumZoom --}}
 	<script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
