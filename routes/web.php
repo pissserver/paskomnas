@@ -88,6 +88,8 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 	Route::put('order-diproses/{id}', [OrderController::class, 'orderProcessAction'])->name('order.process.action');
 	Route::get('order-dibatalkan/data', [OrderController::class, 'orderCancelData'])->name('order.cancel.data');
 	Route::put('order-dibatalkan/{id}', [OrderController::class, 'orderCancelAction'])->name('order.cancel.action');
+	Route::get('order-selesai/data', [OrderController::class, 'orderDoneData'])->name('order.done.data');
+	Route::put('order-selesai/{id}', [OrderController::class, 'orderDoneAction'])->name('order.done.action');
 
 	// Purchase
 	Route::get('purchase', [PurchaseController::class, 'index'])->name('purchase.index');

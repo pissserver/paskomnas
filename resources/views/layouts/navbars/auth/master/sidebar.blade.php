@@ -63,7 +63,7 @@
 						<i style="margin-top: -5px;"
 							class="fa fa-sync-alt {{ (Request::is('order-diproses') ? 'text-white' : 'text-dark') }}"></i>
 					</div>
-					<span class="nav-link-text ms-1">Proses & Batal</span>
+					<span class="nav-link-text ms-1">Proses Order</span>
 				</a>
 			</li>
 
