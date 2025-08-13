@@ -114,17 +114,31 @@
                                     </p>
                                 </div>
                                 @if ($order->status === 'confirmed')
-                                <form id="cancel-form-{{ $order->id }}"
-                                    action="{{ route('order.cancel.action', $order->id) }}" method="POST"
-                                    class="d-none">
-                                    @csrf
-                                    @method('PUT')
-                                </form>
-                                <a class="btn bg-gradient-danger align-self-start" href="javascript:;"
-                                    title="Cancel Order"
-                                    onclick="confirmCancel({{ $order->id }}, '{{ $order->order_code }}', '{{ $order->customer->name }}')">
-                                    <i class="fas fa-ban text-white me-2"></i>Batalkan Order
-                                </a>
+                                <div class="action-button">
+                                    <form id="cancel-form-{{ $order->id }}"
+                                        action="{{ route('order.cancel.action', $order->id) }}" method="POST"
+                                        class="d-none">
+                                        @csrf
+                                        @method('PUT')
+                                    </form>
+                                    <a class="btn bg-gradient-danger align-self-start" href="javascript:;"
+                                        title="Cancel Order"
+                                        onclick="confirmCancel({{ $order->id }}, '{{ $order->order_code }}', '{{ $order->customer->name }}')">
+                                        <i class="fas fa-ban text-white me-2"></i>Batalkan Order
+                                    </a>
+
+                                    <form id="done-form-{{ $order->id }}"
+                                        action="{{ route('order.done.action', $order->id) }}" method="POST"
+                                        class="d-none">
+                                        @csrf
+                                        @method('PUT')
+                                    </form>
+                                    <a class="btn bg-gradient-success align-self-start" href="javascript:;"
+                                        title="Done Order"
+                                        onclick="confirmDone({{ $order->id }}, '{{ $order->order_code }}', '{{ $order->customer->name }}')">
+                                        <i class="fas fa-check text-white me-2"></i>Batalkan Order
+                                    </a>
+                                </div>
                                 @else
                                 <form id="process-form-{{ $order->id }}"
                                     action="{{ route('order.process.action', $order->id) }}" method="POST"
@@ -139,6 +153,7 @@
                                 </a>
                                 @endif
                             </div>
+
                             <form
                                 action="{{ route('order.update', ['customer_id' => $order->customer_id, 'order_id' => $order->id]) }}"
                                 method="POST" role="form text-left" enctype="multipart/form-data">
@@ -653,6 +668,23 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 document.getElementById(`process-form-${orderId}`).submit();
+            }
+        });
+    }
+
+    function confirmDone(orderId, orderCode, customerName) {
+        Swal.fire({
+            title: 'Yakin ingin selesaikan?',
+            html: `Order dengan kode <strong>${orderCode}</strong> dari customer <strong>${customerName}</strong>.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, Selesaikan!',
+            cancelButtonText: 'Kembali'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(`done-form-${orderId}`).submit();
             }
         });
     }
