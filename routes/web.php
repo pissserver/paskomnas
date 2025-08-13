@@ -168,6 +168,10 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 		return view('pages.virtual-reality');
 	})->name('virtual-reality');
 
+	Route::get('informasi', function() {
+		return view('pages.information');
+	})->name('information');
+
 	// Chat
 	Route::get('chat', [ChatController::class, 'index'])->name('chat.index');
 	Route::get('chat/user/{userId}', [ChatController::class, 'index'])->name('chat.show');
