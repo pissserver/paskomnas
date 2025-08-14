@@ -51,10 +51,6 @@
 				</a>
 			</li>
 
-			<li class="nav-item mt-3">
-				<h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Proses</h6>
-			</li>
-
 			<li class="nav-item">
 				<a class="nav-link {{ Request::is('order-diproses')  ? 'active' : '' }}"
 					href="{{ route('order.process.view') }}">
@@ -66,6 +62,11 @@
 					<span class="nav-link-text ms-1">Proses Order</span>
 				</a>
 			</li>
+
+			<li class="nav-item mt-3">
+				<h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Proses</h6>
+			</li>
+
 
 			<li class="nav-item">
 				<a class="nav-link {{ Request::is('purchase')  ? 'active' : '' }}" href="{{ route('purchase.index') }}">
