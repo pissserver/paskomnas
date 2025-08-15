@@ -145,6 +145,99 @@
             </div>
         </div>
     </div>
+    <div class="accordion-item border">
+        <h2 class="accordion-header" id="headingSix">
+            <button class="accordion-button fw-bold collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
+                Surat Jalan
+            </button>
+        </h2>
+        <div id="collapseSix" class="accordion-collapse collapse" aria-labelledby="headingSix"
+            data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+                Menu <strong><i>Surat Jalan</i></strong> digunakan untuk melakukan print atau pencetakan order yang
+                sudah
+                dibuat sesuai dengan kode order. Pada menu surat jalan ini admin bisa melakukan convert quantity, contoh
+                seperti dari KG ingin diubah menjadi Gram.
+                <div class="video mt-5">
+                    <video width="50%" class="border border-dark border-5"
+                        style="border-radius: 10px; overflow: hidden;" controls>
+                        <source src="{{ asset('assets/video/surat-jalan.mp4') }}" type="video/mp4">
+                        Browser Anda tidak mendukung tag video.
+                    </video>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="accordion-item border">
+        <h2 class="accordion-header" id="headingSeven">
+            <button class="accordion-button fw-bold collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseSeven" aria-expanded="false" aria-controls="collapseSeven">
+                Invoice
+            </button>
+        </h2>
+        <div id="collapseSeven" class="accordion-collapse collapse" aria-labelledby="headingSeven"
+            data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+                Menu <strong><i>Invoice</i></strong> digunakan untuk melakukan print atau pencetakan order yang
+                sudah
+                dibuat sesuai dengan kode order. Pada menu invoice ini berisi semua detail barang yang dipesan dan juga
+                total harganya.
+                <div class="video mt-5">
+                    <video width="50%" class="border border-dark border-5"
+                        style="border-radius: 10px; overflow: hidden;" controls>
+                        <source src="{{ asset('assets/video/invoice.mp4') }}" type="video/mp4">
+                        Browser Anda tidak mendukung tag video.
+                    </video>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="accordion-item border">
+        <h2 class="accordion-header" id="headingEight">
+            <button class="accordion-button fw-bold collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseEight" aria-expanded="false" aria-controls="collapseEight">
+                Customer Group
+            </button>
+        </h2>
+        <div id="collapseEight" class="accordion-collapse collapse" aria-labelledby="headingEight"
+            data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+                Menu <strong><i>Customer Group</i></strong> digunakan untuk membuat data customer group, dimana
+                customer group ini akan menampung dari beberapa customer.
+                <div class="video mt-5">
+                    <video width="50%" class="border border-dark border-5"
+                        style="border-radius: 10px; overflow: hidden;" controls>
+                        <source src="{{ asset('assets/video/customer-group.mp4') }}" type="video/mp4">
+                        Browser Anda tidak mendukung tag video.
+                    </video>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="accordion-item border">
+        <h2 class="accordion-header" id="headingNine">
+            <button class="accordion-button fw-bold collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseNine" aria-expanded="false" aria-controls="collapseNine">
+                Customer
+            </button>
+        </h2>
+        <div id="collapseNine" class="accordion-collapse collapse" aria-labelledby="headingNine"
+            data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+                Menu <strong><i>Customer</i></strong> digunakan untuk membuat data customer. Admin bisa mendaftarkan
+                atau membuat data customer sesuai dengan formulir pendaftaran customer. Pada menu customer ini admin
+                juga bisa membuat daftar harga semua komoditi sesuai dengan harga customer.
+                <div class="video mt-5">
+                    <video width="50%" class="border border-dark border-5"
+                        style="border-radius: 10px; overflow: hidden;" controls>
+                        <source src="{{ asset('assets/video/customer.mp4') }}" type="video/mp4">
+                        Browser Anda tidak mendukung tag video.
+                    </video>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <style>
