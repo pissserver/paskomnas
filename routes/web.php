@@ -168,6 +168,7 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 		return view('pages.virtual-reality');
 	})->name('virtual-reality');
 
+	// Information
 	Route::get('informasi', function() {
 		return view('pages.information');
 	})->name('information');

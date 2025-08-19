@@ -204,7 +204,8 @@
             data-bs-parent="#accordionExample">
             <div class="accordion-body">
                 Menu <strong><i>Customer Group</i></strong> digunakan untuk membuat data customer group, dimana
-                customer group ini akan menampung dari beberapa customer.
+                customer group ini akan menampung dari beberapa customer. <i>Menu ini khusus untuk akun dengan role
+                    Master.</i>
                 <div class="video mt-5">
                     <video width="50%" class="border border-dark border-5"
                         style="border-radius: 10px; overflow: hidden;" controls>
@@ -227,11 +228,126 @@
             <div class="accordion-body">
                 Menu <strong><i>Customer</i></strong> digunakan untuk membuat data customer. Admin bisa mendaftarkan
                 atau membuat data customer sesuai dengan formulir pendaftaran customer. Pada menu customer ini admin
-                juga bisa membuat daftar harga semua komoditi sesuai dengan harga customer.
+                juga bisa membuat daftar harga semua komoditi sesuai dengan harga customer. <i>Menu ini khusus untuk
+                    akun dengan role Master.</i>
                 <div class="video mt-5">
                     <video width="50%" class="border border-dark border-5"
                         style="border-radius: 10px; overflow: hidden;" controls>
                         <source src="{{ asset('assets/video/customer.mp4') }}" type="video/mp4">
+                        Browser Anda tidak mendukung tag video.
+                    </video>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="accordion-item border">
+        <h2 class="accordion-header" id="headingTen">
+            <button class="accordion-button fw-bold collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseTen" aria-expanded="false" aria-controls="collapseTen">
+                Barang Komoditi
+            </button>
+        </h2>
+        <div id="collapseTen" class="accordion-collapse collapse" aria-labelledby="headingTen"
+            data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+                Menu <strong><i>Barang Komoditi</i></strong> digunakan untuk membuat data barang komoditi. Terdapat nama
+                barang, satuan, satuan didalam order (opsional) dan ppn jika ada pada barang komoditi. <i>Menu ini
+                    khusus untuk akun dengan role Master.</i>
+                <div class="video mt-5">
+                    <video width="50%" class="border border-dark border-5"
+                        style="border-radius: 10px; overflow: hidden;" controls>
+                        <source src="{{ asset('assets/video/barang-komoditi.mp4') }}" type="video/mp4">
+                        Browser Anda tidak mendukung tag video.
+                    </video>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="accordion-item border">
+        <h2 class="accordion-header" id="headingEleven">
+            <button class="accordion-button fw-bold collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseEleven" aria-expanded="false" aria-controls="collapseEleven">
+                Spesifikasi Komoditi
+            </button>
+        </h2>
+        <div id="collapseEleven" class="accordion-collapse collapse" aria-labelledby="headingEleven"
+            data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+                Menu <strong><i>Spesifikasi Komoditi</i></strong> digunakan untuk membuat data spesifikasi barang
+                komoditi. Data ini akan digunakan pada saat membuat order, jadi customer bisa request spesifikasi barang
+                komoditi
+                yang dibutuhkan. <i>Menu ini khusus untuk akun dengan role Master.</i>
+                <div class="video mt-5">
+                    <video width="50%" class="border border-dark border-5"
+                        style="border-radius: 10px; overflow: hidden;" controls>
+                        <source src="{{ asset('assets/video/spesifikasi-komoditi.mp4') }}" type="video/mp4">
+                        Browser Anda tidak mendukung tag video.
+                    </video>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="accordion-item border">
+        <h2 class="accordion-header" id="headingTwelve">
+            <button class="accordion-button fw-bold collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseTwelve" aria-expanded="false" aria-controls="collapseTwelve">
+                Kelola Pengguna
+            </button>
+        </h2>
+        <div id="collapseTwelve" class="accordion-collapse collapse" aria-labelledby="headingTwelve"
+            data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+                Menu <strong><i>Kelola Pengguna</i></strong> digunakan untuk membuat akun sistem
+                PASKOMNAS. Selain pada menu ini, membuat akun juga bisa dengan registrasi di awal halaman masuk sistem
+                dengan role default yaitu User. <i>Menu ini khusus untuk akun dengan role Master.</i>
+                <div class="video mt-5">
+                    <video width="50%" class="border border-dark border-5"
+                        style="border-radius: 10px; overflow: hidden;" controls>
+                        <source src="{{ asset('assets/video/kelola-pengguna.mp4') }}" type="video/mp4">
+                        Browser Anda tidak mendukung tag video.
+                    </video>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="accordion-item border">
+        <h2 class="accordion-header" id="headingThreeteen">
+            <button class="accordion-button fw-bold collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseThreeteen" aria-expanded="false" aria-controls="collapseThreeteen">
+                Profil
+            </button>
+        </h2>
+        <div id="collapseThreeteen" class="accordion-collapse collapse" aria-labelledby="headingThreeteen"
+            data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+                Menu <strong><i>Profil</i></strong> digunakan untuk mengedit profil akun seperti nama, email, no
+                telepon, password, dan lain lain.
+                <div class="video mt-5">
+                    <video width="50%" class="border border-dark border-5"
+                        style="border-radius: 10px; overflow: hidden;" controls>
+                        <source src="{{ asset('assets/video/profil.mp4') }}" type="video/mp4">
+                        Browser Anda tidak mendukung tag video.
+                    </video>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="accordion-item border">
+        <h2 class="accordion-header" id="headingFourteen">
+            <button class="accordion-button fw-bold collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseFourteen" aria-expanded="false" aria-controls="collapseFourteen">
+                Virtual Reality
+            </button>
+        </h2>
+        <div id="collapseFourteen" class="accordion-collapse collapse" aria-labelledby="headingFourteen"
+            data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+                Menu <strong><i>Virtual Reality</i></strong> hanya untuk pemanis tampilan dari sistem PASKOMNAS. Pada
+                menu Virtual Reality ini menampilkan informasi akun seperti pada menu profil.
+                <div class="video mt-5">
+                    <video width="50%" class="border border-dark border-5"
+                        style="border-radius: 10px; overflow: hidden;" controls>
+                        <source src="{{ asset('assets/video/virtual-reality.mp4') }}" type="video/mp4">
                         Browser Anda tidak mendukung tag video.
                     </video>
                 </div>
