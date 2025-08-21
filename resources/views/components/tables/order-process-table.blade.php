@@ -33,10 +33,22 @@
             @csrf
             @method('PUT')
         </form>
-        <a class="mb-0 btn bg-gradient-danger d-inline-flex align-items-center justify-content-center py-2 px-3"
+        <a class="mb-0 me-2 btn bg-gradient-danger d-inline-flex align-items-center justify-content-center py-2 px-3"
             href="javascript:;" title="Cancel Order"
             onclick="confirmCancel({{ $orderProcess->id }}, '{{ $orderProcess->order_code }}', '{{ $orderProcess->customer->name }}')">
             <i class="fas fa-ban text-white me-2"></i>Batalkan
+        </a>
+
+        <!-- Tombol Selesaikan -->
+        <form id="done-form-{{ $orderProcess->id }}" action="{{ route('order.done.action', $orderProcess->id) }}"
+            method="POST" class="d-none">
+            @csrf
+            @method('PUT')
+        </form>
+        <a class="mb-0 btn bg-gradient-success d-inline-flex align-items-center justify-content-center py-2 px-3"
+            href="javascript:;" title="Done Order"
+            onclick="confirmDone({{ $orderProcess->id }}, '{{ $orderProcess->order_code }}', '{{ $orderProcess->customer->name }}')">
+            <i class="fas fa-check text-white me-2"></i>Selesaikan
         </a>
     </td>
 </tr>

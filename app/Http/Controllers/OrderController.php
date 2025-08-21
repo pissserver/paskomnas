@@ -307,27 +307,33 @@ class OrderController extends Controller
     }
 
     // Function process & cancel order
+    // View all
     public function orderProcessView()
     {
-        $query = Order::with(['customer', 'orderItems.goods'])
+        $proccessQuery = Order::with(['customer', 'orderItems.goods'])
             ->where('status', 'confirmed');
-        $orderProcess = $query->orderBy('order_date', 'desc')->orderBy('order_code', 'desc')->paginate(10);
+        $orderProcess = $proccessQuery->orderBy('order_date', 'desc')->orderBy('order_code', 'desc')->paginate(10);
         
         $cancelQuery = Order::with(['customer', 'orderItems.goods'])
             ->where('status', 'cancelled');
         $orderCancel = $cancelQuery->orderBy('order_date', 'desc')->orderBy('order_code', 'desc')->paginate(10);
-        
-        return view('pages.order.order-process', compact('orderProcess', 'orderCancel'));
+
+        $doneQuery = Order::with(['customer', 'orderItems.goods'])
+            ->where('status', 'done');
+        $orderDone = $doneQuery->orderBy('order_date', 'desc')->orderBy('order_code', 'desc')->paginate(10);
+
+        return view('pages.order.order-process', compact('orderProcess', 'orderCancel', 'orderDone'));
     }
 
+    // Table proccess
     public function orderProcessData(Request $request)
     {
         DB::statement("SET lc_time_names = 'id_ID'");
 
         $keyword = $request->input('keyword');
         $query = Order::with(['customer', 'orderItems.goods'])
-            ->where('status', 'confirmed')
-            ->where('order_date', '>=', now()->subWeeks(2));
+            ->where('status', 'confirmed');
+            // ->where('order_date', '>=', now()->subWeeks(2));
 
         $goods = Goods::all();
 
@@ -352,14 +358,39 @@ class OrderController extends Controller
         ]);
     }
 
+    public function orderCancelAction($id)
+    {
+        $cancelOrder = Order::with('customer')
+            ->findOrFail($id);
+
+        $cancelOrder->status = 'cancelled';
+        $cancelOrder->save();
+
+        return redirect()->back()
+            ->with('success', 'Order dengan kode order <b>' . e($cancelOrder->order_code) . '</b> dari customer <b>' . e($cancelOrder->customer->name) . '</b> berhasil dibatalkan.');
+    }
+
+    public function orderDoneAction($id)
+    {
+        $doneOrder = Order::with('customer')
+            ->findOrFail($id);
+
+        $doneOrder->status = 'done';
+        $doneOrder->save();
+
+        return redirect()->back()
+            ->with('success', 'Order dengan kode order <b>' . e($doneOrder->order_code) . '</b> dari customer <b>' . e($doneOrder->customer->name) . '</b> berhasil diselesaikan.');
+    }
+
+    // Table Cancel
     public function orderCancelData(Request $request)
     {
         DB::statement("SET lc_time_names = 'id_ID'");
 
         $keyword = $request->input('keyword');
         $query = Order::with(['customer', 'orderItems.goods'])
-            ->where('status', 'cancelled')
-            ->where('order_date', '>=', now()->subWeeks(2));
+            ->where('status', 'cancelled');
+            // ->where('order_date', '>=', now()->subWeeks(2));
 
         $goods = Goods::all();
 
@@ -384,18 +415,6 @@ class OrderController extends Controller
         ]);
     }
 
-    public function orderCancelAction($id)
-    {
-        $cancelOrder = Order::with('customer')
-            ->findOrFail($id);
-
-        $cancelOrder->status = 'cancelled';
-        $cancelOrder->save();
-
-        return redirect()->back()
-            ->with('success', 'Order dengan kode order <b>' . e($cancelOrder->order_code) . '</b> dari customer <b>' . e($cancelOrder->customer->name) . '</b> berhasil dibatalkan.');
-    }
-
     public function orderProcessAction($id)
     {
         $processOrder = Order::with('customer')
@@ -406,5 +425,38 @@ class OrderController extends Controller
 
         return redirect()->back()
             ->with('success', 'Order dengan kode order <b>' . e($processOrder->order_code) . '</b> dari customer <b>' . e($processOrder->customer->name) . '</b> berhasil diproses kembali.');
+    }
+
+    // Table Done
+    public function orderDoneData(Request $request)
+    {
+        DB::statement("SET lc_time_names = 'id_ID'");
+
+        $keyword = $request->input('keyword');
+        $query = Order::with(['customer', 'orderItems.goods'])
+            ->where('status', 'done')
+            ->where('order_date', '>=', now()->subWeeks(2));
+
+        $goods = Goods::all();
+
+        if ($keyword) {
+            $query->where(function ($q) use ($keyword) {
+                $q->where('order_code', 'like', "%$keyword%")
+                ->orWhereRaw("DATE_FORMAT(order_date, '%W, %d %M %Y') LIKE ?", ["%$keyword%"])
+                ->orWhereHas('customer', function ($q2) use ($keyword) {
+                    $q2->where('name', 'like', "%$keyword%");
+                });
+            });
+        }
+
+        $orderDone = $query->orderBy('order_date', 'desc')->orderBy('order_code', 'desc')->paginate(10);
+
+        $html = view('components.tables.order-done-table', compact('orderDone', 'goods'))->render();
+        $pagination = view('components.pagination.order-done-pagination', compact('orderDone', 'goods'))->render();
+
+        return response()->json([
+            'html' => $html,
+            'pagination' => $pagination
+        ]);
     }
 }

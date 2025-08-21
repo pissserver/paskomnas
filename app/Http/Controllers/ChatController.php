@@ -218,5 +218,4 @@ class ChatController extends Controller
 
         return response()->json(['messages' => $data]);
     }
-
 }

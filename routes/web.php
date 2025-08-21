@@ -60,12 +60,19 @@ Route::group(['middleware' => 'guest'], function () {
 Route::middleware(['auth', 'roleAccess'])->group(function () {
     Route::get('/', [HomeController::class, 'home']);
 
-	Route::view('/chats', 'vendor.wirechat.livewire.chat.chat')->name('wirechat');
-
 	// Dashboard
 	Route::get('dashboard', [HomeController::class, 'index'])->name('dashboard.index');
 	Route::get('dashboard/data-group', [HomeController::class, 'dataGroup'])->name('dashboard.data.group');
 	Route::get('dashboard/data-customer', [HomeController::class, 'dataCustomer'])->name('dashboard.data.customer');
+
+	// Request Order (Archive Image)
+	Route::get('request-order', [ImageArchiveController::class, 'index'])->name('image-archive.index');
+	Route::post('request-order', [ImageArchiveController::class, 'store'])->name('image-archive.store');
+	Route::get('request-order/data', [ImageArchiveController::class, 'data'])->name('image-archive.data');
+	Route::get('request-order/{id}/edit', [ImageArchiveController::class, 'edit'])->name('image-archive.edit');
+	Route::put('request-order/{id}', [ImageArchiveController::class, 'update'])->name('image-archive.update');
+	Route::delete('request-order/{id}', [ImageArchiveController::class, 'destroy'])->name('image-archive.destroy');
+	Route::post('request-order/delete-selected', [ImageArchiveController::class, 'deleteAllSelected'])->name('image-archive.delete-selected');
 
 	// Order
 	Route::get('order', [OrderController::class, 'index'])->name('order.index');
@@ -81,6 +88,8 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 	Route::put('order-diproses/{id}', [OrderController::class, 'orderProcessAction'])->name('order.process.action');
 	Route::get('order-dibatalkan/data', [OrderController::class, 'orderCancelData'])->name('order.cancel.data');
 	Route::put('order-dibatalkan/{id}', [OrderController::class, 'orderCancelAction'])->name('order.cancel.action');
+	Route::get('order-selesai/data', [OrderController::class, 'orderDoneData'])->name('order.done.data');
+	Route::put('order-selesai/{id}', [OrderController::class, 'orderDoneAction'])->name('order.done.action');
 
 	// Purchase
 	Route::get('purchase', [PurchaseController::class, 'index'])->name('purchase.index');
@@ -104,15 +113,6 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 
 	// Invoice
 	Route::get('invoice', [InvoiceController::class, 'index'])->name('invoice.index');
-
-	// Image Archive
-	Route::get('arsip-gambar', [ImageArchiveController::class, 'index'])->name('image-archive.index');
-	Route::post('arsip-gambar', [ImageArchiveController::class, 'store'])->name('image-archive.store');
-	Route::get('arsip-gambar/data', [ImageArchiveController::class, 'data'])->name('image-archive.data');
-	Route::get('arsip-gambar/{id}/edit', [ImageArchiveController::class, 'edit'])->name('image-archive.edit');
-	Route::put('arsip-gambar/{id}', [ImageArchiveController::class, 'update'])->name('image-archive.update');
-	Route::delete('arsip-gambar/{id}', [ImageArchiveController::class, 'destroy'])->name('image-archive.destroy');
-	Route::post('arsip-gambar/delete-selected', [ImageArchiveController::class, 'deleteAllSelected'])->name('image-archive.delete-selected');
 
 	// Group Customer
 	Route::get('customer-group', [CustomerController::class, 'groupIndex'])->name('customer.group.index');
@@ -167,6 +167,11 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 	Route::get('virtual-reality', function () {
 		return view('pages.virtual-reality');
 	})->name('virtual-reality');
+
+	// Information
+	Route::get('informasi', function() {
+		return view('pages.information');
+	})->name('information');
 
 	// Chat
 	Route::get('chat', [ChatController::class, 'index'])->name('chat.index');

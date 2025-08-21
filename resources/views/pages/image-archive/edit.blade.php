@@ -1,6 +1,6 @@
 @extends('layouts.user_type.auth')
 
-@section('title', 'Edit Arsip Gambar')
+@section('title', 'Edit Request Order Gambar')
 
 @section('content')
 
@@ -33,7 +33,7 @@
                 <div class="container-fluid py-4">
                     <div class="card">
                         <div class="card-header p-4 d-flex justify-content-between align-items-center">
-                            <h6 class="mb-0">{{ __('Edit Data Image Archive') }}</h6>
+                            <h6 class="mb-0">{{ __('Edit Request Order') }}</h6>
                             <a href="{{ route('image-archive.index') }}"
                                 class="btn bg-gradient-danger btn-md mb-0">{{ 'Kembali' }}&nbsp;&nbsp;<i
                                     class="fa fa-arrow-right"></i></a>
@@ -55,7 +55,7 @@
 
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="photo">{{ 'Image' }}</label>
+                                        <label for="photo">{{ 'Foto' }}</label>
                                         <div class="@error('archive.photo') border border-danger rounded-3 @enderror">
                                             <div class="row">
                                                 <div class="col-md-1">
@@ -71,7 +71,7 @@
                                                         onclick="document.getElementById('imageInput').click()"
                                                         class="btn bg-gradient-primary w-100">
                                                         <i class="fa fa-upload pe-2" data-bs-toggle="tooltip"
-                                                            title="Upload Image"></i>Upload Image
+                                                            title="Upload Image"></i>Unggah Foto
                                                     </a>
                                                 </div>
                                             </div>
@@ -82,7 +82,8 @@
                             <div class="form-group">
                                 <label for="about">{{ 'Description' }}</label>
                                 <div class="@error('archive.about') border border-danger rounded-3 @enderror">
-                                    <textarea class="form-control" id="about" rows="3" placeholder="Description"
+                                    <textarea class="form-control" id="about" rows="3"
+                                        placeholder="Deskripsi Request Order"
                                         name="description">{{ $archive->description }}</textarea>
                                 </div>
                             </div>

@@ -53,4 +53,35 @@ class SpecificationController extends Controller
 
         return redirect()->route('specification.index')->with('success', $request->name . ' Berhasil ditambahkan ke data spesifikasi komoditi');
     }
+
+    public function edit(String $id)
+    {
+        $specification = Specification::findOrFail($id);
+        return view('pages.specification.edit', compact('specification'));
+    }
+
+    public function update(Request $request, string $id)
+    {
+        $specification = Specification::findOrFail($id);
+
+        $attributes = request()->validate([
+            'name' => ['required', 'max:50'],
+        ]);
+
+        $dataToUpdate = [
+            'name' => $attributes['name'],  
+        ];
+
+        $specification->update($dataToUpdate);
+
+        return redirect()->route('specification.index')->with('success', $request->name .' berhasil diupdate.');
+    }
+
+    public function destroy(string $id)
+    {
+        $specification = Specification::findOrFail($id);
+        $specification->delete();
+
+        return redirect()->route('specification.index')->with('success', 'Barang komoditi berhasil dihapus.');
+    }
 }
