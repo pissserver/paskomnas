@@ -325,7 +325,7 @@
                                                     @foreach ($goods as $item)
                                                     <option value="{{ $item->id }}" data-unit="{{ $item->unit }}"
                                                         data-unit-in-order="{{ $item->unit_in_order }}"
-                                                        data-price="{{ optional($periode->prices)->firstWhere('goods_id', $item->id)?->price }}"
+                                                        data-price="{{ optional($periode?->prices)->firstWhere('goods_id', $item->id)?->price }}"
                                                         {{ $orderItem->goods_id == $item->id ? 'selected' : '' }}>
                                                         {{ $item->name }}
                                                     </option>
