@@ -442,4 +442,127 @@ class PrintLogController extends Controller
         }
 
     }
+
+
+    // * Purchase Prince Log Print
+    // index log print
+    public function purchasePriceDataLogPrint(Request $request)
+    {
+        $keyword = $request->input('keyword');
+        $query = LogPrint::query();
+
+        if ($keyword) {
+            $query->where(function ($q) use ($keyword) {
+                $q->WhereRaw("DATE_FORMAT(created_at, '%d %M %Y') LIKE ?", ["%$keyword%"]);
+            });
+        }
+
+        $logs = $query->with(['details.order.customer'])
+            ->where('purchase', 'done')
+            ->orderBy('print_date', 'desc')
+            ->paginate(10)
+            ->withQueryString();
+
+        $html = view('components.tables.log-print-purchase-price-table', compact('logs'))->render();
+        $pagination = view('components.pagination.log-print-purchase-price-pagination', compact('logs'))->render();
+
+        return response()->json([
+            'html' => $html,
+            'pagination' => $pagination
+        ]);
+    }
+
+    // Show print preview
+    public function purchasePriceViewLogPrint($id)
+    {
+        $log = LogPrint::with([
+            'details.order.orderItems.goods',
+            'details.order.customer',
+            'customerGroup'
+        ])->findOrFail($id);
+
+        $isGroup = $log->customer_group_id !== null;
+
+        $groupName = null;
+        $customerName = null;
+
+        if ($isGroup) {
+            $groupName = $log->customerGroup ? $log->customerGroup->name : 'Unknown Group';
+            $grouped = [];
+            $customers = [];
+
+            foreach ($log->details as $detail) {
+                $order = $detail->order;
+                $custId = $order->customer->id;
+                $custName = $order->customer->name;
+                $customers[$custId] = $custName;
+
+                foreach ($order->orderItems as $item) {
+                    $goodsName = $item->goods->name;
+                    $unit = $item->goods->unit_in_order !== null ? $item->goods->unit_in_order : $item->goods->unit;
+                    $spec = $item->specification ? $item->specification->name : null;
+                    $key = $spec ? "$goodsName ($spec)" : $goodsName;
+
+                    if (!isset($grouped[$key])) {
+                        $grouped[$key] = [
+                            'unit' => $unit,
+                            'total' => 0,
+                            'quantities' => []
+                        ];
+                    }
+
+                    $grouped[$key]['total'] += $item->quantity;
+                    if (!isset($grouped[$key]['quantities'][$custId])) {
+                        $grouped[$key]['quantities'][$custId] = 0;
+                    }
+                    $grouped[$key]['quantities'][$custId] += $item->quantity;
+
+                }
+            }
+
+            ksort($grouped);
+            asort($customers);
+            return response()->json([
+                'success' => true,
+                'group_name' => $groupName,
+                'grouped' => $grouped,
+                'customers' => $customers,
+            ]);
+        } else {
+            // Individual customer
+            $items = [];
+            $customerNames = [];
+
+            foreach ($log->details as $detail) {
+                $customer = $detail->order->customer;
+                if ($customer) {
+                    $customerNames[] = $customer->name;
+                }
+
+                foreach ($detail->order->orderItems as $item) {
+                    $goodsName = $item->goods->name;
+                    $spec = $item->specification ? $item->specification->name : null;
+                    $key = $spec ? "$goodsName ($spec)" : $goodsName;
+
+                    if (!isset($items[$key])) {
+                        $items[$key] = [
+                            'quantity' => 0,
+                            'unit' => $item->goods->unit_in_order !== null ? $item->goods->unit_in_order : $item->goods->unit,
+                        ];
+                    }
+                    $items[$key]['quantity'] += $item->quantity;
+                }
+            }
+
+            $customerNames = array_unique($customerNames);
+            ksort($items);
+            sort($customerNames);
+
+            return response()->json([
+                'success' => true,
+                'items' => $items,
+                'customer_name' => implode(', ', $customerNames),
+            ]);
+        }
+    }
 }

@@ -85,7 +85,7 @@
 <script>
     // Untuk Log Print
     function loadLogPrint(keyword = '', page = 1) {
-        fetch(`{{ route('purchase.data.log-print') }}?keyword=${encodeURIComponent(keyword)}&page=${page}`)
+        fetch(`{{ route('purchase-price.data.log-print') }}?keyword=${encodeURIComponent(keyword)}&page=${page}`)
             .then(response => response.json())
             .then(data => {
                 document.getElementById('purchaseLogPrintTableBody').innerHTML = data.html;
@@ -111,7 +111,7 @@
     });
 
     function reprintLog(logId) {
-        fetch(`purchase/log-print/${logId}`)
+        fetch(`harga-beli/log-print/${logId}`)
             .then(res => res.json())
             .then(data => {
                 const hari = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
@@ -142,13 +142,12 @@
                                 <tr>
                                     <th class="text-center">No</th>
                                     <th class="text-center">Nama Komoditi</th>
-                                    <th class="text-center">Satuan</th>
-                                    <th class="text-center">Total</th>`;
-
-                    sortedCustomerEntries.forEach(([_, custName]) => {
-                        html += `<th class="text-center">${custName}</th>`;
-                    });
-
+                                    <th class="text-center">Sat</th>
+                                    <th class="text-center">Total</th>
+                                    <th class="text-center">Sat</th>
+                                    <th class="text-center">Beli</th>
+                                    <th class="text-center">Harga</th>
+                                    <th class="text-center">Total Harga</th>`;
                     html += `</tr></thead><tbody>`;
 
                     Object.entries(data.grouped).forEach(([komoditi, row], index) => {
@@ -157,10 +156,11 @@
                                 <td class="text-center">${index + 1}</td>
                                 <td class="text-center commodity">${komoditi}</td>
                                 <td class="text-center">${row.unit}</td>
-                                <td class="text-center">${row.total}</td>`;
-                        sortedCustomerEntries.forEach(([custId, _]) => {
-                            html += `<td class="text-center">${row.quantities[custId] ?? 0}</td>`;
-                        });
+                                <td class="text-center">${row.total}</td>
+                                <td class="text-center"></td>
+                                <td class="text-center"></td>
+                                <td class="text-center"></td>
+                                <td class="text-center"></td>`;
 
                         html += `</tr>`;
                     });
@@ -179,8 +179,12 @@
                                 <tr>
                                     <th class="text-center">No</th>
                                     <th class="text-center">Nama Komoditi</th>
-                                    <th class="text-center">Satuan</th>
+                                    <th class="text-center">Sat</th>
                                     <th class="text-center">Total</th>
+                                    <th class="text-center">Sat</th>
+                                    <th class="text-center">Beli</th>
+                                    <th class="text-center">Harga</th>
+                                    <th class="text-center">Total Harga</th>
                                 </tr>
                             </thead>
                             <tbody>`;
@@ -192,6 +196,10 @@
                                 <td class="text-center commodity">${name}</td>
                                 <td class="text-center">${item.unit}</td>
                                 <td class="text-center">${item.quantity}</td>
+                                <td class="text-center"></td>
+                                <td class="text-center"></td>
+                                <td class="text-center"></td>
+                                <td class="text-center"></td>
                             </tr>`;
                     });
 
@@ -206,7 +214,7 @@
                         <title>Print Purchasing</title>
                         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
                         <style>
-                            body { padding: 20px; font-size: 11px; }
+                            body { padding: 0px; font-size: 11px; }
                             h5 { font-size: 14px; }
                             table { width: 100%; border-collapse: collapse; }
                             table th, table td { border: 1px solid #000; padding: 6px; text-align: center; }

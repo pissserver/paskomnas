@@ -1,0 +1,1 @@
+{{ $logs->withQueryString()->links('pagination::bootstrap-5') }}
