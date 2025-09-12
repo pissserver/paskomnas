@@ -21,11 +21,10 @@
             <i class="fas fa-print me-2"></i>Print Harga Beli
         </a>
 
-        <a href="javascript:void(0)"
-            class="btn-print-ulang mb-0 btn bg-gradient-info d-inline-flex align-items-center justify-content-center py-2 px-3"
-            data-log-id="{{ $log->id }}">
+        <a href="javascript:void(0)" class="btn mb-0 btn bg-gradient-info btn-input-harga" data-log-id="{{ $log->id }}">
             <i class="fas fa-money-bill me-2"></i>Input Harga Beli
         </a>
     </td>
 </tr>
+
 @endforeach

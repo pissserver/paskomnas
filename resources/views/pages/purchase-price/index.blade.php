@@ -82,6 +82,34 @@
     </div>
 </div>
 
+<!-- Modal Input Harga Beli -->
+<div class="modal fade" id="modalHargaBeli" tabindex="-1" aria-labelledby="modalHargaBeliLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-gradient-info text-white">
+                <h5 class="modal-title text-white" id="modalHargaBeliLabel">
+                    <i class="fas fa-money-bill me-2"></i>Input Harga Beli
+                </h5>
+                <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form id="formHargaBeli" method="POST" action="">
+                @csrf
+                <input type="hidden" name="log_id" id="logIdField">
+
+                <div class="modal-body" id="modalHargaBeliContent" style="max-height: 500px; overflow-y: auto;">
+                    <!-- Konten akan diisi via JS -->
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn bg-gradient-info">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
     // Untuk Log Print
     function loadLogPrint(keyword = '', page = 1) {
@@ -244,6 +272,87 @@
     document.getElementById('searchLogPrint').addEventListener('keyup', function () {
         loadLogPrint(this.value);
     });
+
+    // Modal Input Harga Beli
+    $(document).on("click", ".btn-input-harga", function () {
+        let logId = $(this).data("log-id");
+
+        $("#logIdField").val(logId);
+
+        // Ambil data dari backend (sama seperti reprintLog)
+        fetch(`harga-beli/log-print/${logId}`)
+            .then(res => res.json())
+            .then(data => {
+                let html = `
+                    <h6 class="mb-4 btn bg-gradient-primary text-white py-2 px-3 rounded-pill">
+                        <i class="fas fa-briefcase me-2"></i>
+                        ${data.group_name ? `Group : ${data.group_name}` : `Customer : ${data.customer_name}`}
+                    </h6>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th class="text-center">No</th>
+                                <th class="text-center">Nama Komoditi</th>
+                                <th class="text-center">Satuan</th>
+                                <th class="text-center">Total Qty</th>
+                                <th class="text-center">Satuan Beli</th>
+                                <th class="text-center">Qty Beli</th>
+                                <th class="text-center">Harga Beli</th>
+                                <th class="text-center">Total Harga</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                if (data.group_name) {
+                    // GROUP MODE
+                    Object.entries(data.grouped).forEach(([komoditi, row], index) => {
+                        html += `
+                            <tr>
+                                <td class="text-center">${index + 1}</td>
+                                <td class="text-center">${komoditi}</td>
+                                <td class="text-center">${row.unit}</td>
+                                <td class="text-center">${row.total}</td>
+                                <td><input type="number" name="sat[]" step="any" class="form-control"></td>
+                                <td><input type="text" name="beli[]" class="form-control"></td>
+                                <td><input type="number" name="harga[]" class="form-control"></td>
+                                <td><input type="number" name="total_harga[]" class="form-control"></td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                    // CUSTOMER MODE
+                    Object.entries(data.items).forEach(([name, item], index) => {
+                        html += `
+                            <tr>
+                                <td class="text-center">${index + 1}</td>
+                                <td class="text-center">${name}</td>
+                                <td class="text-center">${item.unit}</td>
+                                <td class="text-center">${item.quantity}</td>
+                                <td><input type="text" name="sat[]" class="form-control"></td>
+                                <td><input type="text" name="beli[]" class="form-control"></td>
+                                <td><input type="text" name="harga[]" class="form-control"></td>
+                                <td><input type="text" name="total_harga[]" class="form-control"></td>
+                            </tr>
+                        `;
+                    });
+                }
+
+                html += `</tbody></table>`;
+
+                // isi konten modal
+                $("#modalHargaBeliContent").html(html);
+
+                // tampilkan modal
+                let modal = new bootstrap.Modal(document.getElementById("modalHargaBeli"));
+                modal.show();
+            })
+            .catch(err => {
+                console.error("Gagal load data:", err);
+                alert("Gagal memuat data untuk input harga beli.");
+            });
+    });
+
 </script>
 
 @endsection
