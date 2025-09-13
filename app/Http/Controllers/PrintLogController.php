@@ -6,6 +6,7 @@ use App\Models\Specification;
 use App\Models\Order;
 use App\Models\LogPrint;
 use App\Models\LogPrintDetail;
+use App\Models\PurchasePrice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -503,13 +504,32 @@ class PrintLogController extends Controller
                     $spec = $item->specification ? $item->specification->name : null;
                     $key = $spec ? "$goodsName ($spec)" : $goodsName;
 
+                    $pp = PurchasePrice::where('log_print_id', $log->id)
+                    ->where('order_id', $detail->order->id)
+                    ->where('goods_id', $item->goods_id)
+                    ->when($item->specification_id, function ($q) use ($item) {
+                        $q->where('specification_id', $item->specification_id);
+                    })
+                    ->first();
+                    
+
                     if (!isset($grouped[$key])) {
                         $grouped[$key] = [
                             'unit' => $unit,
                             'total' => 0,
-                            'quantities' => []
+                            'quantities' => [],
+                            'goods_id' => $item->goods->id,
+                            'specification_id' => $item->specification ? $item->specification->id : null,
+                            'order_ids' => [$order->id],
+
+                            'unit_purchase'  => $pp && $pp->unit ? $pp->unit : '',
+                            'quantity'       => $pp && $pp->quantity ? $pp->quantity : '',
+                            'purchase_price' => $pp && $pp->purchase_price ? $pp->purchase_price : '',
+                            'total_price'    => $pp && $pp->total_price ? $pp->total_price : '',
                         ];
                     }
+
+                    $grouped[$key]['order_ids'][] = $order->id;
 
                     $grouped[$key]['total'] += $item->quantity;
                     if (!isset($grouped[$key]['quantities'][$custId])) {
@@ -544,13 +564,30 @@ class PrintLogController extends Controller
                     $spec = $item->specification ? $item->specification->name : null;
                     $key = $spec ? "$goodsName ($spec)" : $goodsName;
 
+                    $pp = PurchasePrice::where('log_print_id', $log->id)
+                    ->where('order_id', $detail->order->id)
+                    ->where('goods_id', $item->goods_id)
+                    ->when($item->specification_id, function ($q) use ($item) {
+                        $q->where('specification_id', $item->specification_id);
+                    })
+                    ->first();
+
                     if (!isset($items[$key])) {
                         $items[$key] = [
                             'quantity' => 0,
                             'unit' => $item->goods->unit_in_order !== null ? $item->goods->unit_in_order : $item->goods->unit,
+                            'goods_id' => $item->goods->id,
+                            'specification_id' => $item->specification ? $item->specification->id : null,
+                            'order_ids' => [],
+
+                            'unit_purchase'  => $pp && $pp->unit ? $pp->unit : '',
+                            'quantity_purchase' => $pp && $pp->quantity ? $pp->quantity : '',
+                            'purchase_price' => $pp && $pp->purchase_price ? $pp->purchase_price : '',
+                            'total_price'    => $pp && $pp->total_price ? $pp->total_price : '',
                         ];
                     }
                     $items[$key]['quantity'] += $item->quantity;
+                    $items[$key]['order_ids'][] = $detail->order->id;
                 }
             }
 

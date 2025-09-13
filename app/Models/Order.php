@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use App\Models\Customer;
 use App\Models\OrderItem;
+use App\Models\PurchasePrice;
 
 class Order extends Model
 {
@@ -31,5 +32,8 @@ class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
-    
+    public function purchasePrices()
+    {
+        return $this->hasMany(PurchasePrice::class);
+    }
 }

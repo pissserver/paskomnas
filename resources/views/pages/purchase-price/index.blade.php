@@ -84,7 +84,7 @@
 
 <!-- Modal Input Harga Beli -->
 <div class="modal fade" id="modalHargaBeli" tabindex="-1" aria-labelledby="modalHargaBeliLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content">
             <div class="modal-header bg-gradient-info text-white">
                 <h5 class="modal-title text-white" id="modalHargaBeliLabel">
@@ -93,11 +93,11 @@
                 <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            <form id="formHargaBeli" method="POST" action="">
+            <form id="formHargaBeli" method="POST" action="{{ route('purchase-price.store') }}">
                 @csrf
                 <input type="hidden" name="log_id" id="logIdField">
 
-                <div class="modal-body" id="modalHargaBeliContent" style="max-height: 500px; overflow-y: auto;">
+                <div class="modal-body" id="modalHargaBeliContent" style="max-height: 400px; overflow-y: auto;">
                     <!-- Konten akan diisi via JS -->
                 </div>
 
@@ -284,6 +284,7 @@
             .then(res => res.json())
             .then(data => {
                 let html = `
+                    <input type="hidden" name="log_print_id" value="${logId}">
                     <h6 class="mb-4 btn bg-gradient-primary text-white py-2 px-3 rounded-pill">
                         <i class="fas fa-briefcase me-2"></i>
                         ${data.group_name ? `Group : ${data.group_name}` : `Customer : ${data.customer_name}`}
@@ -309,14 +310,22 @@
                     Object.entries(data.grouped).forEach(([komoditi, row], index) => {
                         html += `
                             <tr>
-                                <td class="text-center">${index + 1}</td>
-                                <td class="text-center">${komoditi}</td>
-                                <td class="text-center">${row.unit}</td>
-                                <td class="text-center">${row.total}</td>
-                                <td><input type="number" name="sat[]" step="any" class="form-control"></td>
-                                <td><input type="text" name="beli[]" class="form-control"></td>
-                                <td><input type="number" name="harga[]" class="form-control"></td>
-                                <td><input type="number" name="total_harga[]" class="form-control"></td>
+                                <td class="text-center" style="vertical-align: middle;">${index + 1}</td>
+                                <td class="text-center" style="vertical-align: middle;">
+                                    ${komoditi}
+                                    <input type="hidden" name="goods_id[]" value="${row.goods_id}">
+                                    <input type="hidden" name="specification_id[]" value="${row.specification_id ?? ''}">
+                                    ${row.order_ids.map(orderId => `<input type="hidden" name="order_id[]" value="${orderId}">`).join('')}
+                                </td>
+                                <td class="text-center" style="vertical-align: middle;">
+                                    ${row.unit}
+                                    <input type="hidden" name="unit[]" value="${row.unit}">
+                                </td>
+                                <td class="text-center" style="vertical-align: middle;">${row.total}</td>
+                                <td><input type="text" name="unit_purchase[]" class="form-control" placeholder="Satuan Beli" value="${row.unit_purchase != row.unit ? row.unit_purchase : ''}"></td>
+                                <td><input type="number" name="quantity[]" step="any" class="form-control" placeholder="0" value="${row.quantity ? row.quantity : ''}"></td>
+                                <td><input type="number" name="purchase_price[]" class="form-control" placeholder="0" value="${row.purchase_price ? row.purchase_price : ''}"></td>
+                                <td><input type="number" name="total_price[]" class="form-control" placeholder="0" value="${row.total_price ? row.total_price : ''}"></td>
                             </tr>
                         `;
                     });
@@ -325,14 +334,22 @@
                     Object.entries(data.items).forEach(([name, item], index) => {
                         html += `
                             <tr>
-                                <td class="text-center">${index + 1}</td>
-                                <td class="text-center">${name}</td>
-                                <td class="text-center">${item.unit}</td>
-                                <td class="text-center">${item.quantity}</td>
-                                <td><input type="text" name="sat[]" class="form-control"></td>
-                                <td><input type="text" name="beli[]" class="form-control"></td>
-                                <td><input type="text" name="harga[]" class="form-control"></td>
-                                <td><input type="text" name="total_harga[]" class="form-control"></td>
+                                <td class="text-center" style="vertical-align: middle;">${index + 1}</td>
+                                <td class="text-center" style="vertical-align: middle;">
+                                    ${name}
+                                    <input type="hidden" name="goods_id[]" value="${item.goods_id}">
+                                    <input type="hidden" name="specification_id[]" value="${item.specification_id ?? ''}">
+                                    ${item.order_ids.map(orderId => `<input type="hidden" name="order_id[]" value="${orderId}">`).join('')}
+                                </td>
+                                <td class="text-center" style="vertical-align: middle;">
+                                    ${item.unit}
+                                    <input type="hidden" name="unit[]" value="${item.unit}">
+                                </td>
+                                <td class="text-center" style="vertical-align: middle;">${item.quantity}</td>
+                                <td><input type="text" name="unit_purchase[]" class="form-control" placeholder="Satuan Beli" value="${item.unit_purchase != item.unit ? item.unit_purchase : ''}"></td>
+                                <td><input type="number" name="quantity[]" step="any" class="form-control" placeholder="0" value="${item.quantity_purchase ? item.quantity_purchase : ''}"></td>
+                                <td><input type="number" name="purchase_price[]" class="form-control" placeholder="0" value="${item.purchase_price ? item.purchase_price : ''}"></td>
+                                <td><input type="number" name="total_price[]" class="form-control" placeholder="0" value="${item.total_price ? item.total_price : ''}"></td>
                             </tr>
                         `;
                     });

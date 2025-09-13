@@ -119,6 +119,7 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 	Route::get('harga-beli', [PurchasePriceController::class, 'index'])->name('purchase-price.index');
 	Route::get('harga-beli/data-log-print', [PrintLogController::class, 'purchasePriceDataLogPrint'])->name('purchase-price.data.log-print');
 	Route::get('harga-beli/log-print/{id}', [PrintLogController::class, 'purchasePriceViewLogPrint'])->name('purchase-price.reprint');
+	Route::post('harga-beli', [PurchasePriceController::class, 'store'])->name('purchase-price.store');
 
 	// Group Customer
 	Route::get('customer-group', [CustomerController::class, 'groupIndex'])->name('customer.group.index');
