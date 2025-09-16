@@ -547,6 +547,7 @@ class PrintLogController extends Controller
                 'group_name' => $groupName,
                 'grouped' => $grouped,
                 'customers' => $customers,
+                'print_date' => Carbon::parse($log->print_date)->format('d M Y'),
             ]);
         } else {
             // Individual customer
@@ -599,6 +600,7 @@ class PrintLogController extends Controller
                 'success' => true,
                 'items' => $items,
                 'customer_name' => implode(', ', $customerNames),
+                'print_date' => Carbon::parse($log->print_date)->format('d M Y'),
             ]);
         }
     }

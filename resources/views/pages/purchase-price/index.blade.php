@@ -65,6 +65,10 @@
                                         class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                         Aksi
                                     </th>
+                                    <th
+                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                        Status
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody id="purchaseLogPrintTableBody">
@@ -288,6 +292,10 @@
                     <h6 class="mb-4 btn bg-gradient-primary text-white py-2 px-3 rounded-pill">
                         <i class="fas fa-briefcase me-2"></i>
                         ${data.group_name ? `Group : ${data.group_name}` : `Customer : ${data.customer_name}`}
+                    </h6>
+                    <h6 class="mb-4 btn bg-gradient-warning text-white py-2 px-3 rounded-pill">
+                        <i class="fas fa-calendar-alt me-2"></i>
+                        ${`Tanggal Print : ${data.print_date}`}
                     </h6>
                     <table class="table table-striped">
                         <thead>

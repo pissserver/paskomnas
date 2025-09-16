@@ -3,9 +3,11 @@
     <td class="text-center">
         <p class="text-xs font-weight-bold mb-0">{{ $index + 1 }}</p>
     </td>
+
     <td class="text-center">
         <span class="text-secondary text-xs font-weight-bold">{{ $log->print_date->format('d F Y') }}</span>
     </td>
+
     <td class="text-center">
         @if ($log->customer_group_id != null)
         <span class="badge bg-info text-white">Group</span>
@@ -25,6 +27,14 @@
             data-log-id="{{ $log->id }}">
             <i class="fas fa-money-bill me-2"></i>Input Harga Beli
         </a>
+    </td>
+
+    <td class="text-center">
+        @if ($log->purchase_recap == null)
+        <span class="badge bg-danger text-white"><i class="fa fa-times me-2"></i>Belum</span>
+        @else
+        <span class="badge bg-success text-white"><i class="fa fa-check me-2"></i>Selesai</span>
+        @endif
     </td>
 </tr>
 

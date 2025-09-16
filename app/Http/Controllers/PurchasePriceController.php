@@ -56,8 +56,13 @@ class PurchasePriceController extends Controller
                 'purchase_price'   => $request->purchase_price[$index],
                 'total_price'      => $request->total_price[$index],
             ]);
-        }
 
+            // Update status harga beli di log print
+            LogPrint::where('id', $request->log_print_id)
+                ->update([
+                    'purchase_recap' => 'done',
+                ]);
+        }
 
         return redirect()->route('purchase-price.index')->with('success', 'Harga beli berhasil disimpan.');
     }
