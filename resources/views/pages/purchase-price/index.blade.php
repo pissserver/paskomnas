@@ -315,6 +315,7 @@
 
                 if (data.group_name) {
                     // GROUP MODE
+                    let totalPrice = 0;
                     Object.entries(data.grouped).forEach(([komoditi, row], index) => {
                         html += `
                             <tr>
@@ -331,14 +332,27 @@
                                 </td>
                                 <td class="text-center" style="vertical-align: middle;">${row.total}</td>
                                 <td><input type="text" name="unit_purchase[]" class="form-control" placeholder="Satuan Beli" value="${row.unit_purchase != row.unit ? row.unit_purchase : ''}"></td>
-                                <td><input type="number" name="quantity[]" step="any" class="form-control" placeholder="0" value="${row.quantity ? row.quantity : ''}"></td>
-                                <td><input type="number" name="purchase_price[]" class="form-control" placeholder="0" value="${row.purchase_price ? row.purchase_price : ''}"></td>
-                                <td><input type="number" name="total_price[]" class="form-control" placeholder="0" value="${row.total_price ? row.total_price : ''}"></td>
+                                <td><input type="number" name="quantity[]" step="any" class="form-control" placeholder="0" value="${row.quantity}"></td>
+                                <td><input type="number" name="purchase_price[]" class="form-control" placeholder="0" value="${row.purchase_price}"></td>
+                                <td><input type="number" name="total_price[]" class="form-control" placeholder="0" value="${row.total_price}"></td>
                             </tr>
                         `;
+                        totalPrice += (row.total_price ? row.total_price : 0);
                     });
+                    html += `
+                        <tr>
+                            <td colspan="6"></td>
+                            <td class="text-center" style="vertical-align: middle;">
+                                Total Keseluruhan :
+                            </td>
+                            <td class="text-left" style="vertical-align: middle;">
+                                <strong>Rp ${Number(totalPrice).toLocaleString('id-ID')}</strong>
+                            </td>
+                        </tr>
+                    `;
                 } else {
                     // CUSTOMER MODE
+                    let totalPrice = 0;
                     Object.entries(data.items).forEach(([name, item], index) => {
                         html += `
                             <tr>
@@ -355,12 +369,24 @@
                                 </td>
                                 <td class="text-center" style="vertical-align: middle;">${item.quantity}</td>
                                 <td><input type="text" name="unit_purchase[]" class="form-control" placeholder="Satuan Beli" value="${item.unit_purchase != item.unit ? item.unit_purchase : ''}"></td>
-                                <td><input type="number" name="quantity[]" step="any" class="form-control" placeholder="0" value="${item.quantity_purchase ? item.quantity_purchase : ''}"></td>
-                                <td><input type="number" name="purchase_price[]" class="form-control" placeholder="0" value="${item.purchase_price ? item.purchase_price : ''}"></td>
-                                <td><input type="number" name="total_price[]" class="form-control" placeholder="0" value="${item.total_price ? item.total_price : ''}"></td>
+                                <td><input type="number" name="quantity[]" step="any" class="form-control" placeholder="0" value="${item.quantity_purchase}"></td>
+                                <td><input type="number" name="purchase_price[]" class="form-control" placeholder="0" value="${item.purchase_price}"></td>
+                                <td><input type="number" name="total_price[]" class="form-control" placeholder="0" value="${item.total_price}"></td>
                             </tr>
                         `;
+                        totalPrice += (item.total_price ? item.total_price : 0);
                     });
+                    html += `
+                        <tr>
+                            <td colspan="6"></td>
+                            <td class="text-center" style="vertical-align: middle;">
+                                Total Keseluruhan :
+                            </td>
+                            <td class="text-left" style="vertical-align: middle;">
+                                <strong>Rp ${Number(totalPrice).toLocaleString('id-ID')}</strong>
+                            </td>
+                        </tr>
+                    `;
                 }
 
                 html += `</tbody></table>`;

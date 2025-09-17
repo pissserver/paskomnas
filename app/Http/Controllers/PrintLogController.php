@@ -506,7 +506,7 @@ class PrintLogController extends Controller
 
                     $pp = PurchasePrice::where('log_print_id', $log->id)
                     ->where('order_id', $detail->order->id)
-                    ->where('goods_id', $item->goods_id)
+                    ->where('goods_id', $item->goods->id)
                     ->when($item->specification_id, function ($q) use ($item) {
                         $q->where('specification_id', $item->specification_id);
                     })
@@ -525,7 +525,7 @@ class PrintLogController extends Controller
                             'unit_purchase'  => $pp && $pp->unit ? $pp->unit : '',
                             'quantity'       => $pp && $pp->quantity ? $pp->quantity : '',
                             'purchase_price' => $pp && $pp->purchase_price ? $pp->purchase_price : '',
-                            'total_price'    => $pp && $pp->total_price ? $pp->total_price : '',
+                            'total_price'    => $pp && $pp->total_price ? $pp->total_price : 0,
                         ];
                     }
 
@@ -567,12 +567,12 @@ class PrintLogController extends Controller
 
                     $pp = PurchasePrice::where('log_print_id', $log->id)
                     ->where('order_id', $detail->order->id)
-                    ->where('goods_id', $item->goods_id)
+                    ->where('goods_id', $item->goods->id)
                     ->when($item->specification_id, function ($q) use ($item) {
                         $q->where('specification_id', $item->specification_id);
                     })
                     ->first();
-
+ 
                     if (!isset($items[$key])) {
                         $items[$key] = [
                             'quantity' => 0,
@@ -584,7 +584,7 @@ class PrintLogController extends Controller
                             'unit_purchase'  => $pp && $pp->unit ? $pp->unit : '',
                             'quantity_purchase' => $pp && $pp->quantity ? $pp->quantity : '',
                             'purchase_price' => $pp && $pp->purchase_price ? $pp->purchase_price : '',
-                            'total_price'    => $pp && $pp->total_price ? $pp->total_price : '',
+                            'total_price'    => $pp && $pp->total_price ? $pp->total_price : 0,
                         ];
                     }
                     $items[$key]['quantity'] += $item->quantity;
