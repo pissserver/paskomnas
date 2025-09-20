@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('log_print_id')->constrained('log_prints')->onDelete('cascade');
-            $table->foreignId('order_id')->constrained('orders')->onDelete('cascade');
             $table->foreignId('goods_id')->constrained('goods')->onDelete('cascade');
             $table->foreignId('specification_id')->nullable()->constrained('specifications')->onDelete('cascade');
             $table->string('unit', 20)->nullable();

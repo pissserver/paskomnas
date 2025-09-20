@@ -15,7 +15,6 @@ class PurchasePrice extends Model
 
     protected $fillable = [
         'log_print_id',
-        'order_id',
         'goods_id',
         'specification_id',
         'unit',

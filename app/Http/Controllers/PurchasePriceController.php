@@ -22,8 +22,6 @@ class PurchasePriceController extends Controller
     {
         $request->validate([
             'log_print_id'    => ['required', 'integer', 'exists:log_prints,id'],
-            'order_id'        => ['required', 'array'],
-            'order_id.*'      => ['required', 'integer', 'exists:orders,id'],
             'goods_id'        => ['required', 'array'],
             'goods_id.*'      => ['required', 'integer', 'exists:goods,id'],
             'specification_id'=> ['nullable', 'array'],
@@ -44,7 +42,6 @@ class PurchasePriceController extends Controller
         foreach ($request->goods_id as $index => $goodsId) {
             PurchasePrice::updateOrCreate([
                 'log_print_id'     => $request->log_print_id,
-                'order_id'         => $request->order_id[$index],
                 'goods_id'         => $goodsId,
                 'specification_id' => $request->specification_id[$index] ? $request->specification_id[$index] : null,
             ],

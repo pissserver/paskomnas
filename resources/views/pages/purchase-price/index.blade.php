@@ -324,7 +324,6 @@
                                     ${komoditi}
                                     <input type="hidden" name="goods_id[]" value="${row.goods_id}">
                                     <input type="hidden" name="specification_id[]" value="${row.specification_id ?? ''}">
-                                    ${row.order_ids.map(orderId => `<input type="hidden" name="order_id[]" value="${orderId}">`).join('')}
                                 </td>
                                 <td class="text-center" style="vertical-align: middle;">
                                     ${row.unit}
@@ -343,10 +342,13 @@
                         <tr>
                             <td colspan="6"></td>
                             <td class="text-center" style="vertical-align: middle;">
-                                Total Keseluruhan :
+                                <strong>Total Keseluruhan :</strong>
                             </td>
                             <td class="text-center" style="vertical-align: middle;">
-                                <strong>Rp ${Number(totalPrice).toLocaleString('id-ID')}</strong>
+                                <div class="bg-gradient-success py-2 px-1 text-white rounded-pill">
+                                    <i class="fas fa-money-bill-wave me-2"></i>
+                                    <strong>Rp ${Number(totalPrice).toLocaleString('id-ID')}</strong>
+                                </div>
                             </td>
                         </tr>
                     `;
@@ -361,7 +363,6 @@
                                     ${name}
                                     <input type="hidden" name="goods_id[]" value="${item.goods_id}">
                                     <input type="hidden" name="specification_id[]" value="${item.specification_id ?? ''}">
-                                    ${item.order_ids.map(orderId => `<input type="hidden" name="order_id[]" value="${orderId}">`).join('')}
                                 </td>
                                 <td class="text-center" style="vertical-align: middle;">
                                     ${item.unit}
