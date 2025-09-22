@@ -10,6 +10,7 @@ use App\Models\Goods;
 use App\Models\Customer;
 use App\Models\CustomerGroup;
 use App\Models\Order;
+use App\Models\PurchasePrice;
 
 class HomeController extends Controller
 {
@@ -69,6 +70,37 @@ class HomeController extends Controller
             $chartData[] = $monthOrder ? $monthOrder->total : 0;
         }
 
+
+        // * Statistic Omzet & Pengeluaran
+
+        $year = now()->year;
+
+        $expenses = PurchasePrice::with('logPrint')
+            ->whereHas('logPrint', function ($q) use ($year) {
+                $q->whereYear('print_date', $year);
+            })
+            ->get()
+            ->groupBy(function ($item) {
+                return $item->logPrint->print_date->format('n'); // bulan 1-12
+            })
+            ->map(function ($items) {
+                return $items->sum('total_price');
+            })
+            ->toArray();
+
+        // isi semua bulan (1–12)
+        $dataExpenses = [];
+        for ($i = 1; $i <= 12; $i++) {
+            if (isset($expenses[$i])) {
+                $dataExpenses[] = $expenses[$i];
+            } else {
+                $dataExpenses[] = 0;
+            }
+        }
+
+        $labels = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+        $dataOmzet = [50, 40, 300, 220, 500, 250, 400, 230, 500, 300, 200, 450];
+
         return view('pages.dashboard', 
             compact(
                 'startOfYear', 
@@ -80,7 +112,10 @@ class HomeController extends Controller
                 'mostCustomerOrdered', 
                 'mostGroupOrdered',
                 'chartLabels',
-                'chartData'
+                'chartData',
+                'labels',
+                'dataOmzet', 
+                'dataExpenses'
                 )
         );
     }
@@ -125,7 +160,6 @@ class HomeController extends Controller
 
         return response()->json($dataGroupProgression);
     }
-
 
     public function dataCustomer()
     {

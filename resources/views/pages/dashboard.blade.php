@@ -5,256 +5,258 @@
 @section('content')
 @if($errors->any())
 <div class="alert alert-primary alert-dismissible fade show" role="alert">
-  <span class="alert-text text-white">
-    {{$errors->first()}}</span>
-  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
-    <i class="fa fa-close" aria-hidden="true"></i>
-  </button>
+    <span class="alert-text text-white">
+        {{$errors->first()}}</span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+        <i class="fa fa-close" aria-hidden="true"></i>
+    </button>
 </div>
 @endif
 @if(session('success'))
 <div class="alert alert-success alert-dismissible fade show" id="alert-success" role="alert">
-  <span class="alert-text text-white">
-    {!! session('success') !!}</span>
-  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
-    <i class="fa fa-close" aria-hidden="true"></i>
-  </button>
+    <span class="alert-text text-white">
+        {!! session('success') !!}</span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+        <i class="fa fa-close" aria-hidden="true"></i>
+    </button>
 </div>
 @endif
 
 <div class="row">
-  <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-    <div class="card bg-gradient-primary">
-      <div class="card-body p-3">
-        <div class="row">
-          <div class="col-8">
-            <div class="numbers">
-              <p class="text-sm mb-0 text-capitalize font-weight-bold text-white">Pengguna Sistem</p>
-              <h5 class="font-weight-bolder mb-2 text-white">
-                {{ $users }}
-                <span class="text-warning text-sm font-weight-bolder">Pengguna</span>
-              </h5>
-              <p class="text-sm mb-0 text-capitalize text-white">Sekarang</p>
+    <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+        <div class="card bg-gradient-primary">
+            <div class="card-body p-3">
+                <div class="row">
+                    <div class="col-8">
+                        <div class="numbers">
+                            <p class="text-sm mb-0 text-capitalize font-weight-bold text-white">Pengguna Sistem</p>
+                            <h5 class="font-weight-bolder mb-2 text-white">
+                                {{ $users }}
+                                <span class="text-warning text-sm font-weight-bolder">Pengguna</span>
+                            </h5>
+                            <p class="text-sm mb-0 text-capitalize text-white">Sekarang</p>
+                        </div>
+                    </div>
+                    <div class="col-4 text-end">
+                        <div class="icon icon-shape bg-gradient-light shadow text-center border-radius-md">
+                            <i class="fa fa-users text-lg opacity-10 text-primary" aria-hidden="true"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div class="col-4 text-end">
-            <div class="icon icon-shape bg-gradient-light shadow text-center border-radius-md">
-              <i class="fa fa-users text-lg opacity-10 text-primary" aria-hidden="true"></i>
-            </div>
-          </div>
         </div>
-      </div>
     </div>
-  </div>
-  <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-    <div class="card bg-gradient-info">
-      <div class="card-body p-3">
-        <div class="row">
-          <div class="col-8">
-            <div class="numbers">
-              <p class="text-sm mb-0 text-capitalize font-weight-bold text-white">Barang Komoditi</p>
-              <h5 class="font-weight-bolder mb-2 text-white">
-                {{ $goods }}
-                <span class="text-warning text-sm font-weight-bolder">Tersedia</span>
-              </h5>
-              <p class="text-sm mb-0 text-capitalize text-white">Sekarang</p>
+    <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+        <div class="card bg-gradient-info">
+            <div class="card-body p-3">
+                <div class="row">
+                    <div class="col-8">
+                        <div class="numbers">
+                            <p class="text-sm mb-0 text-capitalize font-weight-bold text-white">Barang Komoditi</p>
+                            <h5 class="font-weight-bolder mb-2 text-white">
+                                {{ $goods }}
+                                <span class="text-warning text-sm font-weight-bolder">Tersedia</span>
+                            </h5>
+                            <p class="text-sm mb-0 text-capitalize text-white">Sekarang</p>
+                        </div>
+                    </div>
+                    <div class="col-4 text-end">
+                        <div class="icon icon-shape bg-gradient-light shadow text-center border-radius-md">
+                            <i class="fa fa-box text-lg opacity-10 text-info" aria-hidden="true"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div class="col-4 text-end">
-            <div class="icon icon-shape bg-gradient-light shadow text-center border-radius-md">
-              <i class="fa fa-box text-lg opacity-10 text-info" aria-hidden="true"></i>
-            </div>
-          </div>
         </div>
-      </div>
     </div>
-  </div>
-  <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-    <div class="card bg-gradient-danger">
-      <div class="card-body p-3">
-        <div class="row">
-          <div class="col-8">
-            <div class="numbers">
-              <p class="text-sm mb-0 text-capitalize font-weight-bold text-white">Daftar Customer</p>
-              <h5 class="font-weight-bolder mb-2 text-white">
-                {{ $customers }}
-                <span class="text-warning text-sm font-weight-bolder">Customer</span>
-              </h5>
-              <p class="text-sm mb-0 text-capitalize text-white">Sekarang</p>
+    <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+        <div class="card bg-gradient-danger">
+            <div class="card-body p-3">
+                <div class="row">
+                    <div class="col-8">
+                        <div class="numbers">
+                            <p class="text-sm mb-0 text-capitalize font-weight-bold text-white">Daftar Customer</p>
+                            <h5 class="font-weight-bolder mb-2 text-white">
+                                {{ $customers }}
+                                <span class="text-warning text-sm font-weight-bolder">Customer</span>
+                            </h5>
+                            <p class="text-sm mb-0 text-capitalize text-white">Sekarang</p>
+                        </div>
+                    </div>
+                    <div class="col-4 text-end">
+                        <div class="icon icon-shape bg-gradient-light shadow text-center border-radius-md">
+                            <i class="fa fa-briefcase text-lg opacity-10 text-danger" aria-hidden="true"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div class="col-4 text-end">
-            <div class="icon icon-shape bg-gradient-light shadow text-center border-radius-md">
-              <i class="fa fa-briefcase text-lg opacity-10 text-danger" aria-hidden="true"></i>
-            </div>
-          </div>
         </div>
-      </div>
     </div>
-  </div>
-  <div class="col-xl-3 col-sm-6">
-    <div class="card bg-gradient-dark">
-      <div class="card-body p-3">
-        <div class="row">
-          <div class="col-8">
-            <div class="numbers">
-              <p class="text-sm mb-0 text-capitalize font-weight-bold text-white">Total Order</p>
-              <h5 class="font-weight-bolder mb-2 text-white">
-                {{ $orders }}
-                <span class="text-warning text-sm font-weight-bolder">Order</span>
-              </h5>
-              <p class="text-sm mb-0 text-capitalize text-white">
-                {{ \Carbon\Carbon::parse($startOfYear)->translatedFormat('d F Y') }} -
-                {{ \Carbon\Carbon::parse($endOfNow)->translatedFormat('d F Y') }}
-              </p>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card bg-gradient-dark">
+            <div class="card-body p-3">
+                <div class="row">
+                    <div class="col-8">
+                        <div class="numbers">
+                            <p class="text-sm mb-0 text-capitalize font-weight-bold text-white">Total Order</p>
+                            <h5 class="font-weight-bolder mb-2 text-white">
+                                {{ $orders }}
+                                <span class="text-warning text-sm font-weight-bolder">Order</span>
+                            </h5>
+                            <p class="text-sm mb-0 text-capitalize text-white">
+                                {{ \Carbon\Carbon::parse($startOfYear)->translatedFormat('d F Y') }} -
+                                {{ \Carbon\Carbon::parse($endOfNow)->translatedFormat('d F Y') }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-4 text-end">
+                        <div class="icon icon-shape bg-gradient-light shadow text-center border-radius-md">
+                            <i class="fas fa-shopping-cart text-lg opacity-10 text-dark" aria-hidden="true"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div class="col-4 text-end">
-            <div class="icon icon-shape bg-gradient-light shadow text-center border-radius-md">
-              <i class="fas fa-shopping-cart text-lg opacity-10 text-dark" aria-hidden="true"></i>
-            </div>
-          </div>
         </div>
-      </div>
     </div>
-  </div>
 </div>
 
 <div class="row mt-4">
-  {{-- Kiri: Carousel konten --}}
-  <div class="col-md-7 mb-4">
-    <div class="card">
-      <div class="card-body p-3">
-        <div id="customerGroupCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel"
-          data-bs-interval="5000">
-          <div class="carousel-inner">
+    {{-- Kiri: Carousel konten --}}
+    <div class="col-md-7 mb-4">
+        <div class="card">
+            <div class="card-body p-3">
+                <div id="customerGroupCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel"
+                    data-bs-interval="5000">
+                    <div class="carousel-inner">
 
-            {{-- Slide 1: Customer dengan order terbanyak --}}
-            <div class="carousel-item active">
-              <div class="row">
-                <div class="col-md-7 position-relative">
-                  <div>
-                    <p class="mb-1 text-sm text-muted">Customer dengan order terbanyak</p>
-                    <h6 class="fw-bold mb-1">{{ $mostCustomerOrdered->customer->name }}</h6>
-                    <span class="badge bg-gradient-info text-white mb-2">
-                      {{ $mostCustomerOrdered->order_count }} Order
-                    </span>
-                    <p class="text-sm text-secondary">
-                      {{ $mostCustomerOrdered->customer->company_address }}</p>
-                  </div>
+                        {{-- Slide 1: Customer dengan order terbanyak --}}
+                        <div class="carousel-item active">
+                            <div class="row">
+                                <div class="col-md-7 position-relative">
+                                    <div>
+                                        <p class="mb-1 text-sm text-muted">Customer dengan order terbanyak</p>
+                                        <h6 class="fw-bold mb-1">{{ $mostCustomerOrdered->customer->name }}</h6>
+                                        <span class="badge bg-gradient-info text-white mb-2">
+                                            {{ $mostCustomerOrdered->order_count }} Order
+                                        </span>
+                                        <p class="text-sm text-secondary">
+                                            {{ $mostCustomerOrdered->customer->company_address }}</p>
+                                    </div>
 
-                  <a class="btn btn-sm bg-gradient-primary text-white position-absolute bottom-0"
-                    href="{{ route('customer.edit', $mostCustomerOrdered->customer->id) }}">
-                    Info selengkapnya <i class="fas fa-arrow-right text-sm ms-1"></i>
-                  </a>
-                </div>
-                <div class="col-md-5 d-flex align-items-center justify-content-center">
-                  <img
-                    src="{{ $mostCustomerOrdered->customer->photo ? $mostCustomerOrdered->customer->photo : asset('assets/img/default-profile.jpg') }}"
-                    alt="{{ $mostCustomerOrdered->customer->name }}" class="img-fluid rounded-3 shadow-sm w-100"
-                    style="max-height: 280px;">
-                </div>
-              </div>
-            </div>
+                                    <a class="btn btn-sm bg-gradient-primary text-white position-absolute bottom-0"
+                                        href="{{ route('customer.edit', $mostCustomerOrdered->customer->id) }}">
+                                        Info selengkapnya <i class="fas fa-arrow-right text-sm ms-1"></i>
+                                    </a>
+                                </div>
+                                <div class="col-md-5 d-flex align-items-center justify-content-center">
+                                    <img src="{{ $mostCustomerOrdered->customer->photo ? $mostCustomerOrdered->customer->photo : asset('assets/img/default-profile.jpg') }}"
+                                        alt="{{ $mostCustomerOrdered->customer->name }}"
+                                        class="img-fluid rounded-3 shadow-sm w-100" style="max-height: 280px;">
+                                </div>
+                            </div>
+                        </div>
 
-            {{-- Slide 2: Group dengan order terbanyak --}}
-            <div class="carousel-item">
-              <div class="row">
-                <div class="col-md-7 position-relative">
-                  <div>
-                    <p class="mb-1 text-sm text-bold">Group dengan order terbanyak</p>
-                    <h6 class="fw-bold mb-1">{{ $mostGroupOrdered->name }}</h6>
-                    <span class="badge bg-gradient-info text-white mb-2">
-                      {{ $mostGroupOrdered->order_count }} Order
-                    </span>
+                        {{-- Slide 2: Group dengan order terbanyak --}}
+                        <div class="carousel-item">
+                            <div class="row">
+                                <div class="col-md-7 position-relative">
+                                    <div>
+                                        <p class="mb-1 text-sm text-bold">Group dengan order terbanyak</p>
+                                        <h6 class="fw-bold mb-1">{{ $mostGroupOrdered->name }}</h6>
+                                        <span class="badge bg-gradient-info text-white mb-2">
+                                            {{ $mostGroupOrdered->order_count }} Order
+                                        </span>
 
-                    @if ($mostGroupOrdered->group->customers->count())
-                    <p class="text-sm mb-2">Member of group:</p>
-                    <div class="d-flex flex-wrap gap-1 mb-2">
-                      @foreach ($mostGroupOrdered->group->customers as $customer)
-                      <a href="{{ route('customer.edit', $customer->id) }}" class="avatar avatar-sm rounded-circle"
-                        data-bs-toggle="tooltip" title="{{ $customer->name }}">
-                        <img
-                          src="{{ $customer->photo ? asset($customer->photo) : asset('assets/img/default-profile.jpg') }}"
-                          alt="{{ $customer->name }}">
-                      </a>
-                      @endforeach
+                                        @if ($mostGroupOrdered->group->customers->count())
+                                        <p class="text-sm mb-2">Member of group:</p>
+                                        <div class="d-flex flex-wrap gap-1 mb-2">
+                                            @foreach ($mostGroupOrdered->group->customers as $customer)
+                                            <a href="{{ route('customer.edit', $customer->id) }}"
+                                                class="avatar avatar-sm rounded-circle" data-bs-toggle="tooltip"
+                                                title="{{ $customer->name }}">
+                                                <img src="{{ $customer->photo ? asset($customer->photo) : asset('assets/img/default-profile.jpg') }}"
+                                                    alt="{{ $customer->name }}">
+                                            </a>
+                                            @endforeach
+                                        </div>
+                                        @endif
+                                    </div>
+
+                                    <a class="btn btn-sm bg-gradient-primary text-white position-absolute bottom-0"
+                                        href="{{ route('customer.group.edit', $mostGroupOrdered->group->id) }}">
+                                        Info selengkapnya <i class="fas fa-arrow-right text-sm ms-1"></i>
+                                    </a>
+                                </div>
+                                <div class="col-md-5 d-flex align-items-center justify-content-center">
+                                    <img src="{{ $mostGroupOrdered->group->photo ?? asset('assets/img/default-profile.jpg') }}"
+                                        alt="{{ $mostGroupOrdered->name }}" class="img-fluid rounded-3 shadow-sm w-100"
+                                        style="max-height: 280px;">
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    @endif
-                  </div>
-
-                  <a class="btn btn-sm bg-gradient-primary text-white position-absolute bottom-0"
-                    href="{{ route('customer.group.edit', $mostGroupOrdered->group->id) }}">
-                    Info selengkapnya <i class="fas fa-arrow-right text-sm ms-1"></i>
-                  </a>
                 </div>
-                <div class="col-md-5 d-flex align-items-center justify-content-center">
-                  <img src="{{ $mostGroupOrdered->group->photo ?? asset('assets/img/default-profile.jpg') }}"
-                    alt="{{ $mostGroupOrdered->name }}" class="img-fluid rounded-3 shadow-sm w-100"
-                    style="max-height: 280px;">
+            </div>
+        </div>
+    </div>
+
+    {{-- Kanan: Carousel gambar --}}
+    <div class="col-md-5 mb-4">
+        <div class="card">
+            <div class="card-body p-3">
+                <div id="landscapeCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="6000">
+                    {{-- Indicators --}}
+                    <div class="carousel-indicators mb-2">
+                        <button type="button" data-bs-target="#landscapeCarousel" data-bs-slide-to="0" class="active"
+                            aria-current="true" aria-label="Slide 1"></button>
+                        <button type="button" data-bs-target="#landscapeCarousel" data-bs-slide-to="1"
+                            aria-label="Slide 2"></button>
+                        <button type="button" data-bs-target="#landscapeCarousel" data-bs-slide-to="2"
+                            aria-label="Slide 3"></button>
+                    </div>
+
+                    <div class="carousel-inner rounded shadow">
+                        <div class="carousel-item active">
+                            <img src="{{ asset('assets/img/banner-dashboard-1.png') }}" class="d-block w-100 rounded"
+                                alt="Banner 1">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="{{ asset('assets/img/banner-dashboard-2.png') }}" class="d-block w-100 rounded"
+                                alt="Banner 2">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="{{ asset('assets/img/banner-dashboard-3.png') }}" class="d-block w-100 rounded"
+                                alt="Banner 3">
+                        </div>
+                    </div>
                 </div>
-              </div>
             </div>
-          </div>
         </div>
-      </div>
     </div>
-  </div>
-
-  {{-- Kanan: Carousel gambar --}}
-  <div class="col-md-5 mb-4">
-    <div class="card">
-      <div class="card-body p-3">
-        <div id="landscapeCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="6000">
-          {{-- Indicators --}}
-          <div class="carousel-indicators mb-2">
-            <button type="button" data-bs-target="#landscapeCarousel" data-bs-slide-to="0" class="active"
-              aria-current="true" aria-label="Slide 1"></button>
-            <button type="button" data-bs-target="#landscapeCarousel" data-bs-slide-to="1"
-              aria-label="Slide 2"></button>
-            <button type="button" data-bs-target="#landscapeCarousel" data-bs-slide-to="2"
-              aria-label="Slide 3"></button>
-          </div>
-
-          <div class="carousel-inner rounded shadow">
-            <div class="carousel-item active">
-              <img src="{{ asset('assets/img/banner-dashboard-1.png') }}" class="d-block w-100 rounded" alt="Banner 1">
-            </div>
-            <div class="carousel-item">
-              <img src="{{ asset('assets/img/banner-dashboard-2.png') }}" class="d-block w-100 rounded" alt="Banner 2">
-            </div>
-            <div class="carousel-item">
-              <img src="{{ asset('assets/img/banner-dashboard-3.png') }}" class="d-block w-100 rounded" alt="Banner 3">
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 </div>
 
 <div class="row mt-2">
-  <div class="col-lg-5 mb-lg-0 mb-4">
-    <div class="card z-index-2">
-      <div class="card-body p-3">
-        <div class="bg-gradient-dark border-radius-lg py-3 pe-1 mb-3">
-          <div class="chart">
-            <canvas id="chart-bars" class="chart-canvas" height="170"></canvas>
-          </div>
-        </div>
-        <div class="d-flex align-items-center ms-2 mt-4 mb-0">
-          <i class="fas fa-chart-line text-info me-2"></i>
-          <h6 class="mb-0">Statistik Order All Customer</h6>
-        </div>
-        <div class="d-flex align-items-center ms-2">
-          <i class="fas fa-calendar-alt text-secondary me-2"></i>
-          <p class="text-sm mb-0 ms-1">
-            Per
-            {{ \Carbon\Carbon::parse($startOfYear)->translatedFormat('d F Y') }} -
-            {{ \Carbon\Carbon::parse($endOfNow)->translatedFormat('d F Y') }}
-          </p>
-        </div>
-        {{-- <div class="container border-radius-lg">
+    <div class="col-lg-5 mb-lg-0 mb-4">
+        <div class="card z-index-2">
+            <div class="card-body p-3">
+                <div class="bg-gradient-dark border-radius-lg py-3 pe-1 mb-3">
+                    <div class="chart">
+                        <canvas id="chart-bars" class="chart-canvas" height="170"></canvas>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center ms-2 mt-4 mb-0">
+                    <i class="fas fa-chart-line text-info me-2"></i>
+                    <h6 class="mb-0">Statistik Order All Customer</h6>
+                </div>
+                <div class="d-flex align-items-center ms-2">
+                    <i class="fas fa-calendar-alt text-secondary me-2"></i>
+                    <p class="text-sm mb-0 ms-1">
+                        Per
+                        {{ \Carbon\Carbon::parse($startOfYear)->translatedFormat('d F Y') }} -
+                        {{ \Carbon\Carbon::parse($endOfNow)->translatedFormat('d F Y') }}
+                    </p>
+                </div>
+                {{-- <div class="container border-radius-lg">
           <div class="row">
             <div class="col-3 py-3 ps-0">
               <div class="d-flex mb-2">
@@ -391,75 +393,91 @@
             </div>
           </div>
         </div> --}}
-      </div>
-    </div>
-  </div>
-  <div class="col-lg-7">
-    <div class="card z-index-2">
-      <div class="card-header pb-0">
-        <h6>Sales overview</h6>
-        <p class="text-sm">
-          <i class="fa fa-arrow-up text-success"></i>
-          <span class="font-weight-bold">4% more</span> in 2021
-        </p>
-      </div>
-      <div class="card-body p-3">
-        <div class="chart">
-          <canvas id="chart-line" class="chart-canvas" height="300"></canvas>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
+    <div class="col-lg-7">
+        <div class="card z-index-2">
+            <div class="card-header pb-0">
+                <h6>Omzet Overview</h6>
+                <p class="text-sm">
+                    <i class="fa fa-calendar-alt text-info"></i>
+                    Tahun
+                    <span class="font-weight-bold">
+                        {{ \Carbon\Carbon::parse($endOfNow)->translatedFormat('Y') }}
+                    </span>
+                </p>
+            </div>
+            <div class="card-body p-3">
+                <div class="chart">
+                    <canvas id="chart-line" class="chart-canvas" height="300"></canvas>
+                </div>
+
+                <div class="d-flex align-items-center ms-2 mt-4">
+                    <div class="d-flex align-items-center me-4">
+                        <i class="fas fa-wave-square text-primary me-2"></i>
+                        <span>Omzet Pendapatan</span>
+                    </div>
+                    <div class="d-flex align-items-center me-4">
+                        <i class="fas fa-wave-square text-dark me-2"></i>
+                        <span>Biaya Pengeluaran</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="row my-4">
-  <div class="col-lg-12 col-md-12 mb-md-0 mb-4">
-    <div class="card">
-      <div class="card-header pb-0">
-        <div class="row">
-          <div class="col-lg-6 col-7">
-            <h6 id="section-title">Progression Order Group</h6>
-            <p class="text-sm mb-0">
-              <i class="fa fa-check text-info" aria-hidden="true"></i>
-              <span class="font-weight-bold ms-1">1 Bulan</span> terakhir
-            </p>
-          </div>
-          <div class="col-lg-6 col-5 my-auto text-end">
-            <div class="pe-4">
-              <a class="cursor-pointer" id="toggleViewBtn">
-                <i class="fa fa-random text-secondary" title="Switch View"></i>
-              </a>
+    <div class="col-lg-12 col-md-12 mb-md-0 mb-4">
+        <div class="card">
+            <div class="card-header pb-0">
+                <div class="row">
+                    <div class="col-lg-6 col-7">
+                        <h6 id="section-title">Progression Order Group</h6>
+                        <p class="text-sm mb-0">
+                            <i class="fa fa-check text-info" aria-hidden="true"></i>
+                            <span class="font-weight-bold ms-1">1 Bulan</span> terakhir
+                        </p>
+                    </div>
+                    <div class="col-lg-6 col-5 my-auto text-end">
+                        <div class="pe-4">
+                            <a class="cursor-pointer" id="toggleViewBtn">
+                                <i class="fa fa-random text-secondary" title="Switch View"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
+            <div class="card-body px-0 pb-2">
+                <div class="table-responsive">
+                    <table class="table align-items-center mb-0">
+                        <thead>
+                            <tr>
+                                <th id="th-name"
+                                    class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    Group
+                                    Customer</th>
+                                <th id="th-member"
+                                    class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                    Member</th>
+                                <th
+                                    class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    Omzet</th>
+                                <th
+                                    class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    Order</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="card-body px-0 pb-2">
-        <div class="table-responsive">
-          <table class="table align-items-center mb-0">
-            <thead>
-              <tr>
-                <th id="th-name"
-                  class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                  Group
-                  Customer</th>
-                <th id="th-member"
-                  class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                  Member</th>
-                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                  Omzet</th>
-                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                  Order</th>
-              </tr>
-            </thead>
-            <tbody id="table-body">
-            </tbody>
-          </table>
-        </div>
-      </div>
     </div>
-  </div>
 
-  {{-- <div class="col-lg-4 col-md-6">
+    {{-- <div class="col-lg-4 col-md-6">
     <div class="card h-100">
       <div class="card-header pb-0">
         <h6>Orders overview</h6>
@@ -534,7 +552,7 @@
 @push('dashboard')
 
 <script>
-  window.onload = function() {
+    window.onload = function() {
         var ctx = document.getElementById("chart-bars").getContext("2d");
 
         new Chart(ctx, {
@@ -589,106 +607,110 @@
         var ctx2 = document.getElementById("chart-line").getContext("2d");
 
         var gradientStroke1 = ctx2.createLinearGradient(0, 230, 0, 50);
-
         gradientStroke1.addColorStop(1, 'rgba(203,12,159,0.2)');
         gradientStroke1.addColorStop(0.2, 'rgba(72,72,176,0.0)');
-        gradientStroke1.addColorStop(0, 'rgba(203,12,159,0)'); //purple colors
+        gradientStroke1.addColorStop(0, 'rgba(203,12,159,0)');
 
         var gradientStroke2 = ctx2.createLinearGradient(0, 230, 0, 50);
-
         gradientStroke2.addColorStop(1, 'rgba(20,23,39,0.2)');
         gradientStroke2.addColorStop(0.2, 'rgba(72,72,176,0.0)');
-        gradientStroke2.addColorStop(0, 'rgba(20,23,39,0)'); //purple colors
+        gradientStroke2.addColorStop(0, 'rgba(20,23,39,0)');
 
         new Chart(ctx2, {
-          type: "line",
-          data: {
-            labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-            datasets: [{
-                label: "Mobile apps",
-                tension: 0.4,
-                borderWidth: 0,
-                pointRadius: 0,
-                borderColor: "#cb0c9f",
-                borderWidth: 3,
-                backgroundColor: gradientStroke1,
-                fill: true,
-                data: [50, 40, 300, 220, 500, 250, 400, 230, 500],
-                maxBarThickness: 6
-
-              },
-              {
-                label: "Websites",
-                tension: 0.4,
-                borderWidth: 0,
-                pointRadius: 0,
-                borderColor: "#3A416F",
-                borderWidth: 3,
-                backgroundColor: gradientStroke2,
-                fill: true,
-                data: [30, 90, 40, 140, 290, 290, 340, 230, 400],
-                maxBarThickness: 6
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                display: false,
-              }
+            type: "line",
+            data: {
+                labels: @json($labels),
+                datasets: [
+                    {
+                        label: "Omzet Pendapatan",
+                        tension: 0.4,
+                        pointRadius: 0,
+                        borderColor: "#cb0c9f",
+                        borderWidth: 3,
+                        backgroundColor: gradientStroke1,
+                        fill: true,
+                        data: @json($dataOmzet),
+                    },
+                    {
+                        label: "Biaya Pengeluaran",
+                        tension: 0.4,
+                        pointRadius: 0,
+                        borderColor: "#3A416F",
+                        borderWidth: 3,
+                        backgroundColor: gradientStroke2,
+                        fill: true,
+                        data: @json($dataExpenses),
+                    }
+                ],
             },
-            interaction: {
-              intersect: false,
-              mode: 'index',
-            },
-            scales: {
-              y: {
-                grid: {
-                  drawBorder: false,
-                  display: true,
-                  drawOnChartArea: true,
-                  drawTicks: false,
-                  borderDash: [5, 5]
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                let value = context.raw || 0;
+                                return context.dataset.label + ": Rp " + value.toLocaleString('id-ID') + ',-';
+                            }
+                        }
+                    }
                 },
-                ticks: {
-                  display: true,
-                  padding: 10,
-                  color: '#b2b9bf',
-                  font: {
-                    size: 11,
-                    family: "Open Sans",
-                    style: 'normal',
-                    lineHeight: 2
-                  },
-                }
-              },
-              x: {
-                grid: {
-                  drawBorder: false,
-                  display: false,
-                  drawOnChartArea: false,
-                  drawTicks: false,
-                  borderDash: [5, 5]
+                interaction: {
+                    intersect: false,
+                    mode: 'index',
                 },
-                ticks: {
-                  display: true,
-                  color: '#b2b9bf',
-                  padding: 20,
-                  font: {
-                    size: 11,
-                    family: "Open Sans",
-                    style: 'normal',
-                    lineHeight: 2
-                  },
-                }
-              },
-            },
-          },
+                scales: {
+                    y: {
+                        grid: {
+                            drawBorder: false,
+                            display: true,
+                            drawOnChartArea: true,
+                            drawTicks: false,
+                            borderDash: [5, 5]
+                        },
+                        ticks: {
+                            display: true,
+                            padding: 10,
+                            color: '#b2b9bf',
+                            font: {
+                                size: 11,
+                                family: "Open Sans",
+                                style: 'normal',
+                                lineHeight: 2
+                            },
+                            callback: function (value) {
+                                return 'Rp ' + value.toLocaleString('id-ID') + ',-';
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            drawBorder: false,
+                            display: false,
+                            drawOnChartArea: false,
+                            drawTicks: false,
+                            borderDash: [5, 5]
+                        },
+                        ticks: {
+                            display: true,
+                            color: '#b2b9bf',
+                            padding: 20,
+                            font: {
+                                size: 11,
+                                family: "Open Sans",
+                                style: 'normal',
+                                lineHeight: 2
+                            },
+                        }
+                    },
+                },
+            }
         });
       }
-
 
     let isGroupView = true; // default tampilan awal: group customer
 
