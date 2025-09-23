@@ -71,9 +71,28 @@ class HomeController extends Controller
         }
 
 
-        // * Statistic Omzet & Pengeluaran
+        // * Statistic Omzet & Expenses
 
         $year = now()->year;
+
+        $omzet = Order::with('orderItems')
+            ->whereYear('order_date', $year)
+            ->get()
+            ->groupBy(function ($item) {
+                return $item->order_date->format('n'); // bulan 1-12
+            })
+            ->map(function ($items) {
+                return $items->sum(function ($order) {
+                    return $order->orderItems->sum('total');
+                });
+            })
+            ->toArray();
+
+        // isi semua bulan (1–12)
+        $dataOmzet = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $dataOmzet[] = isset($omzet[$i]) ? $omzet[$i] : 0;
+        }
 
         $expenses = PurchasePrice::with('logPrint')
             ->whereHas('logPrint', function ($q) use ($year) {
@@ -99,7 +118,9 @@ class HomeController extends Controller
         }
 
         $labels = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-        $dataOmzet = [50, 40, 300, 220, 500, 250, 400, 230, 500, 300, 200, 450];
+        $dataNetIncome = array_map(function($omzet, $expenses) {
+            return $omzet - $expenses;
+        }, $dataOmzet, $dataExpenses);
 
         return view('pages.dashboard', 
             compact(
@@ -115,7 +136,8 @@ class HomeController extends Controller
                 'chartData',
                 'labels',
                 'dataOmzet', 
-                'dataExpenses'
+                'dataExpenses',
+                'dataNetIncome'
                 )
         );
     }

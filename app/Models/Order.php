@@ -14,6 +14,12 @@ class Order extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $table = 'orders';
+
+    protected $casts = [
+        'order_date' => 'datetime',
+    ];
+
     protected $fillable = [
         'order_code',
         'customer_id',
