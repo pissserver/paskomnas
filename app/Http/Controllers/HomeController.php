@@ -10,6 +10,7 @@ use App\Models\Goods;
 use App\Models\Customer;
 use App\Models\CustomerGroup;
 use App\Models\Order;
+use App\Models\PurchasePrice;
 
 class HomeController extends Controller
 {
@@ -69,6 +70,58 @@ class HomeController extends Controller
             $chartData[] = $monthOrder ? $monthOrder->total : 0;
         }
 
+
+        // * Statistic Omzet & Expenses
+
+        $year = now()->year;
+
+        $omzet = Order::with('orderItems')
+            ->whereYear('order_date', $year)
+            ->get()
+            ->groupBy(function ($item) {
+                return $item->order_date->format('n'); // bulan 1-12
+            })
+            ->map(function ($items) {
+                return $items->sum(function ($order) {
+                    return $order->orderItems->sum('total');
+                });
+            })
+            ->toArray();
+
+        // isi semua bulan (1–12)
+        $dataOmzet = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $dataOmzet[] = isset($omzet[$i]) ? $omzet[$i] : 0;
+        }
+
+        $expenses = PurchasePrice::with('logPrint')
+            ->whereHas('logPrint', function ($q) use ($year) {
+                $q->whereYear('print_date', $year);
+            })
+            ->get()
+            ->groupBy(function ($item) {
+                return $item->logPrint->print_date->format('n'); // bulan 1-12
+            })
+            ->map(function ($items) {
+                return $items->sum('total_price');
+            })
+            ->toArray();
+
+        // isi semua bulan (1–12)
+        $dataExpenses = [];
+        for ($i = 1; $i <= 12; $i++) {
+            if (isset($expenses[$i])) {
+                $dataExpenses[] = $expenses[$i];
+            } else {
+                $dataExpenses[] = 0;
+            }
+        }
+
+        $labels = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+        $dataNetIncome = array_map(function($omzet, $expenses) {
+            return $omzet - $expenses;
+        }, $dataOmzet, $dataExpenses);
+
         return view('pages.dashboard', 
             compact(
                 'startOfYear', 
@@ -80,7 +133,11 @@ class HomeController extends Controller
                 'mostCustomerOrdered', 
                 'mostGroupOrdered',
                 'chartLabels',
-                'chartData'
+                'chartData',
+                'labels',
+                'dataOmzet', 
+                'dataExpenses',
+                'dataNetIncome'
                 )
         );
     }
@@ -125,7 +182,6 @@ class HomeController extends Controller
 
         return response()->json($dataGroupProgression);
     }
-
 
     public function dataCustomer()
     {

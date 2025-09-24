@@ -6,6 +6,7 @@ use App\Models\Specification;
 use App\Models\Order;
 use App\Models\LogPrint;
 use App\Models\LogPrintDetail;
+use App\Models\PurchasePrice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -441,5 +442,164 @@ class PrintLogController extends Controller
             ]);
         }
 
+    }
+
+
+    // * Purchase Prince Log Print
+    // index log print
+    public function purchasePriceDataLogPrint(Request $request)
+    {
+        $keyword = $request->input('keyword');
+        $query = LogPrint::query();
+
+        if ($keyword) {
+            $query->where(function ($q) use ($keyword) {
+                $q->WhereRaw("DATE_FORMAT(created_at, '%d %M %Y') LIKE ?", ["%$keyword%"]);
+            });
+        }
+
+        $logs = $query->with(['details.order.customer'])
+            ->where('purchase', 'done')
+            ->orderBy('print_date', 'desc')
+            ->paginate(10)
+            ->withQueryString();
+
+        $html = view('components.tables.log-print-purchase-price-table', compact('logs'))->render();
+        $pagination = view('components.pagination.log-print-purchase-price-pagination', compact('logs'))->render();
+
+        return response()->json([
+            'html' => $html,
+            'pagination' => $pagination
+        ]);
+    }
+
+    // Show print preview
+    public function purchasePriceViewLogPrint($id)
+    {
+        $log = LogPrint::with([
+            'details.order.orderItems.goods',
+            'details.order.customer',
+            'customerGroup'
+        ])->findOrFail($id);
+
+        $isGroup = $log->customer_group_id !== null;
+
+        $groupName = null;
+        $customerName = null;
+
+        if ($isGroup) {
+            $groupName = $log->customerGroup ? $log->customerGroup->name : 'Unknown Group';
+            $grouped = [];
+            $customers = [];
+
+            foreach ($log->details as $detail) {
+                $order = $detail->order;
+                $custId = $order->customer->id;
+                $custName = $order->customer->name;
+                $customers[$custId] = $custName;
+
+                foreach ($order->orderItems as $item) {
+                    $goodsName = $item->goods->name;
+                    $unit = $item->goods->unit_in_order !== null ? $item->goods->unit_in_order : $item->goods->unit;
+                    $spec = $item->specification ? $item->specification->name : null;
+                    $key = $spec ? "$goodsName ($spec)" : $goodsName;
+
+                    $pp = PurchasePrice::where('log_print_id', $log->id)
+                    ->where('goods_id', $item->goods->id)
+                    ->when($item->specification_id, function ($q) use ($item) {
+                        $q->where('specification_id', $item->specification_id);
+                    })
+                    ->first();
+                    
+
+                    if (!isset($grouped[$key])) {
+                        $grouped[$key] = [
+                            'unit' => $unit,
+                            'total' => 0,
+                            'quantities' => [],
+                            'goods_id' => $item->goods->id,
+                            'specification_id' => $item->specification ? $item->specification->id : null,
+                            'order_ids' => [$order->id],
+
+                            'unit_purchase'  => $pp && $pp->unit ? $pp->unit : '',
+                            'quantity'       => $pp && $pp->quantity ? $pp->quantity : '',
+                            'purchase_price' => $pp && $pp->purchase_price ? $pp->purchase_price : '',
+                            'total_price'    => $pp && $pp->total_price ? $pp->total_price : '',
+                        ];
+                    }
+
+                    $grouped[$key]['order_ids'][] = $order->id;
+
+                    $grouped[$key]['total'] += $item->quantity;
+                    if (!isset($grouped[$key]['quantities'][$custId])) {
+                        $grouped[$key]['quantities'][$custId] = 0;
+                    }
+                    $grouped[$key]['quantities'][$custId] += $item->quantity;
+
+                }
+            }
+
+            ksort($grouped);
+            asort($customers);
+            return response()->json([
+                'success' => true,
+                'group_name' => $groupName,
+                'grouped' => $grouped,
+                'customers' => $customers,
+                'print_date' => Carbon::parse($log->print_date)->format('d M Y'),
+            ]);
+        } else {
+            // Individual customer
+            $items = [];
+            $customerNames = [];
+
+            foreach ($log->details as $detail) {
+                $customer = $detail->order->customer;
+                if ($customer) {
+                    $customerNames[] = $customer->name;
+                }
+
+                foreach ($detail->order->orderItems as $item) {
+                    $goodsName = $item->goods->name;
+                    $spec = $item->specification ? $item->specification->name : null;
+                    $key = $spec ? "$goodsName ($spec)" : $goodsName;
+
+                    $pp = PurchasePrice::where('log_print_id', $log->id)
+                    ->where('goods_id', $item->goods->id)
+                    ->when($item->specification_id, function ($q) use ($item) {
+                        $q->where('specification_id', $item->specification_id);
+                    })
+                    ->first();
+
+                    if (!isset($items[$key])) {
+                        $items[$key] = [
+                            'quantity' => 0,
+                            'unit' => $item->goods->unit_in_order !== null ? $item->goods->unit_in_order : $item->goods->unit,
+                            'goods_id' => $item->goods->id,
+                            'specification_id' => $item->specification ? $item->specification->id : null,
+                            'order_ids' => [],
+
+                            'unit_purchase'  => $pp && $pp->unit ? $pp->unit : '',
+                            'quantity_purchase' => $pp && $pp->quantity ? $pp->quantity : '',
+                            'purchase_price' => $pp && $pp->purchase_price ? $pp->purchase_price : '',
+                            'total_price'    => $pp && $pp->total_price ? $pp->total_price : '',
+                        ];
+                    }
+                    $items[$key]['quantity'] += $item->quantity;
+                    $items[$key]['order_ids'][] = $detail->order->id;
+                }
+            }
+
+            $customerNames = array_unique($customerNames);
+            ksort($items);
+            sort($customerNames);
+
+            return response()->json([
+                'success' => true,
+                'items' => $items,
+                'customer_name' => implode(', ', $customerNames),
+                'print_date' => Carbon::parse($log->print_date)->format('d M Y'),
+            ]);
+        }
     }
 }

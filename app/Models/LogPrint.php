@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\CustomerGroup;
 use App\Models\LogPrintDetail;
+use App\Models\PurchasePrice;
 
 class LogPrint extends Model
 {
@@ -31,5 +32,10 @@ class LogPrint extends Model
     public function details()
     {
         return $this->hasMany(LogPrintDetail::class);
+    }
+
+    public function purchasePrices()
+    {
+        return $this->hasMany(PurchasePrice::class);
     }
 }

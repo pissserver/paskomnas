@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\OrderItems;
+use App\Models\PurchasePrice;
 
 class Goods extends Model
 {
@@ -23,5 +24,10 @@ class Goods extends Model
     public function orderItems()
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function purchasePrices()
+    {
+        return $this->hasMany(PurchasePrice::class);
     }
 }

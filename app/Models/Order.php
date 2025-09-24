@@ -8,10 +8,17 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use App\Models\Customer;
 use App\Models\OrderItem;
+use App\Models\PurchasePrice;
 
 class Order extends Model
 {
     use HasFactory, SoftDeletes;
+
+    protected $table = 'orders';
+
+    protected $casts = [
+        'order_date' => 'datetime',
+    ];
 
     protected $fillable = [
         'order_code',
@@ -31,5 +38,8 @@ class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
-    
+    public function purchasePrices()
+    {
+        return $this->hasMany(PurchasePrice::class);
+    }
 }
