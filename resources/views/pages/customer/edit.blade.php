@@ -1134,120 +1134,194 @@
 
     <div class="tab-pane" id="achievement" role="tabpanel" aria-labelledby="achievement-tab">
         <div class="container-fluid py-4">
-            <div class="card">
-                <div class="card-header pb-0 p-4">
-                    @php
-                    $orderCount = $customer->orders_count;
-                    $levels = [
-                    ['label' => 'Basic', 'icon' => 'fa-user', 'threshold' => 0, 'bg' => 'bg-gradient-light text-dark',
-                    'line' => '#adb5bd'],
-                    ['label' => 'Silver', 'icon' => 'fa-star', 'threshold' => 20, 'bg' => 'bg-gradient-secondary
-                    text-white','line' => '#6c757d'],
-                    ['label' => 'Gold', 'icon' => 'fa-medal', 'threshold' => 100, 'bg' => 'bg-gradient-warning
-                    text-white', 'line' => '#fbcf33'],
-                    ['label' => 'Platinum', 'icon' => 'fa-crown', 'threshold' => 500, 'bg' => 'bg-gradient-dark
-                    text-white', 'line' => '#212529'],
-                    ];
-                    @endphp
-
-                    <div class="d-flex align-items-center justify-content-between px-2 py-3">
-                        @foreach ($levels as $index => $level)
-                        @php
-                        $reached = $orderCount >= $level['threshold'];
-                        $nextLevel = $levels[$index + 1] ?? null;
-                        $isCurrent = $reached && (!$nextLevel || $orderCount < $nextLevel['threshold']);
-                            $badgeClass=$isCurrent ? $level['bg'] . ' border border-white border-3 shadow' : ($reached ?
-                            $level['bg'] : 'bg-secondary text-white' ); $labelClass=$isCurrent ? 'text-success fw-bold'
-                            : ($reached ? 'text-dark' : 'text-muted' ); $lineColor=($nextLevel && $orderCount>=
-                            $nextLevel['threshold']) ? $nextLevel['line'] : '#dee2e6';
-                            $iconText = $level['label'] === 'Basic' ? 'text-dark' : '';
+            <div class="row">
+                <div class="col-md-7">
+                    <div class="card">
+                        <div class="card-header pb-0 p-4">
+                            @php
+                            $orderCount = $customer->orders_count;
+                            $levels = [
+                            ['label' => 'Basic', 'icon' => 'fa-user', 'threshold' => 0, 'bg' => 'bg-gradient-light
+                            text-dark',
+                            'line' => '#adb5bd'],
+                            ['label' => 'Silver', 'icon' => 'fa-star', 'threshold' => 20, 'bg' => 'bg-gradient-secondary
+                            text-white','line' => '#6c757d'],
+                            ['label' => 'Gold', 'icon' => 'fa-medal', 'threshold' => 100, 'bg' => 'bg-gradient-warning
+                            text-white', 'line' => '#fbcf33'],
+                            ['label' => 'Platinum', 'icon' => 'fa-crown', 'threshold' => 500, 'bg' => 'bg-gradient-dark
+                            text-white', 'line' => '#212529'],
+                            ];
                             @endphp
 
-                            <div class="text-center position-relative z-2" style="width: 70px;">
-                                <div class="icon icon-shape shadow mb-1 mx-auto {{ $badgeClass }}">
-                                    <i class="fas {{ $level['icon'] }} {{ $iconText }}"></i>
-                                </div>
-                                <small class="{{ $labelClass }}">{{ $level['label'] }}</small>
-                            </div>
+                            <div class="d-flex align-items-center justify-content-between px-2 py-3">
+                                @foreach ($levels as $index => $level)
+                                @php
+                                $reached = $orderCount >= $level['threshold'];
+                                $nextLevel = $levels[$index + 1] ?? null;
+                                $isCurrent = $reached && (!$nextLevel || $orderCount < $nextLevel['threshold']);
+                                    $badgeClass=$isCurrent ? $level['bg'] . ' border border-white border-3 shadow' :
+                                    ($reached ? $level['bg'] : 'bg-secondary text-white' ); $labelClass=$isCurrent
+                                    ? 'text-success fw-bold' : ($reached ? 'text-dark' : 'text-muted' );
+                                    $lineColor=($nextLevel && $orderCount>=
+                                    $nextLevel['threshold']) ? $nextLevel['line'] : '#dee2e6';
+                                    $iconText = $level['label'] === 'Basic' ? 'text-dark' : '';
+                                    @endphp
 
-                            @if (!$loop->last)
-                            <div class="flex-grow-1 mx-1 d-flex align-items-center" style="height: 2px;">
-                                <div
-                                    style="height: 2px; width: 100%; border-radius: 1px; background-color: {{ $lineColor }}; margin-top: -12px;">
-                                </div>
-                            </div>
-                            @endif
-                            @endforeach
-                    </div>
-                </div>
-
-                <div class="card-body pt-4 p-4">
-                    <div class="text-center mb-4">
-                        <h5 class="mb-2">Total Order {{ $customer->name }}</h5>
-                        <div class="bg-gradient-primary d-flex align-items-center justify-content-center rounded-3 px-3 py-2 mx-auto"
-                            style="width: fit-content;">
-                            <i class="fa fa-shopping-cart text-white me-3 fs-4"></i>
-                            <h2 class="text-white fw-bold mb-0">{{ $orderCount }}</h2>
-                        </div>
-                        <p class="text-sm text-muted mt-2">Jumlah order menentukan level Anda saat ini.</p>
-                    </div>
-
-                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3">
-                        @php
-                        $orderCount = $customer->orders_count;
-                        $levels = [
-                        ['label' => 'Basic', 'icon' => 'fa-user', 'threshold' => 0, 'bg' => 'bg-gradient-light', 'text'
-                        => 'text-dark'],
-                        ['label' => 'Silver', 'icon' => 'fa-star', 'threshold' => 20, 'bg' => 'bg-gradient-secondary',
-                        'text' => 'text-white'],
-                        ['label' => 'Gold', 'icon' => 'fa-medal', 'threshold' => 100, 'bg' => 'bg-gradient-warning',
-                        'text' => 'text-white'],
-                        ['label' => 'Platinum', 'icon' => 'fa-crown', 'threshold' => 500, 'bg' => 'bg-gradient-dark',
-                        'text' => 'text-white'],
-                        ];
-                        @endphp
-
-                        @foreach ($levels as $index => $level)
-                        @php
-                        $reached = $orderCount >= $level['threshold'];
-                        $nextThreshold = $levels[$index + 1]['threshold'] ?? null;
-
-                        $badgeTextColor=match($level['label']) { 'Basic'=> 'text-dark',
-                        'Silver' => 'text-secondary',
-                        'Gold' => 'text-warning',
-                        'Platinum' => 'text-dark',
-                        default => 'text-dark',
-                        };
-                        @endphp
-
-                        <div class="col">
-                            <div
-                                class="card border-0 shadow-sm h-100 text-center {{ $level['bg'] }} {{ $level['text'] }}">
-                                <div class="card-body py-4">
-                                    <div class="icon icon-shape rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3 border border-white border-2"
-                                        style="width: 60px; height: 60px;">
-                                        <i class="fas {{ $level['icon'] }} {{ $level['text'] }} mt-n4"></i>
+                                    <div class="text-center position-relative z-2" style="width: 70px;">
+                                        <div class="icon icon-shape shadow mb-1 mx-auto {{ $badgeClass }}">
+                                            <i class="fas {{ $level['icon'] }} {{ $iconText }}"></i>
+                                        </div>
+                                        <small class="{{ $labelClass }}">{{ $level['label'] }}</small>
                                     </div>
 
-                                    <h6 class="fw-bold mb-1 {{ $level['text'] }}">{{ $level['label'] }}</h6>
-                                    <p class="text-sm mb-2 {{ $level['text'] }}">Min. {{ $level['threshold'] }}
-                                        Order</p>
-
-                                    @if ($reached)
-                                    <span class="badge bg-success text-white">Tercapai</span>
-                                    @else
-                                    <span class="badge bg-white text-dark">Belum Tercapai</span>
+                                    @if (!$loop->last)
+                                    <div class="flex-grow-1 mx-1 d-flex align-items-center" style="height: 2px;">
+                                        <div
+                                            style="height: 2px; width: 100%; border-radius: 1px; background-color: {{ $lineColor }}; margin-top: -12px;">
+                                        </div>
+                                    </div>
                                     @endif
-                                </div>
+                                    @endforeach
                             </div>
                         </div>
-                        @endforeach
+
+                        <div class="card-body pt-4 p-4">
+                            <div class="text-center mb-4">
+                                <h5 class="mb-2">Total Order {{ $customer->name }}</h5>
+                                <div class="bg-gradient-primary d-flex align-items-center justify-content-center rounded-3 px-3 py-2 mx-auto"
+                                    style="width: fit-content;">
+                                    <i class="fa fa-shopping-cart text-white me-3 fs-4"></i>
+                                    <h2 class="text-white fw-bold mb-0">{{ $orderCount }}</h2>
+                                </div>
+                                <p class="text-sm text-muted mt-2">Jumlah order menentukan level Anda saat ini.</p>
+                            </div>
+
+                            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3">
+                                @php
+                                $orderCount = $customer->orders_count;
+                                $levels = [
+                                ['label' => 'Basic', 'icon' => 'fa-user', 'threshold' => 0, 'bg' => 'bg-gradient-light',
+                                'text'
+                                => 'text-dark'],
+                                ['label' => 'Silver', 'icon' => 'fa-star', 'threshold' => 20, 'bg' =>
+                                'bg-gradient-secondary',
+                                'text' => 'text-white'],
+                                ['label' => 'Gold', 'icon' => 'fa-medal', 'threshold' => 100, 'bg' =>
+                                'bg-gradient-warning',
+                                'text' => 'text-white'],
+                                ['label' => 'Platinum', 'icon' => 'fa-crown', 'threshold' => 500, 'bg' =>
+                                'bg-gradient-dark',
+                                'text' => 'text-white'],
+                                ];
+                                @endphp
+
+                                @foreach ($levels as $index => $level)
+                                @php
+                                $reached = $orderCount >= $level['threshold'];
+                                $nextThreshold = $levels[$index + 1]['threshold'] ?? null;
+
+                                $badgeTextColor=match($level['label']) { 'Basic'=> 'text-dark',
+                                'Silver' => 'text-secondary',
+                                'Gold' => 'text-warning',
+                                'Platinum' => 'text-dark',
+                                default => 'text-dark',
+                                };
+                                @endphp
+
+                                <div class="col">
+                                    <div
+                                        class="card border-0 shadow-sm h-100 text-center {{ $level['bg'] }} {{ $level['text'] }}">
+                                        <div class="card-body py-4">
+                                            <div class="icon icon-shape rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3 border border-white border-2"
+                                                style="width: 60px; height: 60px;">
+                                                <i class="fas {{ $level['icon'] }} {{ $level['text'] }} mt-n4"></i>
+                                            </div>
+
+                                            <h6 class="fw-bold mb-1 {{ $level['text'] }}">{{ $level['label'] }}</h6>
+                                            <p class="text-sm mb-2 {{ $level['text'] }}">Min. {{ $level['threshold'] }}
+                                                Order</p>
+
+                                            @if ($reached)
+                                            <span class="badge bg-success text-white">Tercapai</span>
+                                            @else
+                                            <span class="badge bg-white text-dark">Belum Tercapai</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <p class="text-muted text-center text-sm mt-4">
+                            Semakin banyak order, semakin tinggi level Anda. Raih Platinum dengan lebih dari 500 order!
+                        </p>
                     </div>
                 </div>
 
-                <p class="text-muted text-center text-sm mt-4">
-                    Semakin banyak order, semakin tinggi level Anda. Raih Platinum dengan lebih dari 500 order!
-                </p>
+                <div class="col-md-5">
+                    <div class="card">
+                        <div class="card-header pb-0 p-4">
+                            @php
+                            $orderCount = $customer->orders_count;
+                            $levels = [
+                            ['label' => 'Basic', 'icon' => 'fa-user', 'threshold' => 0, 'bg' => 'bg-gradient-light
+                            text-dark',
+                            'line' => '#adb5bd'],
+                            ['label' => 'Silver', 'icon' => 'fa-star', 'threshold' => 20, 'bg' => 'bg-gradient-secondary
+                            text-white','line' => '#6c757d'],
+                            ['label' => 'Gold', 'icon' => 'fa-medal', 'threshold' => 100, 'bg' => 'bg-gradient-warning
+                            text-white', 'line' => '#fbcf33'],
+                            ['label' => 'Platinum', 'icon' => 'fa-crown', 'threshold' => 500, 'bg' => 'bg-gradient-dark
+                            text-white', 'line' => '#212529'],
+                            ];
+                            @endphp
+
+                            <div class="d-flex align-items-center justify-content-between px-2 py-3">
+                                @foreach ($levels as $index => $level)
+                                @php
+                                $reached = $orderCount >= $level['threshold'];
+                                $nextLevel = $levels[$index + 1] ?? null;
+                                $isCurrent = $reached && (!$nextLevel || $orderCount < $nextLevel['threshold']);
+                                    $badgeClass=$isCurrent ? $level['bg'] . ' border border-white border-3 shadow' :
+                                    ($reached ? $level['bg'] : 'bg-secondary text-white' ); $labelClass=$isCurrent
+                                    ? 'text-success fw-bold' : ($reached ? 'text-dark' : 'text-muted' );
+                                    $lineColor=($nextLevel && $orderCount>=
+                                    $nextLevel['threshold']) ? $nextLevel['line'] : '#dee2e6';
+                                    $iconText = $level['label'] === 'Basic' ? 'text-dark' : '';
+                                    @endphp
+
+                                    <div class="text-center position-relative z-2" style="width: 70px;">
+                                        <div class="icon icon-shape shadow mb-1 mx-auto {{ $badgeClass }}">
+                                            <i class="fas {{ $level['icon'] }} {{ $iconText }}"></i>
+                                        </div>
+                                        <small class="{{ $labelClass }}">{{ $level['label'] }}</small>
+                                    </div>
+
+                                    @if (!$loop->last)
+                                    <div class="flex-grow-1 mx-1 d-flex align-items-center" style="height: 2px;">
+                                        <div
+                                            style="height: 2px; width: 100%; border-radius: 1px; background-color: {{ $lineColor }}; margin-top: -12px;">
+                                        </div>
+                                    </div>
+                                    @endif
+                                    @endforeach
+                            </div>
+                        </div>
+
+                        <div class="card-body pt-4 p-4">
+                            <div class="text-center mb-4">
+                                <h5 class="mb-2">Total Order {{ $customer->name }}</h5>
+                                <div class="bg-gradient-primary d-flex align-items-center justify-content-center rounded-3 px-3 py-2 mx-auto"
+                                    style="width: fit-content;">
+                                    <i class="fa fa-shopping-cart text-white me-3 fs-4"></i>
+                                    <h2 class="text-white fw-bold mb-0">{{ $orderCount }}</h2>
+                                </div>
+                                <p class="text-sm text-muted mt-2">Jumlah order menentukan level Anda saat ini.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
