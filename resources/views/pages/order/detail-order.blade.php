@@ -136,7 +136,7 @@
                                     <a class="btn bg-gradient-success align-self-start" href="javascript:;"
                                         title="Done Order"
                                         onclick="confirmDone({{ $order->id }}, '{{ $order->order_code }}', '{{ $order->customer->name }}')">
-                                        <i class="fas fa-check text-white me-2"></i>Batalkan Order
+                                        <i class="fas fa-check text-white me-2"></i>Selesaikan Order
                                     </a>
                                 </div>
                                 @else
