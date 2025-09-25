@@ -138,6 +138,8 @@ Route::middleware(['auth', 'roleAccess'])->group(function () {
 	Route::put('customer/{id}', [CustomerController::class, 'update'])->name('customer.update');
 	Route::put('customer/{id}/price', [CustomerController::class, 'updatePrice'])->name('customer.update.price');
 	Route::delete('customer/{id}', [CustomerController::class, 'destroy'])->name('customer.destroy');
+	Route::get('customer/{id}/order', [CustomerController::class, 'customerOrders'])->name('customer.order');
+	Route::get('customer/{id}/invoice', [CustomerController::class, 'customerInvoice'])->name('customer.invoice');
 
 	// Goods
 	Route::get('barang-komoditi', [GoodsController::class, 'index'])->name('goods.index');

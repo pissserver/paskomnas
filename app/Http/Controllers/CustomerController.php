@@ -348,4 +348,59 @@ class CustomerController extends Controller
 
         return redirect()->route('customer.index')->with('success', 'Customer berhasil dihapus.');
     }
+
+    public function customerOrders(Request $request, string $id)
+    {
+        $customer = Customer::findOrFail($id);
+
+        $keyword = $request->input('keyword');
+        $query = Order::where('customer_id', $customer->id);
+
+        if ($keyword) {
+            $query->where(function ($q) use ($keyword) {
+                $q->where('order_code', 'like', "%$keyword%")
+                    ->orWhereRaw("DATE_FORMAT(order_date, '%W, %d %M %Y') LIKE ?", ["%$keyword%"])
+                    ->orWhere('status', 'like', "%$keyword%");
+            });
+        }
+
+        $orders = $query->orderBy('order_date', 'desc')->paginate(10);
+
+        $html = view('components.tables.customer-order-table', compact('orders'))->render();
+        $pagination = view('components.pagination.customer-order-pagination', compact('orders'))->render();
+
+        return response()->json([
+            'html' => $html,
+            'pagination' => $pagination
+        ]);
+    }
+
+    public function customerInvoice(Request $request, string $id)
+    {
+        $customer = Customer::findOrFail($id);
+
+        $query = Order::with('orderItems.goods')
+            ->where('customer_id', $customer->id)
+            ->where('status', 'confirmed');
+
+        $orders = $query->orderBy('order_date', 'desc')->get();
+
+        foreach ($orders as $order) {
+            $order->total_with_ppn = $order->orderItems->sum(function ($item) {
+                $subtotal = $item->total;
+                if ($item->goods && $item->goods->ppn) {
+                    $subtotal += ($subtotal * 11 / 100);
+                }
+                return $subtotal;
+            });
+        }
+
+        $totalAll = $orders->sum('total_with_ppn');
+
+        $html = view('components.tables.customer-invoice-table', compact('orders', 'totalAll'))->render();
+
+        return response()->json([
+            'html' => $html
+        ]);
+    }
 }
