@@ -1,0 +1,1 @@
+{{ $orders->withQueryString()->links('pagination::bootstrap-5') }}
